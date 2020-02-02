@@ -4,12 +4,13 @@ import (
 	"encoding/json"
 
 	"aelf_sdk.go/aelf_sdk/dto"
+	util "aelf_sdk.go/aelf_sdk/utils"
 )
 
-//GetNetworkInfo Get Network Info
+//GetNetworkInfo Get the node's network information.
 func (a *AElfClient) GetNetworkInfo() (*dto.NetworkInfo, error) {
 	url := a.Host + NETWORKINFO
-	networkBytes, err := GetRequest("GET", url, a.Version, nil)
+	networkBytes, err := util.GetRequest("GET", url, a.Version, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -18,11 +19,11 @@ func (a *AElfClient) GetNetworkInfo() (*dto.NetworkInfo, error) {
 	return network, nil
 }
 
-//RemovePeer Remove Peer
-func (a *AElfClient) RemovePeer(peerAddress string) (bool, error) {
+//RemovePeer Attempt to remove a node from the connected network nodes by given the ipAddress.
+func (a *AElfClient) RemovePeer(ipAddress string) (bool, error) {
 	url := a.Host + REMOVEPEER
-	params := map[string]interface{}{"address": peerAddress}
-	peerBytes, err := GetRequest("DELETE", url, a.Version, params)
+	params := map[string]interface{}{"address": ipAddress}
+	peerBytes, err := util.GetRequest("DELETE", url, a.Version, params)
 	if err != nil {
 		return false, err
 	}
@@ -31,23 +32,24 @@ func (a *AElfClient) RemovePeer(peerAddress string) (bool, error) {
 	return data.(bool), nil
 }
 
-//AddPeer Add Peer
-func (a *AElfClient) AddPeer(peerAddress string) (interface{}, error) {
+//AddPeer Attempt to add a node to the connected network nodes.Input parameter contains the ipAddress of the node.
+func (a *AElfClient) AddPeer(ipAddress string) (bool, error) {
 	url := a.Host + ADDPEER
-	params := map[string]interface{}{"Address": peerAddress}
-	peerBytes, err := PostRequest(url, a.Version, params)
+	params := map[string]interface{}{"Address": ipAddress}
+	peerBytes, err := util.PostRequest(url, a.Version, params)
 	if err != nil {
 		return false, err
 	}
-	var data map[string]interface{}
+	var data interface{}
 	json.Unmarshal(peerBytes, &data)
-	return data, nil
+	return data.(bool), nil
 }
 
-//GetPeers GetPeers
-func (a *AElfClient) GetPeers() ([]*dto.PeerDto, error) {
+//GetPeers Gets information about the peer nodes of the current node.Optional whether to include metrics.
+func (a *AElfClient) GetPeers(withMetrics bool) ([]*dto.PeerDto, error) {
 	url := a.Host + PEERS
-	peerBytes, err := GetRequest("GET", url, a.Version, nil)
+	params := map[string]interface{}{"withMetrics": withMetrics}
+	peerBytes, err := util.GetRequest("GET", url, a.Version, params)
 	if err != nil {
 		return nil, err
 	}

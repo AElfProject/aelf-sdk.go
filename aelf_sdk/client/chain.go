@@ -1,17 +1,17 @@
 package client
 
 import (
-	"encoding/binary"
 	"encoding/json"
 
 	"aelf_sdk.go/aelf_sdk/dto"
+	util "aelf_sdk.go/aelf_sdk/utils"
 	"github.com/btcsuite/btcutil/base58"
 )
 
-//GetChainStatus Get Chain Status
+//GetChainStatus Get the current status of the block chain
 func (a *AElfClient) GetChainStatus() (*dto.ChainStatusDto, error) {
 	url := a.Host + CHAINSTATUS
-	chainBytes, err := GetRequest("GET", url, a.Version, nil)
+	chainBytes, err := util.GetRequest("GET", url, a.Version, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -20,21 +20,21 @@ func (a *AElfClient) GetChainStatus() (*dto.ChainStatusDto, error) {
 	return chain, nil
 }
 
-//GetContractFileDescriptorSet Get Contract File Descriptor Set
+//GetContractFileDescriptorSet Get the definitions of proto-buff related to a contract
 func (a *AElfClient) GetContractFileDescriptorSet(address string) ([]byte, error) {
 	url := a.Host + FILEDESCRIPTOR
 	params := map[string]interface{}{"address": address}
-	data, err := GetRequest("GET", url, a.Version, params)
+	data, err := util.GetRequest("GET", url, a.Version, params)
 	if err != nil {
 		return nil, err
 	}
 	return data, err
 }
 
-//GetCurrentRoundInformation Get Current Round Information   //已完成
+//GetCurrentRoundInformation Get the latest round of consensus information from data on the last blockHeader of best-chain.
 func (a *AElfClient) GetCurrentRoundInformation() (*dto.RoundDto, error) {
 	url := a.Host + ROUNDINFORMATION
-	roundBytes, err := GetRequest("GET", url, a.Version, nil)
+	roundBytes, err := util.GetRequest("GET", url, a.Version, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -43,20 +43,31 @@ func (a *AElfClient) GetCurrentRoundInformation() (*dto.RoundDto, error) {
 	return round, nil
 }
 
-//GetChainID Get Chain ID
-func (a *AElfClient) GetChainID() (uint16, error) {
+//GetChainID Get id of the chain
+func (a *AElfClient) GetChainID() (int, error) {
 	chainStatus, err := a.GetChainStatus()
 	if err != nil {
 		return 0, err
 	}
 	chainIDBytes := base58.Decode(chainStatus.ChainId)
-	return binary.BigEndian.Uint16(chainIDBytes), nil
+
+	if len(chainIDBytes) < 4 {
+		var bs [4]byte
+		for i := 0; i < 4; i++ {
+			bs[i] = 0
+			if len(chainIDBytes) > i {
+				bs[i] = chainIDBytes[i]
+			}
+		}
+		chainIDBytes = bs[:]
+	}
+	return util.BytesToInt(chainIDBytes), nil
 }
 
-//GetTaskQueueStatus Get Task Queue Status  //已完成
+//GetTaskQueueStatus Get the status information of the task queue
 func (a *AElfClient) GetTaskQueueStatus() ([]*dto.TaskQueueInfoDto, error) {
 	url := a.Host + TASKQUEUESTATUS
-	queues, err := GetRequest("GET", url, a.Version, nil)
+	queues, err := util.GetRequest("GET", url, a.Version, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -72,6 +83,5 @@ func (a *AElfClient) GetTaskQueueStatus() ([]*dto.TaskQueueInfoDto, error) {
 		json.Unmarshal(queueBytes, &queue)
 		queueInfos = append(queueInfos, queue)
 	}
-
 	return queueInfos, nil
 }

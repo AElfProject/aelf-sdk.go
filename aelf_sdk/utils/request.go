@@ -1,4 +1,4 @@
-package client
+package utils
 
 import (
 	"encoding/json"
@@ -100,21 +100,3 @@ func ToString(v interface{}) string {
 		return fmt.Sprintf("%", v)
 	}
 }
-
-//ByteToInterface Byte To Interface{}
-// func ByteToInterface(b []byte) interface{} {
-// 	var data interface{}
-// 	err := json.Unmarshal(b, data)
-// 	if err != nil {
-// 		return errors.New("bytes to interface error")
-// 	}
-// 	return data
-// }
-
-//BytesToInt Bytes To Int
-// func BytesToInt(b []byte) int {
-// 	bytesBuffer := bytes.NewBuffer(b)
-// 	var data int32
-// 	binary.Read(bytesBuffer, binary.BigEndian, &data)
-// 	return int(data)
-// }

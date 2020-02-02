@@ -4,28 +4,29 @@ import (
 	"encoding/json"
 
 	"aelf_sdk.go/aelf_sdk/dto"
+	util "aelf_sdk.go/aelf_sdk/utils"
 )
 
-//GetBlockHeight Get Block Height
+//GetBlockHeight Get height of the current chain
 func (a *AElfClient) GetBlockHeight() (float64, error) {
 	url := a.Host + BLOCKHEIGHT
-	heightBytes, err := GetRequest("GET", url, a.Version, nil)
+	heightBytes, err := util.GetRequest("GET", url, a.Version, nil)
 	if err != nil {
 		return 0, err
 	}
 	var data interface{}
 	json.Unmarshal(heightBytes, &data)
-	return data.(float64), err
+	return data.(float64), nil
 }
 
-// GetBlockByHash Get Block By Hash
+// GetBlockByHash Get information of a block by given block hash. Optional whether to include transaction information.
 func (a *AElfClient) GetBlockByHash(blockHash string, isTransactions bool) (*dto.BlockDto, error) {
 	params := map[string]interface{}{
 		"blockHash":           blockHash,
 		"includeTransactions": isTransactions,
 	}
 	url := a.Host + BLOCKBYHASH
-	blockBytes, err := GetRequest("GET", url, a.Version, params)
+	blockBytes, err := util.GetRequest("GET", url, a.Version, params)
 	if err != nil {
 		return nil, err
 	}
@@ -34,14 +35,14 @@ func (a *AElfClient) GetBlockByHash(blockHash string, isTransactions bool) (*dto
 	return block, nil
 }
 
-//GetBlockByHeight Get Block By Height
+//GetBlockByHeight Get information of a block by specified height. Optional whether to include transaction information.
 func (a *AElfClient) GetBlockByHeight(blockHeight int, isTransactions bool) (*dto.BlockDto, error) {
 	params := map[string]interface{}{
 		"blockHeight":         blockHeight,
 		"includeTransactions": isTransactions,
 	}
 	url := a.Host + BLOCKBYHEIGHT
-	blockBytes, err := GetRequest("GET", url, a.Version, params)
+	blockBytes, err := util.GetRequest("GET", url, a.Version, params)
 	if err != nil {
 		return nil, err
 	}

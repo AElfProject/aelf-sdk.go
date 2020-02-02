@@ -4,12 +4,13 @@ import (
 	"encoding/json"
 
 	"aelf_sdk.go/aelf_sdk/dto"
+	util "aelf_sdk.go/aelf_sdk/utils"
 )
 
-//GetTransactionPoolStatus Get Transaction Pool Status  //已完成
+//GetTransactionPoolStatus Get information about the current transaction pool.
 func (a *AElfClient) GetTransactionPoolStatus() (*dto.TransactionPoolStatus, error) {
 	url := a.Host + TRANSACTIONPOOLSTATUS
-	transactionPoolBytes, err := GetRequest("GET", url, a.Version, nil)
+	transactionPoolBytes, err := util.GetRequest("GET", url, a.Version, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -18,70 +19,11 @@ func (a *AElfClient) GetTransactionPoolStatus() (*dto.TransactionPoolStatus, err
 	return transactionPool, nil
 }
 
-//ExecuteTransaction Execute Transaction   //已完成
-func (a *AElfClient) ExecuteTransaction(params map[string]interface{}) (string, error) {
-	url := a.Host + EXECUTETRANSACTION
-	transactionBytes, err := PostRequest(url, a.Version, params)
-	if err != nil {
-		return "", err
-	}
-	var data interface{}
-	json.Unmarshal(transactionBytes, &data)
-	return data.(string), nil
-}
-
-//ExecuteRawTransaction Execute Raw Transaction //已完成
-func (a *AElfClient) ExecuteRawTransaction(params map[string]interface{}) (string, error) {
-	url := a.Host + EXECUTERAWTRANSACTION
-	transactionBytes, err := PostRequest(url, a.Version, params)
-	if err != nil {
-		return "", err
-	}
-	var data interface{}
-	json.Unmarshal(transactionBytes, &data)
-	return data.(string), nil
-}
-
-//CreateRawTransaction Create Raw Transaction  //已完成
-func (a *AElfClient) CreateRawTransaction(params map[string]interface{}) (string, error) {
-	url := a.Host + RAWTRANSACTION
-	transactionBytes, err := PostRequest(url, a.Version, params)
-	if err != nil {
-		return "", err
-	}
-	var data interface{}
-	json.Unmarshal(transactionBytes, &data)
-	return data.(string), nil
-}
-
-//SendTransaction Send Transaction   //已完成
-// func (a *AElfClient) SendTransaction(transaction string) (string, error) {
-// 	url := a.Host + SENDTRANSACTION
-// 	params := map[string]interface{}{"RawTransaction": transaction} //hex string
-// 	data, err := PostRequest(url, a.Version, params)
-// 	if err != nil {
-// 		return "", err
-// 	}
-// 	return data.(string), nil
-// }
-
-//SendRawTransaction Send  raw Transaction  //已完成
-func (a *AElfClient) SendRawTransaction(params map[string]interface{}) (*dto.SendRawTransactionOutput, error) {
-	url := a.Host + SENDRAWTRANSACTION
-	rawTransactionBytes, err := PostRequest(url, a.Version, params)
-	if err != nil {
-		return nil, err
-	}
-	var rawTransaction = new(dto.SendRawTransactionOutput)
-	json.Unmarshal(rawTransactionBytes, &rawTransaction)
-	return rawTransaction, nil
-}
-
-//GetTransactionResult Get Transaction Result
+//GetTransactionResult Gets the result of transaction execution by the given transactionId.
 func (a *AElfClient) GetTransactionResult(transactionID string) (*dto.TransactionResultDto, error) {
 	url := a.Host + TRANSACTIONRESULT
 	params := map[string]interface{}{"transactionId": transactionID}
-	transactionBytes, err := GetRequest("GET", url, a.Version, params)
+	transactionBytes, err := util.GetRequest("GET", url, a.Version, params)
 	if err != nil {
 		return nil, err
 	}
@@ -90,11 +32,15 @@ func (a *AElfClient) GetTransactionResult(transactionID string) (*dto.Transactio
 	return transaction, nil
 }
 
-//GetTransactionResults Get Transaction Results  //已完成
-func (a *AElfClient) GetTransactionResults(blockHash string) ([]*dto.TransactionResultDto, error) {
+//GetTransactionResults Get results of multiple transactions by specified blockHash
+func (a *AElfClient) GetTransactionResults(blockHash string, offset, limit int) ([]*dto.TransactionResultDto, error) {
 	url := a.Host + TRANSACTIONRESULTS
-	params := map[string]interface{}{"blockHash": blockHash}
-	transactionsBytes, err := GetRequest("GET", url, a.Version, params)
+	params := map[string]interface{}{
+		"blockHash": blockHash,
+		"offset":    offset,
+		"limit":     limit,
+	}
+	transactionsBytes, err := util.GetRequest("GET", url, a.Version, params)
 	if err != nil {
 		return nil, err
 	}
@@ -113,11 +59,11 @@ func (a *AElfClient) GetTransactionResults(blockHash string) ([]*dto.Transaction
 	return transactions, nil
 }
 
-//GetMerklePathByTransactionID Get MerklePath By TransactionId  //已完成
+//GetMerklePathByTransactionID Get merkle path of a transaction.
 func (a *AElfClient) GetMerklePathByTransactionID(transactionID string) (*dto.MerklePathDto, error) {
 	url := a.Host + MBYTRANSACTIONID
 	params := map[string]interface{}{"transactionId": transactionID}
-	merkleBytes, err := GetRequest("GET", url, a.Version, params)
+	merkleBytes, err := util.GetRequest("GET", url, a.Version, params)
 	if err != nil {
 		return nil, err
 	}
@@ -126,20 +72,94 @@ func (a *AElfClient) GetMerklePathByTransactionID(transactionID string) (*dto.Me
 	return merkle, nil
 }
 
-// type SendTransactionsInput struct {
-// 	RawTransactions string   post参数
-// }
+//ExecuteTransaction  Call a read-only method of a contract.
+func (a *AElfClient) ExecuteTransaction(rawTransaction string) (string, error) {
+	url := a.Host + EXECUTETRANSACTION
+	params := map[string]interface{}{"RawTransaction": rawTransaction}
+	transactionBytes, err := util.PostRequest(url, a.Version, params)
+	if err != nil {
+		return "", err
+	}
+	return util.BytesToString(transactionBytes), nil
+}
 
-//SendTransactions SendTransactions  //已完成
-// func (a *AElfClient) SendTransactions(params map[string]interface{}) ([]string, error) {
-// 	url := a.Host + SENDTRANSACTIONS
-// 	datas, err := PostRequest(url, a.Version, params)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	var transactions []string
-// 	for _, dat := range datas.([]interface{}) {
-// 		transactions = append(transactions, dat.(string))
-// 	}
-// 	return transactions, nil
-// }
+//ExecuteRawTransaction Call a method of a contract by given serialized strings.
+func (a *AElfClient) ExecuteRawTransaction(input *dto.ExecuteRawTransactionDto) (map[string]interface{}, error) {
+	url := a.Host + EXECUTERAWTRANSACTION
+	params := map[string]interface{}{
+		"RawTransaction": input.RawTransaction,
+		"Signature":      input.Signature,
+	}
+	transactionBytes, err := util.PostRequest(url, a.Version, params)
+	if err != nil {
+		return nil, err
+	}
+	var data map[string]interface{}
+	json.Unmarshal(transactionBytes, &data)
+	return data, nil
+}
+
+//SendTransaction Broadcast a transaction.
+func (a *AElfClient) SendTransaction(transaction string) (*dto.SendTransactionOutput, error) {
+	url := a.Host + SENDTRANSACTION
+	params := map[string]interface{}{"RawTransaction": transaction}
+	transactionBytes, err := util.PostRequest(url, a.Version, params)
+	if err != nil {
+		return nil, err
+	}
+	var output = new(dto.SendTransactionOutput)
+	json.Unmarshal(transactionBytes, &output)
+	return output, nil
+}
+
+//CreateRawTransaction Creates an unsigned serialized transaction.
+func (a *AElfClient) CreateRawTransaction(input *dto.CreateRawTransactionInput) (*dto.CreateRawTransactionOutput, error) {
+	url := a.Host + RAWTRANSACTION
+	params := map[string]interface{}{
+		"From":           input.From,
+		"MethodName":     input.MethodName,
+		"Params":         input.Params,
+		"RefBlockHash":   input.RefBlockHash,
+		"RefBlockNumber": input.RefBlockNumber,
+		"To":             input.To,
+	}
+	transactionBytes, err := util.PostRequest(url, a.Version, params)
+	if err != nil {
+		return nil, err
+	}
+	var output = new(dto.CreateRawTransactionOutput)
+	json.Unmarshal(transactionBytes, &output)
+	return output, nil
+}
+
+//SendRawTransaction Broadcast a serialized transaction.
+func (a *AElfClient) SendRawTransaction(input *dto.SendRawTransactionInput) (*dto.SendRawTransactionOutput, error) {
+	url := a.Host + SENDRAWTRANSACTION
+	params := map[string]interface{}{
+		"Transaction":       input.Transaction,
+		"Signature":         input.Signature,
+		"ReturnTransaction": input.ReturnTransaction,
+	}
+	rawTransactionBytes, err := util.PostRequest(url, a.Version, params)
+	if err != nil {
+		return nil, err
+	}
+	var rawTransaction = new(dto.SendRawTransactionOutput)
+	json.Unmarshal(rawTransactionBytes, &rawTransaction)
+	return rawTransaction, nil
+}
+
+//SendTransactions Broadcast volume transactions.
+func (a *AElfClient) SendTransactions(rawTransactions string) (map[string]interface{}, error) {
+	url := a.Host + SENDTRANSACTIONS
+	params := map[string]interface{}{
+		"RawTransactions": rawTransactions,
+	}
+	transactionsBytes, err := util.PostRequest(url, a.Version, params)
+	if err != nil {
+		return nil, err
+	}
+	var datas map[string]interface{}
+	json.Unmarshal(transactionsBytes, &datas)
+	return datas, nil
+}

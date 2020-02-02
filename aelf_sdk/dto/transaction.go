@@ -67,3 +67,13 @@ type LogEventDto struct {
 	Indexed    []string
 	NonIndexed string
 }
+
+//SendTransactionOutput SendTransactionOutput
+type SendTransactionOutput struct {
+	TransactionID string
+}
+
+//CreateRawTransactionOutput Create RawTransactionOutput
+type CreateRawTransactionOutput struct {
+	RawTransaction string
+}
