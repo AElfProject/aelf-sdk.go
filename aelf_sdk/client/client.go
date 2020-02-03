@@ -3,15 +3,16 @@ package client
 import (
 	"crypto/sha256"
 	"encoding/hex"
-	"encoding/json"
 	"errors"
 
 	pt "aelf_sdk.go/aelf_sdk/proto"
 	util "aelf_sdk.go/aelf_sdk/utils"
 	proto "github.com/golang/protobuf/proto"
-	wrap "github.com/golang/protobuf/ptypes/wrappers"
 
+	"github.com/davecgh/go-spew/spew"
 	secp256 "github.com/skycoin/skycoin/src/cipher/secp256k1-go"
+
+	secp256k1 "github.com/ethereum/go-ethereum/crypto/secp256k1"
 )
 
 //AElfClient AElf Client
@@ -83,7 +84,6 @@ func (a *AElfClient) GetFormattedAddress(privateKey, address string) (string, er
 	if err != nil {
 		return "", errors.New("Get Contract Address By Name error" + err.Error())
 	}
-
 	transaction, err := a.CreateTransaction(fromAddress, toAddress, methodName, nil)
 	if err != nil {
 		return "", errors.New("Create transaction error")
@@ -95,16 +95,18 @@ func (a *AElfClient) GetFormattedAddress(privateKey, address string) (string, er
 	transaction.Signature = signature
 	transactionBytes, err := proto.Marshal(transaction)
 	if err != nil {
-		return "", errors.New("json marshasl transaction error" + err.Error())
+		return "", errors.New("proto marshasl transaction error" + err.Error())
 	}
 
-	result, err := a.ExecuteTransaction(hex.EncodeToString(transactionBytes))
+	executeResult, err := a.ExecuteTransaction(hex.EncodeToString(transactionBytes))
+	spew.Dump(">>>>>>>>>>>>result", executeResult, err)
 	if err != nil {
 		return "", errors.New("Execute Transaction error" + err.Error())
 	}
-	var symbol = new(wrap.StringValue)
-	json.Unmarshal(util.StringToBytes(result), &symbol)
-	return symbol.GetValue() + address + "_" + chain.ChainId, nil
+	// var symbol = new(wrap.StringValue)
+	// json.Unmarshal(util.StringToBytes(executeResult), &symbol)
+	// return symbol.GetValue() + address + "_" + chain.ChainId, nil
+	return chain.ChainId, nil
 }
 
 //GetContractAddressByName Get  contract address by contract name
@@ -119,16 +121,14 @@ func (a *AElfClient) GetContractAddressByName(privateKey string, contractName []
 	if err != nil {
 		return "", errors.New("Create transaction error")
 	}
-
 	signature, err := a.SignTransaction(privateKey, transaction)
 	if err != nil {
 		return "", errors.New("sign transaction error" + err.Error())
 	}
-
 	transaction.Signature = signature
-	transactionBytes, err := json.Marshal(&transaction)
+	transactionBytes, err := proto.Marshal(transaction)
 	if err != nil {
-		return "", errors.New("json marshasl transaction error" + err.Error())
+		return "", errors.New("proto marshasl transaction error" + err.Error())
 	}
 	result, err := a.ExecuteTransaction(hex.EncodeToString(transactionBytes))
 	if err != nil {
@@ -139,20 +139,25 @@ func (a *AElfClient) GetContractAddressByName(privateKey string, contractName []
 
 //SignTransaction Sign a transaction using private key
 func (a *AElfClient) SignTransaction(privateKey string, transaction *pt.Transaction) ([]byte, error) {
-	transactionBytes, err := json.Marshal(transaction)
-	privateKeyBytes, err := hex.DecodeString(privateKey)
+	transactionBytes, _ := proto.Marshal(transaction)
+	txDataBytes := sha256.Sum256(transactionBytes)
+	privateKeyBytes, _ := hex.DecodeString(privateKey)
+	signatureBytes, err := secp256k1.Sign(txDataBytes[:], privateKeyBytes)
 	if err != nil {
-		return nil, errors.New("marshasl transaction error: " + err.Error())
+		return nil, errors.New("Get Signature With PrivateKey error: " + err.Error())
 	}
-	signatureBytes := secp256.Sign(transactionBytes, privateKeyBytes)
 	return signatureBytes, nil
 }
 
 //GetSignatureWithPrivateKey Get Signature With PrivateKey
-func GetSignatureWithPrivateKey(privateKey string, txData []byte) string {
+func GetSignatureWithPrivateKey(privateKey string, txData []byte) (string, error) {
 	privateKeyBytes, _ := hex.DecodeString(privateKey)
-	signatureBytes := secp256.Sign(txData, privateKeyBytes)
-	return hex.EncodeToString(signatureBytes)
+	txDataBytes := sha256.Sum256(txData)
+	signatureBytes, err := secp256k1.Sign(txDataBytes[:], privateKeyBytes)
+	if err != nil {
+		return "", errors.New("Get Signature With PrivateKey error: " + err.Error())
+	}
+	return hex.EncodeToString(signatureBytes), nil
 }
 
 //CreateTransaction create a transaction from the input parameters
@@ -161,17 +166,22 @@ func (a *AElfClient) CreateTransaction(from, to, method string, params []byte) (
 	if err != nil {
 		return nil, errors.New("Get Chain Status error ")
 	}
-	var transaction = new(pt.Transaction)
-	transaction.MethodName = method
-	if params != nil {
-		transaction.Params = params
+	prefixBytes, _ := hex.DecodeString(chainStatus.BestChainHash)
+	fromAddressBytes, _ := util.Base58StringToAddress(from)
+	toAddressBytes, _ := util.Base58StringToAddress(to)
+	var transaction = &pt.Transaction{
+		From:           fromAddressBytes,
+		To:             toAddressBytes,
+		MethodName:     method,
+		RefBlockNumber: chainStatus.BestChainHeight,
+		RefBlockPrefix: prefixBytes[:4],
 	}
-	transaction.ProtoMessage()
-	transaction.To, _ = util.Base58StringToAddress(to)
-	transaction.From, _ = util.Base58StringToAddress(from)
-	transaction.RefBlockNumber = chainStatus.BestChainHeight
-	bytes, _ := hex.DecodeString(chainStatus.BestChainHash)
-	transaction.RefBlockPrefix = bytes[0:4]
+	var hash = new(pt.Hash)
+	hash.Value = params
+	hashBytes, _ := proto.Marshal(hash)
+	if params != nil {
+		transaction.Params = hashBytes
+	}
 	return transaction, nil
 }
 

@@ -7,9 +7,9 @@ import (
 	"aelf_sdk.go/aelf_sdk/client"
 
 	"aelf_sdk.go/aelf_sdk/dto"
-	pt "aelf_sdk.go/aelf_sdk/proto"
 
 	util "aelf_sdk.go/aelf_sdk/utils"
+	"github.com/golang/protobuf/proto"
 	secp256 "github.com/skycoin/skycoin/src/cipher/secp256k1-go"
 
 	"github.com/davecgh/go-spew/spew"
@@ -25,8 +25,8 @@ var aelf = client.AElfClient{
 
 var ContractMethodName = "GetContractAddressByName"
 var TestAddress = "127.0.0.1:6801"
-var ContractAddress, _ = aelf.GetGenesisContractAddress()
-var _address = aelf.GetAddressFromPrivateKey(aelf.PrivateKey, false)
+var ContractAddress, _ = aelf.GetGenesisContractAddress()            //ToAddress
+var _address = aelf.GetAddressFromPrivateKey(aelf.PrivateKey, false) //fromAddress
 
 func TestChainApi(t *testing.T) {
 	chainStatus, err := aelf.GetChainStatus()
@@ -182,9 +182,7 @@ func TestGetContractFileDescriptorSet(t *testing.T) {
 
 func TestCreateRawTransaction(t *testing.T) {
 	chainStatus, err := aelf.GetChainStatus()
-	if err != nil {
-		t.Error("Get Chain Status error", err)
-	}
+	assert.NoError(t, err)
 	var input = &dto.CreateRawTransactionInput{
 		From:           _address,
 		To:             ContractAddress,
@@ -194,10 +192,97 @@ func TestCreateRawTransaction(t *testing.T) {
 		RefBlockNumber: chainStatus.BestChainHeight,
 	}
 	result, err := aelf.CreateRawTransaction(input)
-	if err != nil || result.RawTransaction != "" {
-		t.Error("Create RawTransaction error", err)
-	}
+	assert.NoError(t, err)
 	spew.Dump("Create RawTransaction result", result)
+}
+
+func TestSendRawTransaction(t *testing.T) {
+	chainStatus, err := aelf.GetChainStatus()
+	assert.NoError(t, err)
+	var input = &dto.CreateRawTransactionInput{
+		From:           _address,
+		To:             ContractAddress,
+		MethodName:     ContractMethodName,
+		RefBlockNumber: chainStatus.BestChainHeight,
+		RefBlockHash:   chainStatus.BestChainHash,
+		Params:         util.ParamsToString("AElf.ContractNames.Token"),
+	}
+	createRaw, err := aelf.CreateRawTransaction(input)
+	assert.NoError(t, err)
+	spew.Dump("Create Raw Transaction result", createRaw)
+	rawTransactionBytes, err := hex.DecodeString(createRaw.RawTransaction)
+	signature, _ := client.GetSignatureWithPrivateKey(aelf.PrivateKey, rawTransactionBytes)
+	var sendRawinput = &dto.SendRawTransactionInput{
+		Transaction:       createRaw.RawTransaction,
+		Signature:         signature,
+		ReturnTransaction: true,
+	}
+	executeRawresult, err := aelf.SendRawTransaction(sendRawinput)
+	assert.NoError(t, err)
+	spew.Dump("Send Raw Transaction result", executeRawresult)
+}
+
+func TestExecuteRawTransaction(t *testing.T) {
+	chainStatus, err := aelf.GetChainStatus()
+	assert.NoError(t, err)
+	var input = &dto.CreateRawTransactionInput{
+		From:           _address,
+		To:             ContractAddress,
+		MethodName:     ContractMethodName,
+		RefBlockNumber: chainStatus.BestChainHeight,
+		RefBlockHash:   chainStatus.BestChainHash,
+		Params:         util.ParamsToString("AElf.ContractNames.Consensus"),
+	}
+	createRaw, err := aelf.CreateRawTransaction(input)
+	assert.NoError(t, err)
+	spew.Dump("Create Raw Transaction result", createRaw)
+	rawTransactionBytes, err := hex.DecodeString(createRaw.RawTransaction)
+	signature, _ := client.GetSignatureWithPrivateKey(aelf.PrivateKey, rawTransactionBytes)
+	var executeRawinput = &dto.ExecuteRawTransactionDto{
+		RawTransaction: createRaw.RawTransaction,
+		Signature:      signature,
+	}
+	executeRawresult, err := aelf.ExecuteRawTransaction(executeRawinput)
+	assert.NoError(t, err)
+	spew.Dump("Execute RawTransaction result", executeRawresult)
+}
+
+func TestSendTransaction(t *testing.T) {
+	fromAddress := _address
+	toAddress := ContractAddress
+	methodName := ContractMethodName
+	params := util.GetBytesSha256("AElf.ContractNames.Vote")
+	transaction, err := aelf.CreateTransaction(fromAddress, toAddress, methodName, params)
+	assert.NoError(t, err)
+	signature, err := aelf.SignTransaction(aelf.PrivateKey, transaction)
+	transaction.Signature = signature
+	assert.NoError(t, err)
+	transactionByets, _ := proto.Marshal(transaction)
+	sendResult, err := aelf.SendTransaction(hex.EncodeToString(transactionByets))
+	assert.NoError(t, err)
+	spew.Dump("Send Transaction result", sendResult)
+}
+
+func TestExecuteTransaction(t *testing.T) {
+	fromAddress := _address
+	toAddress := ContractAddress
+	methodName := ContractMethodName
+	params := util.GetBytesSha256("AElf.ContractNames.TokenConverter")
+	transaction, err := aelf.CreateTransaction(fromAddress, toAddress, methodName, params)
+	assert.NoError(t, err)
+	signature, err := aelf.SignTransaction(aelf.PrivateKey, transaction)
+	transaction.Signature = signature
+	transactionByets, _ := proto.Marshal(transaction)
+	executeresult, err := aelf.ExecuteTransaction(hex.EncodeToString(transactionByets))
+	assert.NoError(t, err)
+	spew.Dump("Execute Transaction result", executeresult)
+}
+
+func TestGetContractAddressByName(t *testing.T) {
+	contractNameBytes := util.GetBytesSha256("AElf.ContractNames.Token")
+	contractAddress, err := aelf.GetContractAddressByName(aelf.PrivateKey, contractNameBytes)
+	assert.NoError(t, err)
+	spew.Dump("Get ContractAddress By Name Result", contractAddress)
 }
 
 func TestGetAddressFromPubKey(t *testing.T) {
@@ -214,110 +299,23 @@ func TestSendTransctions(t *testing.T) {
 	param1 := util.GetBytesSha256("AElf.ContractNames.Vote")
 	param2 := util.GetBytesSha256("AElf.ContractNames.Token")
 	var parameters [][]byte
-	var transaction = new(pt.Transaction)
 	parameters = append(parameters, param1)
 	parameters = append(parameters, param2)
 	for _, param := range parameters {
-		transaction, _ = aelf.CreateTransaction(fromAddress, toAddress, methodName, param)
-		transactionBytes := util.SerializeToBytes(transaction)
-		results, err := aelf.SendTransactions(hex.EncodeToString(transactionBytes))
-		if err != nil {
-			t.Error("Send Transactions  error", err)
-		}
+		transaction, err := aelf.CreateTransaction(fromAddress, toAddress, methodName, param)
+		assert.NoError(t, err)
+		signature, err := aelf.SignTransaction(aelf.PrivateKey, transaction)
+		transaction.Signature = signature
+		assert.NoError(t, err)
+		transactionByets, _ := proto.Marshal(transaction)
+		results, err := aelf.SendTransactions(hex.EncodeToString(transactionByets))
+		assert.NoError(t, err)
 		spew.Dump("Send Transactions result", results)
 	}
 }
 
-func TestSendTransaction(t *testing.T) {
-	fromAddress := _address
-	toAddress := ContractAddress
-	methodName := ContractMethodName
-	params := util.GetBytesSha256("AElf.ContractNames.Vote")
-	transaction, err := aelf.CreateTransaction(fromAddress, toAddress, methodName, params)
-	if err != nil {
-		t.Error("Create Transaction error", err)
-	}
-	signature, err := aelf.SignTransaction(aelf.PrivateKey, transaction)
-	if err != nil {
-		t.Error("Sign Transaction with private key error", err)
-	}
-	transaction.Signature = signature
-
-	transactionByets := util.SerializeToBytes(transaction)
-	rawTransaction := hex.EncodeToString(transactionByets)
-	sendResult, err := aelf.SendTransaction(rawTransaction)
-	if err != nil {
-		t.Error("Send Transaction error", err)
-	}
-	spew.Dump("Send Transaction result", sendResult.TransactionID, err)
-}
-
-func TestExecuteTransaction(t *testing.T) {
-	fromAddress := _address
-	toAddress := ContractAddress
-	methodName := ContractMethodName
-	params := util.GetBytesSha256("AElf.ContractNames.TokenConverter")
-	transaction, err := aelf.CreateTransaction(fromAddress, toAddress, methodName, params)
-	if err != nil {
-		t.Error("create Transaction error", err)
-	}
-	spew.Dump("create Transaction result", transaction)
-	signature, err := aelf.SignTransaction(aelf.PrivateKey, transaction)
-	signatureBytes, _ := hex.DecodeString(string(signature))
-	transaction.Signature = signatureBytes
-	RawTransaction := hex.EncodeToString(util.SerializeToBytes(transaction))
-	executeresult, err := aelf.ExecuteTransaction(RawTransaction)
-	if err != nil {
-		t.Error("Execute Transaction error", err)
-	}
-	spew.Dump("Execute Transaction result", executeresult)
-}
-
-func TestSendRawTransaction(t *testing.T) {
-	chainStatus, err := aelf.GetChainStatus()
-	if err != nil {
-		t.Error("Get Chain Status error", err)
-	}
-	var input = &dto.CreateRawTransactionInput{
-		From:           _address,
-		To:             ContractAddress,
-		MethodName:     ContractMethodName,
-		RefBlockNumber: chainStatus.BestChainHeight,
-		RefBlockHash:   chainStatus.BestChainHash,
-		Params:         util.ParamsToString("AElf.ContractNames.Token"),
-	}
-	createRaw, err := aelf.CreateRawTransaction(input)
-	var sendRawinput = &dto.SendRawTransactionInput{
-		Transaction:       createRaw.RawTransaction,
-		Signature:         "6935fca171452304204121397ec5917aca44aad0e7e478fed2a4a02b8f39facb0de7c752148c4fbc6366d63a32be5b824a89830bd5a3336b692be41029dabde501",
-		ReturnTransaction: true,
-	}
-	executeRawresult, _ := aelf.SendRawTransaction(sendRawinput)
-	spew.Dump("Send Raw Transaction result", executeRawresult)
-}
-
-func TestExecuteRawTransaction(t *testing.T) {
-	chainStatus, err := aelf.GetChainStatus()
-	if err != nil {
-		t.Error("Get Chain Status error", err)
-	}
-	var input = &dto.CreateRawTransactionInput{
-		From:           _address,
-		To:             ContractAddress,
-		MethodName:     ContractMethodName,
-		RefBlockNumber: chainStatus.BestChainHeight,
-		RefBlockHash:   chainStatus.BestChainHash,
-		Params:         util.ParamsToString("AElf.ContractNames.Consensus"),
-	}
-	createRaw, err := aelf.CreateRawTransaction(input)
-	spew.Dump("Create Raw Transaction result", createRaw, err)
-	rawTransactionBytes, err := hex.DecodeString(createRaw.RawTransaction)
-	signature := client.GetSignatureWithPrivateKey(aelf.PrivateKey, rawTransactionBytes)
-
-	var executeRawinput = &dto.ExecuteRawTransactionDto{
-		RawTransaction: createRaw.RawTransaction,
-		Signature:      signature,
-	}
-	executeRawresult, err := aelf.ExecuteRawTransaction(executeRawinput)
-	spew.Dump("Execute RawTransaction result", executeRawresult)
+func TestGetFormattedAddress(t *testing.T) {
+	addressVal, err := aelf.GetFormattedAddress(aelf.PrivateKey, _address)
+	assert.NoError(t, err)
+	spew.Dump(">>>>>addressVal", addressVal, err)
 }

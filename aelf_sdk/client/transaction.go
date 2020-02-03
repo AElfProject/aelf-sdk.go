@@ -84,7 +84,7 @@ func (a *AElfClient) ExecuteTransaction(rawTransaction string) (string, error) {
 }
 
 //ExecuteRawTransaction Call a method of a contract by given serialized strings.
-func (a *AElfClient) ExecuteRawTransaction(input *dto.ExecuteRawTransactionDto) (map[string]interface{}, error) {
+func (a *AElfClient) ExecuteRawTransaction(input *dto.ExecuteRawTransactionDto) (string, error) {
 	url := a.Host + EXECUTERAWTRANSACTION
 	params := map[string]interface{}{
 		"RawTransaction": input.RawTransaction,
@@ -92,11 +92,11 @@ func (a *AElfClient) ExecuteRawTransaction(input *dto.ExecuteRawTransactionDto) 
 	}
 	transactionBytes, err := util.PostRequest(url, a.Version, params)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
-	var data map[string]interface{}
+	var data interface{}
 	json.Unmarshal(transactionBytes, &data)
-	return data, nil
+	return data.(string), nil
 }
 
 //SendTransaction Broadcast a transaction.
@@ -150,7 +150,7 @@ func (a *AElfClient) SendRawTransaction(input *dto.SendRawTransactionInput) (*dt
 }
 
 //SendTransactions Broadcast volume transactions.
-func (a *AElfClient) SendTransactions(rawTransactions string) (map[string]interface{}, error) {
+func (a *AElfClient) SendTransactions(rawTransactions string) ([]interface{}, error) {
 	url := a.Host + SENDTRANSACTIONS
 	params := map[string]interface{}{
 		"RawTransactions": rawTransactions,
@@ -159,7 +159,11 @@ func (a *AElfClient) SendTransactions(rawTransactions string) (map[string]interf
 	if err != nil {
 		return nil, err
 	}
-	var datas map[string]interface{}
-	json.Unmarshal(transactionsBytes, &datas)
-	return datas, nil
+	var data interface{}
+	json.Unmarshal(transactionsBytes, &data)
+	var transactions []interface{}
+	for _, d := range data.([]interface{}) {
+		transactions = append(transactions, d)
+	}
+	return transactions, nil
 }

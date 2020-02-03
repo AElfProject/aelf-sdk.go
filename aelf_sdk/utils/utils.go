@@ -21,7 +21,7 @@ import (
 //Base58StringToAddress address to  bytes
 func Base58StringToAddress(addr string) (*pt.Address, error) {
 	var address = new(pt.Address)
-	addressBytes, _, err := base58.CheckDecode(addr)
+	addressBytes, err := DecodeCheck(addr)
 	if err != nil {
 		return nil, errors.New("Base58String To Address error")
 	}
@@ -94,6 +94,22 @@ func checksum(input []byte) (cksum [4]byte) {
 	return
 }
 
+// DecodeCheck decodes a string that was encoded with CheckEncode and verifies the checksum.
+func DecodeCheck(input string) (result []byte, err error) {
+	decoded := base58.Decode(input)
+	if len(decoded) < 5 {
+		return nil, errors.New("invalid format: version and/or checksum bytes missing")
+	}
+	var cksum [4]byte
+	copy(cksum[:], decoded[len(decoded)-4:])
+	if checksum(decoded[:len(decoded)-4]) != cksum {
+		return nil, errors.New("checksum error")
+	}
+	payload := decoded[0 : len(decoded)-4]
+	result = append(result, payload...)
+	return
+}
+
 //ParamsToString Params To String like "AElf.ContractNames.Consensus"
 func ParamsToString(params string) string {
 	paramMap := map[string]interface{}{
@@ -106,7 +122,7 @@ func ParamsToString(params string) string {
 	return string(paramsBytes)
 }
 
-// SerializeToBytes Serialize To Bytes
+// SerializeToBytes Serialize Transaction To Bytes
 func SerializeToBytes(tx *pt.Transaction) []byte {
 	var result bytes.Buffer
 	encoder := gob.NewEncoder(&result)
