@@ -99,3 +99,11 @@ func ParamsToString(params string) string {
 	}
 	return string(paramsBytes)
 }
+
+//GetAddressByBytes  sha256 twice Bytes to get address
+func GetAddressByBytes(b []byte) string {
+	firstBytes := sha256.Sum256(b)
+	secondBytes := sha256.Sum256(firstBytes[:])
+	address := EncodeCheck(secondBytes[:])
+	return address
+}

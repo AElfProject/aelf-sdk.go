@@ -9,10 +9,7 @@ import (
 	util "aelf_sdk.go/aelf_sdk/utils"
 	proto "github.com/golang/protobuf/proto"
 	wrap "github.com/golang/protobuf/ptypes/wrappers"
-
 	secp256 "github.com/skycoin/skycoin/src/cipher/secp256k1-go"
-
-	secp256k1 "github.com/ethereum/go-ethereum/crypto/secp256k1"
 )
 
 //AElfClient AElf Client
@@ -20,7 +17,6 @@ type AElfClient struct {
 	Host       string
 	Version    string
 	PrivateKey string
-	PublicKey  string
 }
 
 //const const
@@ -51,10 +47,7 @@ const (
 //GetAddressFromPubKey Get the account address through the public key
 func (a *AElfClient) GetAddressFromPubKey(pubkey string) string {
 	bytes, _ := hex.DecodeString(pubkey)
-	pubkeyBytes1 := sha256.Sum256(bytes)
-	pubkeyBytes2 := sha256.Sum256(pubkeyBytes1[:])
-	address := util.EncodeCheck(pubkeyBytes2[:])
-	return address
+	return util.GetAddressByBytes(bytes)
 }
 
 //GetAddressFromPrivateKey Get the account address through the private key
@@ -66,41 +59,23 @@ func (a *AElfClient) GetAddressFromPrivateKey(privateKey string, compress bool) 
 	} else {
 		pubkeyBytes = secp256.UncompressedPubkeyFromSeckey(bytes)
 	}
-	pubkeyBytes1 := sha256.Sum256(pubkeyBytes)
-	pubkeyBytes2 := sha256.Sum256(pubkeyBytes1[:])
-	address := util.EncodeCheck(pubkeyBytes2[:])
-	return address
+	return util.GetAddressByBytes(pubkeyBytes)
 }
 
 // GetFormattedAddress Convert the Address to the displayed string：symbol_base58-string_base58-string-chain-id
 func (a *AElfClient) GetFormattedAddress(privateKey, address string) (string, error) {
-	chain, err := a.GetChainStatus()
-	if err != nil {
-		return "", errors.New("get chain Status error" + err.Error())
-	}
+	chain, _ := a.GetChainStatus()
 	methodName := "GetPrimaryTokenSymbol"
 	fromAddress := a.GetAddressFromPrivateKey(privateKey, false)
-	contractAddress, err := a.GetContractAddressByName(privateKey, util.GetBytesSha256("AElf.ContractNames.Token"))
-	if err != nil {
-		return "", errors.New("Get Contract Address By Name error" + err.Error())
-	}
-	transaction, err := a.CreateTransaction(fromAddress, contractAddress, methodName, nil)
-	if err != nil {
-		return "", errors.New("Create transaction error")
-	}
-	signature, err := a.SignTransaction(privateKey, transaction)
-	if err != nil {
-		return "", errors.New("sign transaction error" + err.Error())
-	}
+	contractAddress, _ := a.GetContractAddressByName(privateKey, util.GetBytesSha256("AElf.ContractNames.Token"))
+	transaction, _ := a.CreateTransaction(fromAddress, contractAddress, methodName, nil)
+	signature, _ := a.SignTransaction(privateKey, transaction)
 	transaction.Signature = signature
 	transactionBytes, err := proto.Marshal(transaction)
 	if err != nil {
 		return "", errors.New("proto marshasl transaction error" + err.Error())
 	}
-	executeResult, err := a.ExecuteTransaction(hex.EncodeToString(transactionBytes))
-	if err != nil {
-		return "", errors.New("Execute Transaction error" + err.Error())
-	}
+	executeResult, _ := a.ExecuteTransaction(hex.EncodeToString(transactionBytes))
 	var symbol = new(wrap.StringValue)
 	executeBytes, err := hex.DecodeString(executeResult)
 	proto.Unmarshal(executeBytes, symbol)
@@ -115,23 +90,14 @@ func (a *AElfClient) GetContractAddressByName(privateKey string, contractName []
 		return "", errors.New("Get Genesis Contract Address error")
 	}
 	methodName := "GetContractAddressByName"
-	transaction, err := a.CreateTransaction(fromAddress, toAddress, methodName, contractName)
-	if err != nil {
-		return "", errors.New("Create transaction error")
-	}
-	signature, err := a.SignTransaction(privateKey, transaction)
-	if err != nil {
-		return "", errors.New("sign transaction error" + err.Error())
-	}
+	transaction, _ := a.CreateTransaction(fromAddress, toAddress, methodName, contractName)
+	signature, _ := a.SignTransaction(privateKey, transaction)
 	transaction.Signature = signature
 	transactionBytes, err := proto.Marshal(transaction)
 	if err != nil {
 		return "", errors.New("proto marshasl transaction error" + err.Error())
 	}
-	result, err := a.ExecuteTransaction(hex.EncodeToString(transactionBytes))
-	if err != nil {
-		return "", errors.New("Execute Transaction error" + err.Error())
-	}
+	result, _ := a.ExecuteTransaction(hex.EncodeToString(transactionBytes))
 	var address = new(pt.Address)
 	resultBytes, err := hex.DecodeString(result)
 	proto.Unmarshal(resultBytes, address)
@@ -143,22 +109,8 @@ func (a *AElfClient) SignTransaction(privateKey string, transaction *pt.Transact
 	transactionBytes, _ := proto.Marshal(transaction)
 	txDataBytes := sha256.Sum256(transactionBytes)
 	privateKeyBytes, _ := hex.DecodeString(privateKey)
-	signatureBytes, err := secp256k1.Sign(txDataBytes[:], privateKeyBytes)
-	if err != nil {
-		return nil, errors.New("Get Signature With PrivateKey error: " + err.Error())
-	}
+	signatureBytes := secp256.Sign(txDataBytes[:], privateKeyBytes)
 	return signatureBytes, nil
-}
-
-//GetSignatureWithPrivateKey Get Signature With PrivateKey
-func GetSignatureWithPrivateKey(privateKey string, txData []byte) (string, error) {
-	privateKeyBytes, _ := hex.DecodeString(privateKey)
-	txDataBytes := sha256.Sum256(txData)
-	signatureBytes, err := secp256k1.Sign(txDataBytes[:], privateKeyBytes)
-	if err != nil {
-		return "", errors.New("Get Signature With PrivateKey error: " + err.Error())
-	}
-	return hex.EncodeToString(signatureBytes), nil
 }
 
 //CreateTransaction create a transaction from the input parameters
@@ -188,7 +140,7 @@ func (a *AElfClient) CreateTransaction(from, to, method string, params []byte) (
 func (a *AElfClient) GetGenesisContractAddress() (string, error) {
 	chainStatus, err := a.GetChainStatus()
 	if err != nil {
-		return "", err
+		return "", errors.New("Get Genesis Contract Address error:" + err.Error())
 	}
 	address := chainStatus.GenesisContractAddress
 	return address, nil
@@ -201,4 +153,12 @@ func (a *AElfClient) IsConnected() bool {
 		return false
 	}
 	return true
+}
+
+//GetSignatureWithPrivateKey Get Signature With PrivateKey
+func GetSignatureWithPrivateKey(privateKey string, txData []byte) (string, error) {
+	privateKeyBytes, _ := hex.DecodeString(privateKey)
+	txDataBytes := sha256.Sum256(txData)
+	signatureBytes := secp256.Sign(txDataBytes[:], privateKeyBytes)
+	return hex.EncodeToString(signatureBytes), nil
 }

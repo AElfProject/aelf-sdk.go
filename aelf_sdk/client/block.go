@@ -2,6 +2,7 @@ package client
 
 import (
 	"encoding/json"
+	"errors"
 
 	"aelf_sdk.go/aelf_sdk/dto"
 	util "aelf_sdk.go/aelf_sdk/utils"
@@ -12,7 +13,7 @@ func (a *AElfClient) GetBlockHeight() (float64, error) {
 	url := a.Host + BLOCKHEIGHT
 	heightBytes, err := util.GetRequest("GET", url, a.Version, nil)
 	if err != nil {
-		return 0, err
+		return 0, errors.New("Get BlockHeight error:" + err.Error())
 	}
 	var data interface{}
 	json.Unmarshal(heightBytes, &data)
@@ -28,7 +29,7 @@ func (a *AElfClient) GetBlockByHash(blockHash string, isTransactions bool) (*dto
 	url := a.Host + BLOCKBYHASH
 	blockBytes, err := util.GetRequest("GET", url, a.Version, params)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("Get Block ByHash error:" + err.Error())
 	}
 	var block = new(dto.BlockDto)
 	json.Unmarshal(blockBytes, &block)
@@ -44,7 +45,7 @@ func (a *AElfClient) GetBlockByHeight(blockHeight int, isTransactions bool) (*dt
 	url := a.Host + BLOCKBYHEIGHT
 	blockBytes, err := util.GetRequest("GET", url, a.Version, params)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("Get Block ByHeight error:" + err.Error())
 	}
 	var block = new(dto.BlockDto)
 	json.Unmarshal(blockBytes, &block)

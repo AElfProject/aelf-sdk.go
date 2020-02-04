@@ -2,6 +2,7 @@ package client
 
 import (
 	"encoding/json"
+	"errors"
 
 	"aelf_sdk.go/aelf_sdk/dto"
 	util "aelf_sdk.go/aelf_sdk/utils"
@@ -13,7 +14,7 @@ func (a *AElfClient) GetChainStatus() (*dto.ChainStatusDto, error) {
 	url := a.Host + CHAINSTATUS
 	chainBytes, err := util.GetRequest("GET", url, a.Version, nil)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("Get ChainStatus error:" + err.Error())
 	}
 	var chain = new(dto.ChainStatusDto)
 	json.Unmarshal(chainBytes, &chain)
@@ -26,7 +27,7 @@ func (a *AElfClient) GetContractFileDescriptorSet(address string) ([]byte, error
 	params := map[string]interface{}{"address": address}
 	data, err := util.GetRequest("GET", url, a.Version, params)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("Get ContractFile Descriptor Set error:" + err.Error())
 	}
 	return data, err
 }
@@ -36,7 +37,7 @@ func (a *AElfClient) GetCurrentRoundInformation() (*dto.RoundDto, error) {
 	url := a.Host + ROUNDINFORMATION
 	roundBytes, err := util.GetRequest("GET", url, a.Version, nil)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("Get Current Round Information error:" + err.Error())
 	}
 	var round = new(dto.RoundDto)
 	json.Unmarshal(roundBytes, &round)
@@ -47,10 +48,9 @@ func (a *AElfClient) GetCurrentRoundInformation() (*dto.RoundDto, error) {
 func (a *AElfClient) GetChainID() (int, error) {
 	chainStatus, err := a.GetChainStatus()
 	if err != nil {
-		return 0, err
+		return 0, errors.New("Get Chain Status error:" + err.Error())
 	}
 	chainIDBytes := base58.Decode(chainStatus.ChainId)
-
 	if len(chainIDBytes) < 4 {
 		var bs [4]byte
 		for i := 0; i < 4; i++ {
@@ -69,7 +69,7 @@ func (a *AElfClient) GetTaskQueueStatus() ([]*dto.TaskQueueInfoDto, error) {
 	url := a.Host + TASKQUEUESTATUS
 	queues, err := util.GetRequest("GET", url, a.Version, nil)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("Get Task Queue Status error:" + err.Error())
 	}
 	var datas interface{}
 	json.Unmarshal(queues, &datas)
@@ -78,7 +78,7 @@ func (a *AElfClient) GetTaskQueueStatus() ([]*dto.TaskQueueInfoDto, error) {
 		var queue = new(dto.TaskQueueInfoDto)
 		queueBytes, err := json.Marshal(data)
 		if err != nil {
-			return nil, err
+			return nil, errors.New("json Marshal data error:" + err.Error())
 		}
 		json.Unmarshal(queueBytes, &queue)
 		queueInfos = append(queueInfos, queue)

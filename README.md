@@ -27,9 +27,9 @@ var height =  aelf.GetBlockHeight();
 ```Golang
  func (a *AElfClient) GetBlockHeight() (float64, error);
 
- func (a *AElfClient) GetBlockByHash(blockHash string, isTransactions bool) (BlockDto, error) {
+ func (a *AElfClient) GetBlockByHash(blockHash string, isTransactions bool) (BlockDto, error);
 
- func (a *AElfClient) GetBlockByHeight(blockHeight int, isTransactions bool) (BlockDto, error) {
+ func (a *AElfClient) GetBlockByHeight(blockHeight int, isTransactions bool) (BlockDto, error);
 ```
 
 #### ChainService
@@ -49,7 +49,7 @@ var height =  aelf.GetBlockHeight();
 #### NetworkService
 
 ```Golang
- func (a *AElfClient) AddPeer(ipAddress string) (bool), error) 
+ func (a *AElfClient) AddPeer(ipAddress string) (bool), error);
 
  func (a *AElfClient) RemovePeer(address string) (bool, error);
 
@@ -81,7 +81,7 @@ func (a *AElfClient) CreateRawTransaction(input CreateRawTransactionInput) (Crea
 
 func (a *AElfClient) SendRawTransaction(input SendRawTransactionInput) (SendRawTransactionOutput, error);
 
-func (a *AElfClient) SendTransactions(rawTransactions string) ([]string, error) {
+func (a *AElfClient) SendTransactions(rawTransactions string) ([]string, error);
 
 ```
 
@@ -90,7 +90,7 @@ func (a *AElfClient) SendTransactions(rawTransactions string) ([]string, error) 
 ```Golang
  func (a *AElfClient) IsConnected() bool;
 
- Task<string> GetFormattedAddress(Address address);  //未完成
+ func (a *AElfClient) GetFormattedAddress(privateKey, address string) (string, error);
 
  func (a *AElfClient) GetAddressFromPubKey(pubkey string) string;
 
@@ -98,7 +98,8 @@ func (a *AElfClient) SendTransactions(rawTransactions string) ([]string, error) 
 
  func (a *AElfClient) GetGenesisContractAddress() (string, error);
 
- Task<Address> GetContractAddressByName(Hash contractNameHash);  //未完成
+ func (a *AElfClient) GetContractAddressByName(privateKey string, contractName []byte) (string, error);
+
 ```
 
 ### Test

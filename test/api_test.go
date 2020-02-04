@@ -5,14 +5,12 @@ import (
 	"testing"
 
 	"aelf_sdk.go/aelf_sdk/client"
-
 	"aelf_sdk.go/aelf_sdk/dto"
-
 	util "aelf_sdk.go/aelf_sdk/utils"
-	"github.com/golang/protobuf/proto"
-	secp256 "github.com/skycoin/skycoin/src/cipher/secp256k1-go"
 
 	"github.com/davecgh/go-spew/spew"
+	"github.com/golang/protobuf/proto"
+	secp256 "github.com/skycoin/skycoin/src/cipher/secp256k1-go"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -20,164 +18,134 @@ var aelf = client.AElfClient{
 	Host:       "http://127.0.0.1:8000",
 	Version:    "1.0",
 	PrivateKey: "680afd630d82ae5c97942c4141d60b8a9fedfa5b2864fca84072c17ee1f72d9d",
-	PublicKey:  "",
 }
 
 var ContractMethodName = "GetContractAddressByName"
 var TestAddress = "127.0.0.1:6801"
-var ContractAddress, _ = aelf.GetGenesisContractAddress()            //ToAddress
-var _address = aelf.GetAddressFromPrivateKey(aelf.PrivateKey, false) //fromAddress
+var ContractAddress, _ = aelf.GetGenesisContractAddress()
+var _address = aelf.GetAddressFromPrivateKey(aelf.PrivateKey, false)
 
-func TestChainApi(t *testing.T) {
-	chainStatus, err := aelf.GetChainStatus()
-	if err != nil {
-		t.Error("GetChainStatus error", err)
-	}
-	spew.Dump("get chain status", chainStatus)
-	chainID, err := aelf.GetChainID()
-	if err != nil {
-		t.Error("GetChainID error", err)
-	}
-	spew.Dump("get chain ID", chainID)
+func TestGetAddressFromPubKey(t *testing.T) {
+	var pubkeyBytes []byte
+	pubkeyBytes = secp256.UncompressedPubkeyFromSeckey(util.StringTo32Bytes(aelf.PrivateKey))
+	pubKeyAddress := aelf.GetAddressFromPubKey(string(pubkeyBytes))
+	spew.Dump("Get Address From Public Key", pubKeyAddress)
 }
 
-func TestGetBlockApi(t *testing.T) {
+func TestGetChainStatus(t *testing.T) {
+	chainStatus, err := aelf.GetChainStatus()
+	assert.NoError(t, err)
+	spew.Dump("Get Chain Status Result", chainStatus)
+}
 
-	//Test GetBlockHeight
+func TestGetChainID(t *testing.T) {
+	chainID, err := aelf.GetChainID()
+	assert.NoError(t, err)
+	spew.Dump("Get ChainID Result", chainID)
+}
+
+func TestGetBlockHeight(t *testing.T) {
 	height, err := aelf.GetBlockHeight()
-	if err != nil || height == 0 {
-		t.Error("GetBlockHeight err", err)
-	}
-	spew.Dump("# get_block_height", height)
+	assert.NoError(t, err)
+	assert.True(t, height > 0)
+}
 
+func TestGetBlockByHeightAndByHash(t *testing.T) {
 	//Test GetBlockByHeight
 	var isTransactions = true
 	var blockHeight = 1
-	byHeightBlock, err := aelf.GetBlockByHeight(blockHeight, isTransactions)
-	if err != nil {
-		t.Error("GetBlockByHeight err", err)
-	}
-	spew.Dump("get_block_by_height", byHeightBlock)
+	HeightBlock, err := aelf.GetBlockByHeight(blockHeight, isTransactions)
+	assert.NoError(t, err)
+	spew.Dump("Get Block ByHeight Result", HeightBlock)
 
 	//Test GetBlockByHash
-	blockHash := byHeightBlock.BlockHash
+	blockHash := HeightBlock.BlockHash
 	byHashBlock, err := aelf.GetBlockByHash(blockHash, isTransactions)
-	if err != nil {
-		t.Error("Get Block By Height err", err)
-	}
-	spew.Dump("# get_block_by_hash", byHashBlock)
+	assert.NoError(t, err)
+	spew.Dump("Get Block ByHash Result", byHashBlock)
 }
 
-func TestTransactionResultApi(t *testing.T) {
+func TestTransactionResult(t *testing.T) {
 	//Test GetTransactionResult
 	var isTransactions = true
 	var blockHeight = 1
 	block, err := aelf.GetBlockByHeight(blockHeight, isTransactions)
-	if err != nil || block == nil {
-		t.Error("Get Block By Height error", err)
-	}
+	assert.NoError(t, err)
 
 	transactionID := block.Body.Transactions[0]
 	transactionResult, err := aelf.GetTransactionResult(transactionID)
-	if err != nil {
-		t.Error("Get Transaction Result error", err)
-	}
-	spew.Dump("# Get Transaction Result", transactionResult)
+	assert.NoError(t, err)
+	spew.Dump("Get Transaction Result", transactionResult)
 
 	// Test GetTransactionResults
 	blockHash := block.BlockHash
 	transactionResults, err := aelf.GetTransactionResults(blockHash, 0, 10)
-	if err != nil {
-		t.Error("Get Transaction Results error", err)
-	}
-	spew.Dump("# Get Transaction Results", transactionResults)
+	assert.NoError(t, err)
+	spew.Dump("Get Transaction Results", transactionResults)
 
 	//Test GetMerklePathByTransactionID
 	merklePath, err := aelf.GetMerklePathByTransactionID(transactionID)
-	if err != nil {
-		t.Error("Get merkle Path  error", err)
-	}
-	spew.Dump("Get Merkle Path By TransactionID", merklePath)
+	assert.NoError(t, err)
+	spew.Dump("Get Merkle Path By TransactionID Result", merklePath)
 }
 
 func TestNetworkApi(t *testing.T) {
-
 	//Test GetNetworkInfo
 	netWorkInfo, err := aelf.GetNetworkInfo()
-	if err != nil {
-		t.Error("get net work info error", err)
-	}
-	spew.Dump("# get_network_info", netWorkInfo)
+	assert.NoError(t, err)
+	spew.Dump("Get Network Info Result", netWorkInfo)
 
 	//Test AddPeer
 	addPeer, err := aelf.AddPeer(TestAddress)
-	if err != nil {
-		t.Error("add peer error", err)
-	}
-	spew.Dump("# add_peer", addPeer)
+	assert.NoError(t, err)
+	assert.True(t, addPeer == true)
 
 	//Test RemovePeer
 	removePeer, err := aelf.RemovePeer(TestAddress)
-	if err != nil {
-		t.Error("remove peer error", err)
-	}
-	spew.Dump("# remove_peer", removePeer)
+	assert.NoError(t, err)
+	assert.True(t, removePeer == true)
 
 	//Test GetPeers
 	peers, err := aelf.GetPeers(true)
-	if err != nil {
-		t.Error("get peers error", err)
-	}
-	spew.Dump("# get peers", peers)
+	assert.NoError(t, err)
+	spew.Dump("Get Peers Result", peers)
 }
 
-func TestTransactionPoolApi(t *testing.T) {
+func TestGetTransactionPoolStatus(t *testing.T) {
 	poolStatus, err := aelf.GetTransactionPoolStatus()
-	if err != nil {
-		t.Error("Get Transaction Pool Status error", err)
-	}
-	spew.Dump("", poolStatus)
+	assert.NoError(t, err)
+	spew.Dump("Get TransactionPool Status Result", poolStatus)
 }
 
-func TestTaskQueueApi(t *testing.T) {
+func TestGetTaskQueueStatus(t *testing.T) {
 	taskQueueStatus, err := aelf.GetTaskQueueStatus()
-	if err != nil || len(taskQueueStatus) == 0 {
-		t.Error("get task Queue Status errro", err)
-	}
-	spew.Dump("# get task Queue  status", taskQueueStatus)
+	assert.NoError(t, err)
+	spew.Dump("Get Task Queue Status Result", taskQueueStatus)
 }
 
 func TestCurrentRoundInformation(t *testing.T) {
 	roundInfo, err := aelf.GetCurrentRoundInformation()
-	if err != nil {
-		t.Error("get Current Round Information error", err)
-	}
-	spew.Dump("get Current Round Information", roundInfo)
+	assert.NoError(t, err)
+	spew.Dump("get Current Round Information Result", roundInfo)
 }
 
 func TestClient(t *testing.T) {
 	//Test IsConnected
 	isConnected := aelf.IsConnected()
-	if !isConnected {
-		t.Error("connect faild")
-	}
-	assert.True(t, true, isConnected == true)
+	assert.True(t, isConnected == true)
 
 	//Test GetGenesisContractAddress
-	if ContractAddress != "" {
-		spew.Dump("Get Genesis Contract Address", ContractAddress)
-	}
+	ContractAddress, err := aelf.GetGenesisContractAddress()
+	assert.NoError(t, err)
+	spew.Dump("Get Genesis Contract Address Result", ContractAddress)
 }
 
 func TestGetContractFileDescriptorSet(t *testing.T) {
-	if ContractAddress == "" {
-		t.Error("Get Genesis ContractAddress error")
-	}
+	ContractAddress, err := aelf.GetGenesisContractAddress()
+	assert.NoError(t, err)
 	contractFile, err := aelf.GetContractFileDescriptorSet(ContractAddress)
-	if err != nil {
-		t.Error("Get Contract File Descriptor Set error", err)
-	}
-	spew.Dump("Get Contract File Descriptor Set", contractFile)
+	assert.NoError(t, err)
+	spew.Dump("Get Contract File Descriptor Set Result", contractFile)
 }
 
 func TestCreateRawTransaction(t *testing.T) {
@@ -283,14 +251,6 @@ func TestGetContractAddressByName(t *testing.T) {
 	contractAddress, err := aelf.GetContractAddressByName(aelf.PrivateKey, contractNameBytes)
 	assert.NoError(t, err)
 	spew.Dump("Get ContractAddress By Name Result", contractAddress)
-}
-
-func TestGetAddressFromPubKey(t *testing.T) {
-	var pubkeyBytes []byte
-	pubkeyBytes = secp256.UncompressedPubkeyFromSeckey(util.StringTo32Bytes(aelf.PrivateKey))
-	pubKeyAddress := aelf.GetAddressFromPubKey(string(pubkeyBytes))
-	spew.Dump("Get Address From Public Key", pubKeyAddress)
-
 }
 
 func TestSendTransctions(t *testing.T) {

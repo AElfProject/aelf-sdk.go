@@ -2,6 +2,7 @@ package client
 
 import (
 	"encoding/json"
+	"errors"
 
 	"aelf_sdk.go/aelf_sdk/dto"
 	util "aelf_sdk.go/aelf_sdk/utils"
@@ -12,7 +13,7 @@ func (a *AElfClient) GetTransactionPoolStatus() (*dto.TransactionPoolStatus, err
 	url := a.Host + TRANSACTIONPOOLSTATUS
 	transactionPoolBytes, err := util.GetRequest("GET", url, a.Version, nil)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("Get Transaction Pool Status error:" + err.Error())
 	}
 	var transactionPool = new(dto.TransactionPoolStatus)
 	json.Unmarshal(transactionPoolBytes, &transactionPool)
@@ -25,7 +26,7 @@ func (a *AElfClient) GetTransactionResult(transactionID string) (*dto.Transactio
 	params := map[string]interface{}{"transactionId": transactionID}
 	transactionBytes, err := util.GetRequest("GET", url, a.Version, params)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("Get Transaction Result error:" + err.Error())
 	}
 	var transaction = new(dto.TransactionResultDto)
 	json.Unmarshal(transactionBytes, &transaction)
@@ -42,17 +43,14 @@ func (a *AElfClient) GetTransactionResults(blockHash string, offset, limit int) 
 	}
 	transactionsBytes, err := util.GetRequest("GET", url, a.Version, params)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("Get Transaction Results error:" + err.Error())
 	}
 	var datas interface{}
 	json.Unmarshal(transactionsBytes, &datas)
 	var transactions []*dto.TransactionResultDto
 	for _, d := range datas.([]interface{}) {
 		var transaction = new(dto.TransactionResultDto)
-		Bytes, err := json.Marshal(d)
-		if err != nil {
-			return nil, err
-		}
+		Bytes, _ := json.Marshal(d)
 		json.Unmarshal(Bytes, &transaction)
 		transactions = append(transactions, transaction)
 	}
@@ -65,7 +63,7 @@ func (a *AElfClient) GetMerklePathByTransactionID(transactionID string) (*dto.Me
 	params := map[string]interface{}{"transactionId": transactionID}
 	merkleBytes, err := util.GetRequest("GET", url, a.Version, params)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("Get MerklePath By TransactionID error:" + err.Error())
 	}
 	var merkle = new(dto.MerklePathDto)
 	json.Unmarshal(merkleBytes, &merkle)
@@ -78,7 +76,7 @@ func (a *AElfClient) ExecuteTransaction(rawTransaction string) (string, error) {
 	params := map[string]interface{}{"RawTransaction": rawTransaction}
 	transactionBytes, err := util.PostRequest(url, a.Version, params)
 	if err != nil {
-		return "", err
+		return "", errors.New("Execute Transaction error:" + err.Error())
 	}
 	return util.BytesToString(transactionBytes), nil
 }
@@ -92,7 +90,7 @@ func (a *AElfClient) ExecuteRawTransaction(input *dto.ExecuteRawTransactionDto) 
 	}
 	transactionBytes, err := util.PostRequest(url, a.Version, params)
 	if err != nil {
-		return "", err
+		return "", errors.New("Execute RawTransaction error:" + err.Error())
 	}
 	var data interface{}
 	json.Unmarshal(transactionBytes, &data)
@@ -105,7 +103,7 @@ func (a *AElfClient) SendTransaction(transaction string) (*dto.SendTransactionOu
 	params := map[string]interface{}{"RawTransaction": transaction}
 	transactionBytes, err := util.PostRequest(url, a.Version, params)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("Send Transaction error:" + err.Error())
 	}
 	var output = new(dto.SendTransactionOutput)
 	json.Unmarshal(transactionBytes, &output)
@@ -125,7 +123,7 @@ func (a *AElfClient) CreateRawTransaction(input *dto.CreateRawTransactionInput) 
 	}
 	transactionBytes, err := util.PostRequest(url, a.Version, params)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("Create RawTransaction error:" + err.Error())
 	}
 	var output = new(dto.CreateRawTransactionOutput)
 	json.Unmarshal(transactionBytes, &output)
@@ -142,7 +140,7 @@ func (a *AElfClient) SendRawTransaction(input *dto.SendRawTransactionInput) (*dt
 	}
 	rawTransactionBytes, err := util.PostRequest(url, a.Version, params)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("Send RawTransaction error:" + err.Error())
 	}
 	var rawTransaction = new(dto.SendRawTransactionOutput)
 	json.Unmarshal(rawTransactionBytes, &rawTransaction)
@@ -157,7 +155,7 @@ func (a *AElfClient) SendTransactions(rawTransactions string) ([]interface{}, er
 	}
 	transactionsBytes, err := util.PostRequest(url, a.Version, params)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("Send Transaction error:" + err.Error())
 	}
 	var data interface{}
 	json.Unmarshal(transactionsBytes, &data)

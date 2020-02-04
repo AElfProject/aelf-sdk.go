@@ -19,7 +19,6 @@ func GetRequest(method, url, version string, params map[string]interface{}) ([]b
 		strParams := Map2UrlParams(params)
 		apiURL = url + "?" + strParams
 	}
-	fmt.Println("<<<<<<<<<<", apiURL)
 	request, err := http.NewRequest(method, apiURL, nil)
 	if err != nil {
 		return nil, err
