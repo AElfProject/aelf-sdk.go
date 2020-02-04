@@ -290,6 +290,7 @@ func TestGetAddressFromPubKey(t *testing.T) {
 	pubkeyBytes = secp256.UncompressedPubkeyFromSeckey(util.StringTo32Bytes(aelf.PrivateKey))
 	pubKeyAddress := aelf.GetAddressFromPubKey(string(pubkeyBytes))
 	spew.Dump("Get Address From Public Key", pubKeyAddress)
+
 }
 
 func TestSendTransctions(t *testing.T) {
@@ -315,7 +316,10 @@ func TestSendTransctions(t *testing.T) {
 }
 
 func TestGetFormattedAddress(t *testing.T) {
-	addressVal, err := aelf.GetFormattedAddress(aelf.PrivateKey, _address)
+	formattedAddress, err := aelf.GetFormattedAddress(aelf.PrivateKey, _address)
 	assert.NoError(t, err)
-	spew.Dump(">>>>>addressVal", addressVal, err)
+	spew.Dump("Get Formatted Address result", formattedAddress, err)
+
+	privateKeyaddress := aelf.GetAddressFromPrivateKey(aelf.PrivateKey, false)
+	assert.Equal(t, formattedAddress, ("ELF_" + privateKeyaddress + "_AELF"))
 }

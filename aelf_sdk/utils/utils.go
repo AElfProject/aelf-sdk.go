@@ -5,17 +5,14 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/binary"
-	"encoding/gob"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 	"reflect"
 	"unsafe"
 
 	pt "aelf_sdk.go/aelf_sdk/proto"
 	"github.com/btcsuite/btcutil/base58"
-	"golang.org/x/crypto/ripemd160"
 )
 
 //Base58StringToAddress address to  bytes
@@ -34,13 +31,6 @@ func BytesToString(b []byte) string {
 	bh := (*reflect.SliceHeader)(unsafe.Pointer(&b))
 	sh := reflect.StringHeader{bh.Data, bh.Len}
 	return *(*string)(unsafe.Pointer(&sh))
-}
-
-//StringToBytes String To Bytes
-func StringToBytes(s string) []byte {
-	sh := (*reflect.StringHeader)(unsafe.Pointer(&s))
-	bh := reflect.SliceHeader{sh.Data, sh.Len, 0}
-	return *(*[]byte)(unsafe.Pointer(&bh))
 }
 
 //StringTo32Bytes String To 32Bytes
@@ -63,18 +53,6 @@ func BytesToInt(b []byte) int {
 	var data int32
 	binary.Read(bytesBuffer, binary.BigEndian, &data)
 	return int(data)
-}
-
-//HashKey Hash publicKey
-func HashKey(key []byte) []byte {
-	hash256 := sha256.Sum256(key)
-	ripemd160Hasher := ripemd160.New()
-	_, err := ripemd160Hasher.Write(hash256[:])
-	if err != nil {
-		fmt.Println("hash key error")
-	}
-	ripemdHash := ripemd160Hasher.Sum(nil)
-	return ripemdHash
 }
 
 // EncodeCheck prepends appends a four byte checksum.
@@ -120,26 +98,4 @@ func ParamsToString(params string) string {
 		fmt.Println("json Marshal error")
 	}
 	return string(paramsBytes)
-}
-
-// SerializeToBytes Serialize Transaction To Bytes
-func SerializeToBytes(tx *pt.Transaction) []byte {
-	var result bytes.Buffer
-	encoder := gob.NewEncoder(&result)
-	err := encoder.Encode(tx)
-	if err != nil {
-		log.Panic(err)
-	}
-	return result.Bytes()
-}
-
-// DeserializeToInter Deserialize To Interface
-func DeserializeToInter(b []byte) interface{} {
-	var data interface{}
-	decoder := gob.NewDecoder(bytes.NewReader(b))
-	err := decoder.Decode(&data)
-	if err != nil {
-		log.Panic(err)
-	}
-	return &data
 }
