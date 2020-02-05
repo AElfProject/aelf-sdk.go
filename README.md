@@ -39,8 +39,6 @@ var height =  aelf.GetBlockHeight();
 
  func (a *AElfClient) GetContractFileDescriptorSet(address string) ([]byte, error);
 
- func (a *AElfClient) GetCurrentRoundInformation() (RoundDto, error);
-
  func (a *AElfClient) GetChainID() (int, error);
 
  func (a *AElfClient) GetTaskQueueStatus() ([]TaskQueueInfoDto, error);

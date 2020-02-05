@@ -32,18 +32,6 @@ func (a *AElfClient) GetContractFileDescriptorSet(address string) ([]byte, error
 	return data, err
 }
 
-//GetCurrentRoundInformation Get the latest round of consensus information from data on the last blockHeader of best-chain.
-func (a *AElfClient) GetCurrentRoundInformation() (*dto.RoundDto, error) {
-	url := a.Host + ROUNDINFORMATION
-	roundBytes, err := util.GetRequest("GET", url, a.Version, nil)
-	if err != nil {
-		return nil, errors.New("Get Current Round Information error:" + err.Error())
-	}
-	var round = new(dto.RoundDto)
-	json.Unmarshal(roundBytes, &round)
-	return round, nil
-}
-
 //GetChainID Get id of the chain
 func (a *AElfClient) GetChainID() (int, error) {
 	chainStatus, err := a.GetChainStatus()

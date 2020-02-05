@@ -41,7 +41,6 @@ const (
 	EXECUTETRANSACTION    = "/api/blockChain/executeTransaction"
 	EXECUTERAWTRANSACTION = "/api/blockChain/executeRawTransaction"
 	FILEDESCRIPTOR        = "/api/blockChain/contractFileDescriptorSet"
-	ROUNDINFORMATION      = "/api/blockChain/currentRoundInformation"
 )
 
 //GetAddressFromPubKey Get the account address through the public key

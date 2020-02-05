@@ -26,9 +26,10 @@ var ContractAddress, _ = aelf.GetGenesisContractAddress()
 var _address = aelf.GetAddressFromPrivateKey(aelf.PrivateKey, false)
 
 func TestGetAddressFromPubKey(t *testing.T) {
-	var pubkeyBytes []byte
-	pubkeyBytes = secp256.UncompressedPubkeyFromSeckey(util.StringTo32Bytes(aelf.PrivateKey))
-	pubKeyAddress := aelf.GetAddressFromPubKey(string(pubkeyBytes))
+	privateKeyBytes, _ := hex.DecodeString(aelf.PrivateKey)
+	pubkeyBytes := secp256.UncompressedPubkeyFromSeckey(privateKeyBytes)
+	pubKeyAddress := aelf.GetAddressFromPubKey(hex.EncodeToString(pubkeyBytes))
+	assert.Equal(t, _address, pubKeyAddress)
 	spew.Dump("Get Address From Public Key", pubKeyAddress)
 }
 
@@ -52,15 +53,15 @@ func TestGetBlockHeight(t *testing.T) {
 
 func TestGetBlockByHeightAndByHash(t *testing.T) {
 	//Test GetBlockByHeight
-	var isTransactions = true
+	var includeTransactions = true
 	var blockHeight = 1
-	HeightBlock, err := aelf.GetBlockByHeight(blockHeight, isTransactions)
+	HeightBlock, err := aelf.GetBlockByHeight(blockHeight, includeTransactions)
 	assert.NoError(t, err)
 	spew.Dump("Get Block ByHeight Result", HeightBlock)
 
 	//Test GetBlockByHash
 	blockHash := HeightBlock.BlockHash
-	byHashBlock, err := aelf.GetBlockByHash(blockHash, isTransactions)
+	byHashBlock, err := aelf.GetBlockByHash(blockHash, includeTransactions)
 	assert.NoError(t, err)
 	spew.Dump("Get Block ByHash Result", byHashBlock)
 }
@@ -121,12 +122,6 @@ func TestGetTaskQueueStatus(t *testing.T) {
 	taskQueueStatus, err := aelf.GetTaskQueueStatus()
 	assert.NoError(t, err)
 	spew.Dump("Get Task Queue Status Result", taskQueueStatus)
-}
-
-func TestCurrentRoundInformation(t *testing.T) {
-	roundInfo, err := aelf.GetCurrentRoundInformation()
-	assert.NoError(t, err)
-	spew.Dump("get Current Round Information Result", roundInfo)
 }
 
 func TestClient(t *testing.T) {

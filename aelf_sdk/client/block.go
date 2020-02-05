@@ -21,10 +21,10 @@ func (a *AElfClient) GetBlockHeight() (float64, error) {
 }
 
 // GetBlockByHash Get information of a block by given block hash. Optional whether to include transaction information.
-func (a *AElfClient) GetBlockByHash(blockHash string, isTransactions bool) (*dto.BlockDto, error) {
+func (a *AElfClient) GetBlockByHash(blockHash string, includeTransactions bool) (*dto.BlockDto, error) {
 	params := map[string]interface{}{
 		"blockHash":           blockHash,
-		"includeTransactions": isTransactions,
+		"includeTransactions": includeTransactions,
 	}
 	url := a.Host + BLOCKBYHASH
 	blockBytes, err := util.GetRequest("GET", url, a.Version, params)
@@ -37,10 +37,10 @@ func (a *AElfClient) GetBlockByHash(blockHash string, isTransactions bool) (*dto
 }
 
 //GetBlockByHeight Get information of a block by specified height. Optional whether to include transaction information.
-func (a *AElfClient) GetBlockByHeight(blockHeight int, isTransactions bool) (*dto.BlockDto, error) {
+func (a *AElfClient) GetBlockByHeight(blockHeight int, includeTransactions bool) (*dto.BlockDto, error) {
 	params := map[string]interface{}{
 		"blockHeight":         blockHeight,
-		"includeTransactions": isTransactions,
+		"includeTransactions": includeTransactions,
 	}
 	url := a.Host + BLOCKBYHEIGHT
 	blockBytes, err := util.GetRequest("GET", url, a.Version, params)

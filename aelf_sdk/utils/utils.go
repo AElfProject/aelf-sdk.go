@@ -33,13 +33,6 @@ func BytesToString(b []byte) string {
 	return *(*string)(unsafe.Pointer(&sh))
 }
 
-//StringTo32Bytes String To 32Bytes
-func StringTo32Bytes(s string) []byte {
-	var bytes32 [32]byte
-	copy(bytes32[:], s)
-	return bytes32[:]
-}
-
 //GetBytesSha256 Get Bytes Sha256
 func GetBytesSha256(s string) []byte {
 	sha := sha256.New()
@@ -51,7 +44,7 @@ func GetBytesSha256(s string) []byte {
 func BytesToInt(b []byte) int {
 	bytesBuffer := bytes.NewBuffer(b)
 	var data int32
-	binary.Read(bytesBuffer, binary.BigEndian, &data)
+	binary.Read(bytesBuffer, binary.LittleEndian, &data)
 	return int(data)
 }
 
@@ -107,3 +100,35 @@ func GetAddressByBytes(b []byte) string {
 	address := EncodeCheck(secondBytes[:])
 	return address
 }
+
+// Decode decodes a modified base58 string to a byte slice.
+// func Decode(b string) []byte {
+// 	answer := big.NewInt(0)
+// 	j := big.NewInt(1)
+
+// 	scratch := new(big.Int)
+// 	for i := len(b) - 1; i >= 0; i-- {
+// 		tmp := b58[b[i]]
+// 		if tmp == 255 {
+// 			return []byte("")
+// 		}
+// 		scratch.SetInt64(int64(tmp))
+// 		scratch.Mul(j, scratch)
+// 		answer.Add(answer, scratch)
+// 		j.Mul(j, bigRadix)
+// 	}
+
+// 	tmpval := answer.Bytes()
+
+// 	var numZeros int
+// 	for numZeros = 0; numZeros < len(b); numZeros++ {
+// 		if b[numZeros] != alphabetIdx0 {
+// 			break
+// 		}
+// 	}
+// 	flen := numZeros + len(tmpval)
+// 	val := make([]byte, flen)
+// 	copy(val[numZeros:], tmpval)
+
+// 	return val
+// }
