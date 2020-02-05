@@ -242,8 +242,7 @@ func TestExecuteTransaction(t *testing.T) {
 }
 
 func TestGetContractAddressByName(t *testing.T) {
-	contractNameBytes := util.GetBytesSha256("AElf.ContractNames.Token")
-	contractAddress, err := aelf.GetContractAddressByName(aelf.PrivateKey, contractNameBytes)
+	contractAddress, err := aelf.GetContractAddressByName("AElf.ContractNames.Token")
 	assert.NoError(t, err)
 	spew.Dump("Get ContractAddress By Name Result", contractAddress)
 }
@@ -271,7 +270,7 @@ func TestSendTransctions(t *testing.T) {
 }
 
 func TestGetFormattedAddress(t *testing.T) {
-	formattedAddress, err := aelf.GetFormattedAddress(aelf.PrivateKey, _address)
+	formattedAddress, err := aelf.GetFormattedAddress(_address)
 	assert.NoError(t, err)
 	spew.Dump("Get Formatted Address result", formattedAddress, err)
 

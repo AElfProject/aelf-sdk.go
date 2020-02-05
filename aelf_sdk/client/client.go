@@ -41,6 +41,8 @@ const (
 	EXECUTETRANSACTION    = "/api/blockChain/executeTransaction"
 	EXECUTERAWTRANSACTION = "/api/blockChain/executeRawTransaction"
 	FILEDESCRIPTOR        = "/api/blockChain/contractFileDescriptorSet"
+
+	ExamplePrivateKey = "680afd630d82ae5c97942c4141d60b8a9fedfa5b2864fca84072c17ee1f72d9d"
 )
 
 //GetAddressFromPubKey Get the account address through the public key
@@ -62,13 +64,13 @@ func (a *AElfClient) GetAddressFromPrivateKey(privateKey string, compress bool) 
 }
 
 // GetFormattedAddress Convert the Address to the displayed string：symbol_base58-string_base58-string-chain-id
-func (a *AElfClient) GetFormattedAddress(privateKey, address string) (string, error) {
+func (a *AElfClient) GetFormattedAddress(address string) (string, error) {
 	chain, _ := a.GetChainStatus()
 	methodName := "GetPrimaryTokenSymbol"
-	fromAddress := a.GetAddressFromPrivateKey(privateKey, false)
-	contractAddress, _ := a.GetContractAddressByName(privateKey, util.GetBytesSha256("AElf.ContractNames.Token"))
+	fromAddress := a.GetAddressFromPrivateKey(ExamplePrivateKey, false)
+	contractAddress, _ := a.GetContractAddressByName("AElf.ContractNames.Token")
 	transaction, _ := a.CreateTransaction(fromAddress, contractAddress, methodName, nil)
-	signature, _ := a.SignTransaction(privateKey, transaction)
+	signature, _ := a.SignTransaction(ExamplePrivateKey, transaction)
 	transaction.Signature = signature
 	transactionBytes, err := proto.Marshal(transaction)
 	if err != nil {
@@ -82,15 +84,15 @@ func (a *AElfClient) GetFormattedAddress(privateKey, address string) (string, er
 }
 
 //GetContractAddressByName Get  contract address by contract name
-func (a *AElfClient) GetContractAddressByName(privateKey string, contractName []byte) (string, error) {
-	fromAddress := a.GetAddressFromPrivateKey(privateKey, false)
+func (a *AElfClient) GetContractAddressByName(contractName string) (string, error) {
+	fromAddress := a.GetAddressFromPrivateKey(ExamplePrivateKey, false)
 	toAddress, err := a.GetGenesisContractAddress()
 	if err != nil {
 		return "", errors.New("Get Genesis Contract Address error")
 	}
-	methodName := "GetContractAddressByName"
-	transaction, _ := a.CreateTransaction(fromAddress, toAddress, methodName, contractName)
-	signature, _ := a.SignTransaction(privateKey, transaction)
+	contractNameBytes := util.GetBytesSha256(contractName)
+	transaction, _ := a.CreateTransaction(fromAddress, toAddress, "GetContractAddressByName", contractNameBytes)
+	signature, _ := a.SignTransaction(ExamplePrivateKey, transaction)
 	transaction.Signature = signature
 	transactionBytes, err := proto.Marshal(transaction)
 	if err != nil {
