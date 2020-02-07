@@ -1,385 +1,18 @@
 syntax = "proto3";
 
+option csharp_namespace = "AElf.Client.Proto";
+
+package client;
+
 import "google/protobuf/timestamp.proto";
 
-
-message VotedItems {
-    map<string, VotedIds> voted_item_vote_ids = 1;
+message Address {
+    bytes value = 1;
 }
 
-message VotedIds {
-    repeated Hash active_votes = 1;
-    repeated Hash withdrawn_votes = 2;
+message Hash {
+    bytes value = 1;
 }
-
-message VotingRecord {
-    Hash voting_item_id = 1;
-    Address voter = 2;
-    sint64 snapshot_number = 3;
-    sint64 amount = 4;
-    google.protobuf.Timestamp withdraw_timestamp = 5;
-    google.protobuf.Timestamp vote_timestamp = 6;
-    bool is_withdrawn = 7;
-    string option = 8;
-    bool is_change_target = 9;
-}
-
-
-message VotingRecords {
-    repeated VotingRecord records = 1;
-}
-
-
-
-message GetMinerListInput {
-    sint64 termNumber = 1;
-}
-
-message Organization{
-    int32 release_threshold = 1;
-    repeated Reviewer reviewers = 2;
-    int32 proposer_threshold = 3;
-    Address organization_address = 4;
-    Hash organization_hash = 5;
-    string token_symbol = 6;
-}
-
-
-message ResourceId {
-    ResourceType type = 1;
-}
-
-enum ResourceType {
-    UNDEFINED_RESOURCE_TYPE = 0;
-    RAM = 1;
-    CPU = 2;
-    NET = 3;
-    STO = 4;
-}
-
-message Converter {
-    sint64 res_balance = 1;
-    sint64 elf_balance = 2;
-    sint64 res_weight = 3; 
-    sint64 elf_weight = 4; 
-    ResourceType type = 5;
-}
-
-message UserResourceId {
-    Address address = 1;
-    ResourceType type = 2;
-}
-
-
-message Connector {
-    string symbol = 1;
-    sint64 virtual_balance = 2;
-    string weight = 3;
-    bool is_virtual_balance_enabled = 4; 
-    bool is_purchase_enabled = 5;
-}
-
-message CreatedSchemeIds {
-    repeated Hash scheme_ids = 1;
-}
-
-message GetManagingSchemeIdsInput {
-    Address manager = 1;
-}
-
-
-message SchemePeriod {
-    Hash scheme_id = 1;
-    sint64 period = 2;
-}
-
-message DistributedProfitsInfo {
-    sint64 total_shares = 1;
-    map<string, sint64> profits_amount = 2;
-    bool is_released = 3;
-}
-
-message GetProfitDetailsInput {
-    Hash scheme_id = 1;
-    Address beneficiary = 2;
-}
-
-message ProfitDetails {
-    repeated ProfitDetail details = 1;
-}
-
-message ProfitDetail {
-    sint64 start_period = 1;
-    sint64 end_period = 2;
-    sint64 shares = 3;
-    sint64 last_profit_period = 4;
-    bool is_weight_removed = 5;
-}
-
-message ClaimProfitsInput {
-    Hash scheme_id = 1;
-    string symbol = 2;
-}
-
-message ProposalIdList{
-    repeated Hash proposal_ids = 1;
-}
-
-message VerifyTransactionInput {
-    Hash transaction_id = 1;
-    MerklePath path = 2;
-    sint64 parent_chain_height = 3;
-    int32 verified_chain_id = 4;
-}
-
-//fileDescriptor_equivalent
-message FileDescriptorSet {
-    repeated bytes file = 1;
-}
-
-//election_contract
-message CandidateInformation {
-    string pubkey = 1;
-    repeated sint64 terms = 2;
-    sint64 produced_blocks = 3;
-    sint64 missed_time_slots = 4;
-    sint64 continual_appointment_count = 5;
-    Hash announcement_transaction_id = 6;
-    bool is_current_candidate = 7;
-}
-
-message GetTermSnapshotInput {
-    sint64 term_number = 1;
-}
-
-message TermSnapshot {
-    sint64 end_round_number = 1;
-    sint64 mined_blocks = 2;
-    map<string, sint64> election_result = 3;
-}
-
-message GetElectionResultInput {
-    sint64 term_number = 1;
-}
-
-message ElectionResult {
-    sint64 term_number = 1;
-    map<string, sint64> results = 2;
-    bool is_active = 3;
-}
-
-message ElectorVote {
-    repeated Hash active_voting_record_ids = 1;
-    repeated Hash withdrawn_voting_record_ids = 2;
-    sint64 active_voted_votes_amount = 3;
-    sint64 all_voted_votes_amount = 4;
-    repeated ElectionVotingRecord active_voting_records = 5;
-    repeated ElectionVotingRecord withdrawn_votes_records = 6;
-    bytes pubkey = 7;
-}
-
-message PageInformation {
-    sint32 start = 1;
-    sint32 length = 2;
-}
-
-
-message IsInWhiteListInput {
-    string symbol = 1;
-    Address address = 2;
-}
-
-message ProfitReceivingInformation {
-    Address contract_address = 1;
-    Address profit_receiver_address = 2;
-    sint32 donation_parts_per_hundred = 3;
-}
-
-message GetLockedAmountInput {
-    Address address = 1;
-    string symbol = 3;
-    Hash lock_id = 4;
-}
-
-message GetLockedAmountOutput {
-    Address address = 1;
-    string symbol = 3;
-    Hash lock_id = 4;
-    sint64 amount = 5;
-}
-
-message GetVirtualAddressForLockingInput {
-    Address address = 1;
-    Hash lock_id = 3;
-}
-
-message GetCrossChainTransferTokenContractAddressInput {
-    int32 chainId = 1;
-}
-
-
-message GetVotingItemInput {
-    Hash voting_item_id = 1;
-}
-
-message GetVotingResultInput {
-    Hash voting_item_id = 1;
-    sint64 snapshot_number = 2;
-}
-
-message VotingResult {
-    Hash voting_item_id = 1;
-    map<string, sint64> results = 2; // option -> amount
-    sint64 snapshot_number = 3;
-    sint64 voters_count = 4;
-    google.protobuf.Timestamp snapshot_start_timestamp = 5;
-    google.protobuf.Timestamp snapshot_end_timestamp = 6;
-    sint64 votes_amount = 7;
-}
-
-message GetVotingRecordsInput {
-    repeated Hash ids = 1;
-}
-
-message MinerList {
-    repeated bytes pubkeys = 1;
-}
-
-message PubkeyList {
-    repeated string pubkeys = 1;
-}
-
-message MinerListWithRoundNumber {
-    MinerList minerList = 1;
-    sint64 roundNumber = 2;
-}
-
-
-message Reviewer {
-    Address address  = 1;
-    int32 weight = 2;
-}
-
-//token converter contract
-message TokenSymbol {
-    string symbol = 1;
-}
-
-
-//treasury_contract
-message GetWelfareRewardAmountSampleInput {
-    repeated sint64 value = 1;
-}
-
-message GetWelfareRewardAmountSampleOutput {
-    repeated sint64 value = 1;
-}
-
-message SchemeBeneficiaryShare {
-    Hash scheme_id = 1;
-    sint64 shares = 2;
-}
-
-message Scheme {
-    Address virtual_address = 1;
-    sint64 total_shares = 2;
-    map<string, sint64> undistributed_profits = 3;
-    sint64 current_period = 4;
-    repeated SchemeBeneficiaryShare sub_schemes = 5;
-    sint64 profit_receiving_due_period_count = 7;
-    bool is_release_all_balance_every_time_by_default = 8;
-    Hash scheme_id = 9;
-    sint32 delay_distribute_period_count = 10;
-    map<sint64, sint64> cached_delay_total_shares = 11;
-    Address manager = 12;
-}
-
-
-message ElectionVotingRecord {
-    Address voter = 1;
-    string candidate = 2;
-    sint64 amount = 3;
-    sint64 term_number = 4;
-    Hash vote_id = 5;
-    sint64 lock_time = 7;
-    google.protobuf.Timestamp unlock_timestamp = 10;
-    google.protobuf.Timestamp withdraw_timestamp = 11;
-    google.protobuf.Timestamp vote_timestamp = 12;
-    bool is_withdrawn = 13;
-    sint64 weight = 14;
-    bool is_change_target = 15;
-}
-
-message CandidateVote {
-    repeated Hash obtained_active_voting_record_ids = 1;
-    repeated Hash obtained_withdrawn_voting_record_ids = 2;
-    sint64 obtained_active_voted_votes_amount = 3;
-    sint64 all_obtained_voted_votes_amount = 4;
-    repeated ElectionVotingRecord obtained_active_voting_records = 5;
-    repeated ElectionVotingRecord obtained_withdrawn_votes_records = 6;
-    bytes pubkey = 7;
-}
-
-message CandidateDetail {
-    CandidateInformation candidate_information = 1;
-    sint64 obtained_votes_amount = 2;
-}
-
-message GetPageableCandidateInformationOutput {
-    repeated CandidateDetail value = 1;
-}
-
-message DataCenterRankingList {
-    map<string, sint64> data_centers = 1;
-    sint64 minimum_votes = 2;
-}
-
-//tokenContract
-message TokenInfo {
-    string symbol = 1;
-    string tokenName = 2;
-    sint64 supply = 3;
-    sint64 totalSupply = 4;
-    sint32 decimals = 5;
-    Address issuer = 6;
-    bool is_burnable = 7;
-    bool is_transfer_disabled = 8;
-    sint32 issue_chain_id = 9;
-    sint64 burned = 10;
-}
-
-message GetTokenInfoInput {
-    string symbol = 1;
-}
-
-message TokenInfoList {
-    repeated TokenInfo value = 1;
-}
-
-message GetBalanceInput {
-    string symbol = 1;
-    Address owner = 2;
-}
-
-message GetBalanceOutput {
-    string symbol = 1;
-    Address owner = 2;
-    sint64 balance = 3;
-}
-
-message GetAllowanceInput {
-    string symbol = 1;
-    Address owner = 2;
-    Address spender = 3;
-}
-
-message GetAllowanceOutput {
-    string symbol = 1;
-    Address owner = 2;
-    Address spender = 3;
-    sint64 allowance = 4;
-}
-
 
 message MerklePath {
     repeated MerklePathNode merkle_path_nodes = 1;
@@ -411,6 +44,7 @@ message SmartContractRegistration {
     Hash code_hash = 3;
 }
 
+//acs0
 message ContractInfo
 {
     uint64 serial_number = 1;
@@ -419,6 +53,7 @@ message ContractInfo
     bool is_system_contract = 5;
 }
 
+//acs1
 message MethodFees {
     string method_name = 1;
     repeated MethodFee fees = 2;
@@ -429,11 +64,13 @@ message MethodFee {
     sint64 basic_fee = 2;
 }
 
+//acs2
 message ResourceInfo {
     repeated ScopedStatePath paths = 1;
     bool non_parallelizable = 2;
 }
 
+// acs3
 message ProposalOutput {
     Hash proposal_id = 1;
     string contract_method_name = 2;
@@ -445,12 +82,14 @@ message ProposalOutput {
     bool to_be_released = 8;
 }
 
+//acs4
 
 message ValidationResult {
     bool success = 1;
     string message = 2;
 }
 
+//acs5
 message MethodCallingThreshold {
     map<string, sint64> symbol_to_amount = 1;// The order matters.
     ThresholdCheckType threshold_check_type = 2;
@@ -461,6 +100,7 @@ enum ThresholdCheckType {
     ALLOWANCE = 1;
 }
 
+//acs7
 message SideChainIdAndHeightDict {
     map<int32, int64> id_height_dict = 1;
 }
@@ -494,11 +134,13 @@ message ParentChainBlockData {
     int32 chain_id = 3;
     Hash transaction_status_merkle_tree_root = 4;
 
+    // Indexed block height from side chain and merkle path for this side chain block
     map<int64, MerklePath> indexed_merkle_path = 5;
     map<string, bytes> extra_data = 6;
 }
 
 message CrossChainExtraData {
+    // Merkle tree root of side chain block transaction status root
     Hash transaction_status_merkle_tree_root = 1;
 }
 
@@ -531,10 +173,3 @@ message Transaction {
     bytes signature = 10000;
 }
 
-message Address {
-    bytes value = 1;
-}
-
-message Hash {
-    bytes value = 1;
-}

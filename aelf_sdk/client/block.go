@@ -1,11 +1,13 @@
 package client
 
 import (
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 
 	"aelf_sdk.go/aelf_sdk/dto"
 	util "aelf_sdk.go/aelf_sdk/utils"
+	"github.com/davecgh/go-spew/spew"
 )
 
 //GetBlockHeight Get height of the current chain
@@ -22,6 +24,10 @@ func (a *AElfClient) GetBlockHeight() (float64, error) {
 
 // GetBlockByHash Get information of a block by given block hash. Optional whether to include transaction information.
 func (a *AElfClient) GetBlockByHash(blockHash string, includeTransactions bool) (*dto.BlockDto, error) {
+	_, err := hex.DecodeString(blockHash)
+	if err != nil {
+		return nil, errors.New("transactionID hex to []byte error:" + err.Error())
+	}
 	params := map[string]interface{}{
 		"blockHash":           blockHash,
 		"includeTransactions": includeTransactions,
@@ -42,6 +48,7 @@ func (a *AElfClient) GetBlockByHeight(blockHeight int, includeTransactions bool)
 		"blockHeight":         blockHeight,
 		"includeTransactions": includeTransactions,
 	}
+	spew.Dump(">>>>>>>>>>>>>>params", blockHeight)
 	url := a.Host + BLOCKBYHEIGHT
 	blockBytes, err := util.GetRequest("GET", url, a.Version, params)
 	if err != nil {

@@ -1,6 +1,7 @@
 package client
 
 import (
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 
@@ -23,6 +24,10 @@ func (a *AElfClient) GetTransactionPoolStatus() (*dto.TransactionPoolStatus, err
 //GetTransactionResult Gets the result of transaction execution by the given transactionId.
 func (a *AElfClient) GetTransactionResult(transactionID string) (*dto.TransactionResultDto, error) {
 	url := a.Host + TRANSACTIONRESULT
+	_, err := hex.DecodeString(transactionID)
+	if err != nil {
+		return nil, errors.New("transactionID hex to []byte error:" + err.Error())
+	}
 	params := map[string]interface{}{"transactionId": transactionID}
 	transactionBytes, err := util.GetRequest("GET", url, a.Version, params)
 	if err != nil {
@@ -36,6 +41,10 @@ func (a *AElfClient) GetTransactionResult(transactionID string) (*dto.Transactio
 //GetTransactionResults Get results of multiple transactions by specified blockHash
 func (a *AElfClient) GetTransactionResults(blockHash string, offset, limit int) ([]*dto.TransactionResultDto, error) {
 	url := a.Host + TRANSACTIONRESULTS
+	_, err := hex.DecodeString(blockHash)
+	if err != nil {
+		return nil, errors.New("blockHash hex to []byte error:" + err.Error())
+	}
 	params := map[string]interface{}{
 		"blockHash": blockHash,
 		"offset":    offset,
@@ -60,6 +69,10 @@ func (a *AElfClient) GetTransactionResults(blockHash string, offset, limit int) 
 //GetMerklePathByTransactionID Get merkle path of a transaction.
 func (a *AElfClient) GetMerklePathByTransactionID(transactionID string) (*dto.MerklePathDto, error) {
 	url := a.Host + MBYTRANSACTIONID
+	_, err := hex.DecodeString(transactionID)
+	if err != nil {
+		return nil, errors.New("transactionID hex to []byte error:" + err.Error())
+	}
 	params := map[string]interface{}{"transactionId": transactionID}
 	merkleBytes, err := util.GetRequest("GET", url, a.Version, params)
 	if err != nil {
