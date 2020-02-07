@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option csharp_namespace = "AElf.Client.Election";
+package client;
 
 import "google/protobuf/timestamp.proto";
 import "client.proto";
@@ -71,11 +71,11 @@ message CandidateVote {
     bytes pubkey = 7;
 }
 
-message GetWelfareRewardAmountSampleInput {
+message EleGetWelfareRewardAmountSampleInput {
     repeated sint64 value = 1;
 }
 
-message GetWelfareRewardAmountSampleOutput {
+message EleGetWelfareRewardAmountSampleOutput {
     repeated sint64 value = 1;
 }
 

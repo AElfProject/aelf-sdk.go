@@ -1,6 +1,7 @@
 syntax = "proto3";
 
-option csharp_namespace = "AElf.Client.TokenConverter";
+package client;
+
 
 //token converter
 message TokenSymbol {

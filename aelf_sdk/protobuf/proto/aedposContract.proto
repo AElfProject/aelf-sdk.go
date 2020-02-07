@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "AElf.Client.Consensus.AEDPoS";
+package client;
 
 //aedpos_contract
 message MinerList {

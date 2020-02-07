@@ -2,7 +2,7 @@ syntax = "proto3";
 
 import "client.proto";
 
-option csharp_namespace = "AElf.Client.Profit";
+package client;
 
 //profit_contract
 message CreatedSchemeIds {

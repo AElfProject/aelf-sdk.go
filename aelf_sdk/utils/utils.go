@@ -11,13 +11,13 @@ import (
 	"reflect"
 	"unsafe"
 
-	pt "aelf_sdk.go/aelf_sdk/proto"
+	pb "aelf_sdk.go/aelf_sdk/protobuf/generated"
 	"github.com/btcsuite/btcutil/base58"
 )
 
 //Base58StringToAddress address to  bytes
-func Base58StringToAddress(addr string) (*pt.Address, error) {
-	var address = new(pt.Address)
+func Base58StringToAddress(addr string) (*pb.Address, error) {
+	var address = new(pb.Address)
 	addressBytes, err := DecodeCheck(addr)
 	if err != nil {
 		return nil, errors.New("Base58String To Address error")

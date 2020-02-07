@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option csharp_namespace = "AElf.Client.Runtime";
+package client;
 
 //fileDescriptor_equivalent
 message FileDescriptorSet {

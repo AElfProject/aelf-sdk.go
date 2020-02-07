@@ -1,7 +1,5 @@
 syntax = "proto3";
 
-option csharp_namespace = "AElf.Client.Proto";
-
 package client;
 
 import "google/protobuf/timestamp.proto";

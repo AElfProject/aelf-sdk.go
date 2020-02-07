@@ -7,7 +7,6 @@ import (
 
 	"aelf_sdk.go/aelf_sdk/dto"
 	util "aelf_sdk.go/aelf_sdk/utils"
-	"github.com/davecgh/go-spew/spew"
 )
 
 //GetBlockHeight Get height of the current chain
@@ -48,7 +47,6 @@ func (a *AElfClient) GetBlockByHeight(blockHeight int, includeTransactions bool)
 		"blockHeight":         blockHeight,
 		"includeTransactions": includeTransactions,
 	}
-	spew.Dump(">>>>>>>>>>>>>>params", blockHeight)
 	url := a.Host + BLOCKBYHEIGHT
 	blockBytes, err := util.GetRequest("GET", url, a.Version, params)
 	if err != nil {

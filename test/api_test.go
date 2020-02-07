@@ -55,20 +55,17 @@ func TestGetBlockByHeightAndByHash(t *testing.T) {
 	//Test GetBlockByHeight
 	var includeTransactions = true
 	height, err := aelf.GetBlockHeight()
-	spew.Dump(">>>>>>>height", height)
-	// s := strconv.Itoa(int(height))
-	// s64, _ := strconv.ParseInt(s, 10, 64)
-	spew.Dump(">>>>>>>heights64s64", int64(height))
+	spew.Dump("Get Block height Result", height)
 
 	HeightBlock, err := aelf.GetBlockByHeight(int(height), includeTransactions)
 	assert.NoError(t, err)
 	spew.Dump("Get Block ByHeight Result", HeightBlock)
 
 	//Test GetBlockByHash
-	// blockHash := HeightBlock.BlockHash
-	// byHashBlock, err := aelf.GetBlockByHash(blockHash, includeTransactions)
-	// assert.NoError(t, err)
-	// spew.Dump("Get Block ByHash Result", byHashBlock)
+	blockHash := HeightBlock.BlockHash
+	byHashBlock, err := aelf.GetBlockByHash(blockHash, includeTransactions)
+	assert.NoError(t, err)
+	spew.Dump("Get Block ByHash Result", byHashBlock)
 }
 
 func TestTransactionResult(t *testing.T) {

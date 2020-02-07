@@ -88,7 +88,7 @@ func (a *AElfClient) SendTransactions(rawTransactions string) ([]string, error);
 ```Golang
  func (a *AElfClient) IsConnected() bool;
 
- func (a *AElfClient) GetFormattedAddress(privateKey, address string) (string, error);
+ func (a *AElfClient) GetFormattedAddress(address string) (string, error);
 
  func (a *AElfClient) GetAddressFromPubKey(pubkey string) string;
 
@@ -96,7 +96,7 @@ func (a *AElfClient) SendTransactions(rawTransactions string) ([]string, error);
 
  func (a *AElfClient) GetGenesisContractAddress() (string, error);
 
- func (a *AElfClient) GetContractAddressByName(privateKey string, contractName []byte) (string, error);
+ func (a *AElfClient) GetContractAddressByName(contractName []byte) (string, error);
 
 ```
 
@@ -117,6 +117,14 @@ You need to firstly set necessary parameters to make sure tests can run successf
    ```Golang
    string PrivateKey = "680afd630d82ae5c97942c4141d60b8a9fedfa5b2864fca84072c17ee1f72d9d";
    ```
+
+### ProtoBuff Build
+Compile protobuff before secondary development.
+You need to go to the resource directory.
+
+Windows ./protobuff.bat
+
+Linxu Or Mac ./protobuff.sh
 
 ### Note
 

@@ -3,7 +3,7 @@ syntax = "proto3";
 import "client.proto";
 import "google/protobuf/timestamp.proto";
 
-option csharp_namespace = "AElf.Client.Vote";
+package client;
 
 message GetVotingItemInput {
     client.Hash voting_item_id = 1;

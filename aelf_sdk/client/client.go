@@ -5,7 +5,7 @@ import (
 	"encoding/hex"
 	"errors"
 
-	pt "aelf_sdk.go/aelf_sdk/proto"
+	pb "aelf_sdk.go/aelf_sdk/protobuf/generated"
 	util "aelf_sdk.go/aelf_sdk/utils"
 	proto "github.com/golang/protobuf/proto"
 	wrap "github.com/golang/protobuf/ptypes/wrappers"
@@ -99,14 +99,14 @@ func (a *AElfClient) GetContractAddressByName(contractName string) (string, erro
 		return "", errors.New("proto marshasl transaction error" + err.Error())
 	}
 	result, _ := a.ExecuteTransaction(hex.EncodeToString(transactionBytes))
-	var address = new(pt.Address)
+	var address = new(pb.Address)
 	resultBytes, err := hex.DecodeString(result)
 	proto.Unmarshal(resultBytes, address)
 	return util.EncodeCheck(address.Value), nil
 }
 
 //SignTransaction Sign a transaction using private key
-func (a *AElfClient) SignTransaction(privateKey string, transaction *pt.Transaction) ([]byte, error) {
+func (a *AElfClient) SignTransaction(privateKey string, transaction *pb.Transaction) ([]byte, error) {
 	transactionBytes, _ := proto.Marshal(transaction)
 	txDataBytes := sha256.Sum256(transactionBytes)
 	privateKeyBytes, _ := hex.DecodeString(privateKey)
@@ -115,7 +115,7 @@ func (a *AElfClient) SignTransaction(privateKey string, transaction *pt.Transact
 }
 
 //CreateTransaction create a transaction from the input parameters
-func (a *AElfClient) CreateTransaction(from, to, method string, params []byte) (*pt.Transaction, error) {
+func (a *AElfClient) CreateTransaction(from, to, method string, params []byte) (*pb.Transaction, error) {
 	chainStatus, err := a.GetChainStatus()
 	if err != nil {
 		return nil, errors.New("Get Chain Status error ")
@@ -123,14 +123,14 @@ func (a *AElfClient) CreateTransaction(from, to, method string, params []byte) (
 	prefixBytes, _ := hex.DecodeString(chainStatus.BestChainHash)
 	fromAddressBytes, _ := util.Base58StringToAddress(from)
 	toAddressBytes, _ := util.Base58StringToAddress(to)
-	var transaction = &pt.Transaction{
+	var transaction = &pb.Transaction{
 		From:           fromAddressBytes,
 		To:             toAddressBytes,
 		MethodName:     method,
 		RefBlockNumber: chainStatus.BestChainHeight,
 		RefBlockPrefix: prefixBytes[:4],
 	}
-	var hash = new(pt.Hash)
+	var hash = new(pb.Hash)
 	hash.Value = params
 	hashBytes, _ := proto.Marshal(hash)
 	transaction.Params = hashBytes

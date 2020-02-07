@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-import "client.proto";
+package client;
 
-option csharp_namespace = "AElf.Client.Genesis";
+import "client.proto";
 
 //basic_contract_zero
 message AddressList {
