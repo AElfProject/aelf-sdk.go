@@ -10,13 +10,13 @@ import (
 )
 
 //GetTransactionPoolStatus Get information about the current transaction pool.
-func (a *AElfClient) GetTransactionPoolStatus() (*dto.TransactionPoolStatus, error) {
+func (a *AElfClient) GetTransactionPoolStatus() (*dto.TransactionPoolStatusOutput, error) {
 	url := a.Host + TRANSACTIONPOOLSTATUS
 	transactionPoolBytes, err := util.GetRequest("GET", url, a.Version, nil)
 	if err != nil {
 		return nil, errors.New("Get Transaction Pool Status error:" + err.Error())
 	}
-	var transactionPool = new(dto.TransactionPoolStatus)
+	var transactionPool = new(dto.TransactionPoolStatusOutput)
 	json.Unmarshal(transactionPoolBytes, &transactionPool)
 	return transactionPool, nil
 }

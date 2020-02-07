@@ -122,8 +122,6 @@ You need to firstly set necessary parameters to make sure tests can run successf
 Compile protobuff before secondary development.
 You need to go to the resource directory.
 
-Windows ./protobuff.bat
-
 Linxu Or Mac ./protobuff.sh
 
 ### Note
