@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"errors"
 
+	"aelf_sdk.go/aelf_sdk/model"
 	pb "aelf_sdk.go/aelf_sdk/protobuf/generated"
 	util "aelf_sdk.go/aelf_sdk/utils"
 	proto "github.com/golang/protobuf/proto"
@@ -154,6 +155,20 @@ func (a *AElfClient) IsConnected() bool {
 		return false
 	}
 	return true
+}
+
+//GenerateKeyPairInfo Generate KeyPair Info
+func (a *AElfClient) GenerateKeyPairInfo() *model.KeyPairInfo {
+	publicKeyBytes, privateKeyBytes := secp256.GenerateKeyPair()
+	publicKey := hex.EncodeToString(publicKeyBytes)
+	privateKey := hex.EncodeToString(privateKeyBytes)
+	privateKeyAddress := a.GetAddressFromPrivateKey(privateKey, false)
+	var keyPair = &model.KeyPairInfo{
+		PrivateKey: privateKey,
+		PublicKey:  publicKey,
+		Address:    privateKeyAddress,
+	}
+	return keyPair
 }
 
 //GetSignatureWithPrivateKey Get Signature With PrivateKey

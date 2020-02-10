@@ -98,6 +98,8 @@ func (a *AElfClient) SendTransactions(rawTransactions string) ([]string, error);
 
  func (a *AElfClient) GetContractAddressByName(contractName []byte) (string, error);
 
+ func (a *AElfClient) GenerateKeyPairInfo() *model.KeyPairInfo;
+
 ```
 
 ### Test

@@ -279,3 +279,8 @@ func TestGetFormattedAddress(t *testing.T) {
 	privateKeyaddress := aelf.GetAddressFromPrivateKey(aelf.PrivateKey, false)
 	assert.Equal(t, formattedAddress, ("ELF_" + privateKeyaddress + "_AELF"))
 }
+
+func TestGenerateKeyPairInfo(t *testing.T) {
+	keyPair := aelf.GenerateKeyPairInfo()
+	spew.Dump("Generate KeyPair Info Result", keyPair)
+}
