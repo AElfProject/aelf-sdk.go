@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+package client;
+
+//fileDescriptor_equivalent
+message FileDescriptorSet {
+    repeated bytes file = 1;
+}

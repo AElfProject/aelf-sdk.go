@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package client;
+
+import "client.proto";
+
+//basic_contract_zero
+message AddressList {
+    repeated client.Address value = 1;
+}
