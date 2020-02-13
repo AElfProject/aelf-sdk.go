@@ -4,9 +4,9 @@ import (
 	"encoding/hex"
 	"errors"
 
-	"aelf-sdk.go/client"
-	"aelf-sdk.go/dto"
-	util "aelf-sdk.go/utils"
+	"github.com/AElfProject/aelf-sdk.go/client"
+	"github.com/AElfProject/aelf-sdk.go/dto"
+	util "github.com/AElfProject/aelf-sdk.go/utils"
 
 	secp256 "github.com/skycoin/skycoin/src/cipher/secp256k1-go"
 )
