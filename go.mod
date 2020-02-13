@@ -7,6 +7,7 @@ require (
 	github.com/btccom/secp256k1-go v0.0.0-20170920143146-f7178bcde578
 	github.com/btcsuite/btcutil v1.0.1
 	github.com/btcsuite/btcwallet v0.11.0
+	github.com/casbin/casbin v1.9.1
 	github.com/davecgh/go-spew v1.1.1
 	github.com/ethereum/go-ethereum v1.9.10
 	github.com/gogo/protobuf v1.1.1
@@ -18,4 +19,5 @@ require (
 	github.com/skycoin/skycoin v0.26.0
 	github.com/stretchr/testify v1.4.0
 	golang.org/x/crypto v0.0.0-20200115085410-6d4e4cb37c7d
+	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 )
