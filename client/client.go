@@ -5,12 +5,13 @@ import (
 	"encoding/hex"
 	"errors"
 
-	"aelf_sdk.go/model"
-	pb "aelf_sdk.go/protobuf/generated"
-	util "aelf_sdk.go/utils"
+	"aelf-sdk.go/model"
+	pb "aelf-sdk.go/protobuf/generated"
+	util "aelf-sdk.go/utils"
+
 	proto "github.com/golang/protobuf/proto"
 	wrap "github.com/golang/protobuf/ptypes/wrappers"
-	secp256 "github.com/skycoin/skycoin/src/cipher/secp256k1-go"
+	secp256 "github.com/haltingstate/secp256k1-go"
 )
 
 //AElfClient AElf Client

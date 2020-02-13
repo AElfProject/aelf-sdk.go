@@ -4,9 +4,9 @@ import (
 	"encoding/hex"
 	"testing"
 
-	"aelf_sdk.go/client"
-	"aelf_sdk.go/dto"
-	util "aelf_sdk.go/utils"
+	"aelf-sdk.go/client"
+	"aelf-sdk.go/dto"
+	util "aelf-sdk.go/utils"
 
 	"github.com/davecgh/go-spew/spew"
 	"github.com/golang/protobuf/proto"

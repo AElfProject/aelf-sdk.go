@@ -4,9 +4,11 @@ import (
 	"encoding/hex"
 	"testing"
 
-	"aelf_sdk.go/client"
+	"aelf-sdk.go/client"
 	"github.com/davecgh/go-spew/spew"
-	secp256 "github.com/skycoin/skycoin/src/cipher/secp256k1-go"
+
+	secp256 "github.com/haltingstate/secp256k1-go"
+
 	"github.com/stretchr/testify/assert"
 )
 
