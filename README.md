@@ -120,8 +120,7 @@ You need to firstly set necessary parameters to make sure tests can run successf
    ```
 
 3. How to run test files.
-   The easiest way to run a given test file,looks like TestExecuteTransaction in file (transaction_test.go);
-   
+
    ```Golang
    cd test
    go test -v -run TestExecuteTransaction
