@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"errors"
 
-	"aelf_sdk.go/aelf_sdk/dto"
-	util "aelf_sdk.go/aelf_sdk/utils"
+	"aelf-sdk.go/dto"
+	util "aelf-sdk.go/utils"
 )
 
 //GetTransactionPoolStatus Get information about the current transaction pool.
@@ -38,7 +38,7 @@ func (a *AElfClient) GetTransactionResult(transactionID string) (*dto.Transactio
 	return transaction, nil
 }
 
-//GetTransactionResults Get results of multiple transactions by specified blockHash
+//GetTransactionResults Get results of multiple transactions by specified blockHash.
 func (a *AElfClient) GetTransactionResults(blockHash string, offset, limit int) ([]*dto.TransactionResultDto, error) {
 	url := a.Host + TRANSACTIONRESULTS
 	_, err := hex.DecodeString(blockHash)

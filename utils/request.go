@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-//GetRequest GetRequest
+//GetRequest GetRequest.
 func GetRequest(method, url, version string, params map[string]interface{}) ([]byte, error) {
 	var apiURL string
 	if params == nil {
@@ -42,7 +42,7 @@ func GetRequest(method, url, version string, params map[string]interface{}) ([]b
 	return data, nil
 }
 
-//PostRequest Post Request
+//PostRequest Post Request.
 func PostRequest(url, version string, params map[string]interface{}) ([]byte, error) {
 	jsonParams := ""
 	if params != nil {
@@ -73,7 +73,7 @@ func PostRequest(url, version string, params map[string]interface{}) ([]byte, er
 	return data, nil
 }
 
-//Map2UrlParams Map 2Url Params
+//Map2UrlParams Map 2Url Params.
 func Map2UrlParams(params map[string]interface{}) string {
 	var strParams string
 	for k, v := range params {
@@ -86,7 +86,7 @@ func Map2UrlParams(params map[string]interface{}) string {
 	return strParams
 }
 
-//ToString To tring
+//ToString To tring.
 func ToString(v interface{}) string {
 	switch v.(type) {
 	case string:

@@ -5,11 +5,11 @@ import (
 	"encoding/json"
 	"errors"
 
-	"aelf_sdk.go/aelf_sdk/dto"
-	util "aelf_sdk.go/aelf_sdk/utils"
+	"aelf-sdk.go/dto"
+	util "aelf-sdk.go/utils"
 )
 
-//GetBlockHeight Get height of the current chain
+//GetBlockHeight Get height of the current chain.
 func (a *AElfClient) GetBlockHeight() (float64, error) {
 	url := a.Host + BLOCKHEIGHT
 	heightBytes, err := util.GetRequest("GET", url, a.Version, nil)

@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 
-	"aelf_sdk.go/aelf_sdk/dto"
-	util "aelf_sdk.go/aelf_sdk/utils"
+	"aelf-sdk.go/dto"
+	util "aelf-sdk.go/utils"
 )
 
 //GetNetworkInfo Get the node's network information.

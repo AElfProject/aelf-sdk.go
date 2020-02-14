@@ -4,12 +4,13 @@ import (
 	"encoding/json"
 	"errors"
 
-	"aelf_sdk.go/aelf_sdk/dto"
-	util "aelf_sdk.go/aelf_sdk/utils"
+	"aelf-sdk.go/dto"
+	util "aelf-sdk.go/utils"
+
 	"github.com/btcsuite/btcutil/base58"
 )
 
-//GetChainStatus Get the current status of the block chain
+//GetChainStatus Get the current status of the block chain.
 func (a *AElfClient) GetChainStatus() (*dto.ChainStatusDto, error) {
 	url := a.Host + CHAINSTATUS
 	chainBytes, err := util.GetRequest("GET", url, a.Version, nil)
@@ -21,7 +22,7 @@ func (a *AElfClient) GetChainStatus() (*dto.ChainStatusDto, error) {
 	return chain, nil
 }
 
-//GetContractFileDescriptorSet Get the definitions of proto-buff related to a contract
+//GetContractFileDescriptorSet Get the definitions of proto-buff related to a contract.
 func (a *AElfClient) GetContractFileDescriptorSet(address string) ([]byte, error) {
 	url := a.Host + FILEDESCRIPTOR
 	params := map[string]interface{}{"address": address}
@@ -32,7 +33,7 @@ func (a *AElfClient) GetContractFileDescriptorSet(address string) ([]byte, error
 	return data, err
 }
 
-//GetChainID Get id of the chain
+//GetChainID Get id of the chain.
 func (a *AElfClient) GetChainID() (int, error) {
 	chainStatus, err := a.GetChainStatus()
 	if err != nil {
@@ -52,7 +53,7 @@ func (a *AElfClient) GetChainID() (int, error) {
 	return util.BytesToInt(chainIDBytes), nil
 }
 
-//GetTaskQueueStatus Get the status information of the task queue
+//GetTaskQueueStatus Get the status information of the task queue.
 func (a *AElfClient) GetTaskQueueStatus() ([]*dto.TaskQueueInfoDto, error) {
 	url := a.Host + TASKQUEUESTATUS
 	queues, err := util.GetRequest("GET", url, a.Version, nil)

@@ -1,6 +1,6 @@
 package model
 
-//KeyPairInfo KeyPairInfo
+//KeyPairInfo KeyPairInfo.
 type KeyPairInfo struct {
 	PrivateKey string
 	PublicKey  string
