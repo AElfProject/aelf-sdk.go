@@ -15,7 +15,7 @@ import (
 	"github.com/btcsuite/btcutil/base58"
 )
 
-//Base58StringToAddress address to  bytes
+//Base58StringToAddress address to  bytes.
 func Base58StringToAddress(addr string) (*pb.Address, error) {
 	var address = new(pb.Address)
 	addressBytes, err := DecodeCheck(addr)
@@ -26,21 +26,21 @@ func Base58StringToAddress(addr string) (*pb.Address, error) {
 	return address, nil
 }
 
-//BytesToString  Bytes To String
+//BytesToString  Bytes To String.
 func BytesToString(b []byte) string {
 	bh := (*reflect.SliceHeader)(unsafe.Pointer(&b))
 	sh := reflect.StringHeader{bh.Data, bh.Len}
 	return *(*string)(unsafe.Pointer(&sh))
 }
 
-//GetBytesSha256 Get Bytes Sha256
+//GetBytesSha256 Get Bytes Sha256.
 func GetBytesSha256(s string) []byte {
 	sha := sha256.New()
 	sha.Write([]byte(s))
 	return sha.Sum(nil)
 }
 
-//BytesToInt Bytes To Int
+//BytesToInt Bytes To Int.
 func BytesToInt(b []byte) int {
 	bytesBuffer := bytes.NewBuffer(b)
 	var data int32
@@ -57,7 +57,7 @@ func EncodeCheck(input []byte) string {
 	return base58.Encode(b)
 }
 
-// checksum: first four bytes of sha256^2
+// checksum: first four bytes of sha256^2.
 func checksum(input []byte) (cksum [4]byte) {
 	h := sha256.Sum256(input)
 	h2 := sha256.Sum256(h[:])
@@ -81,7 +81,7 @@ func DecodeCheck(input string) (result []byte, err error) {
 	return
 }
 
-//ParamsToString Params To String like "AElf.ContractNames.Consensus"
+//ParamsToString Params To String like "AElf.ContractNames.Consensus".
 func ParamsToString(params string) string {
 	paramMap := map[string]interface{}{
 		"value": base64.StdEncoding.EncodeToString(GetBytesSha256(params)),
@@ -93,42 +93,10 @@ func ParamsToString(params string) string {
 	return string(paramsBytes)
 }
 
-//GetAddressByBytes  sha256 twice Bytes to get address
+//GetAddressByBytes  sha256 twice Bytes to get address.
 func GetAddressByBytes(b []byte) string {
 	firstBytes := sha256.Sum256(b)
 	secondBytes := sha256.Sum256(firstBytes[:])
 	address := EncodeCheck(secondBytes[:])
 	return address
 }
-
-// Decode decodes a modified base58 string to a byte slice.
-// func Decode(b string) []byte {
-// 	answer := big.NewInt(0)
-// 	j := big.NewInt(1)
-
-// 	scratch := new(big.Int)
-// 	for i := len(b) - 1; i >= 0; i-- {
-// 		tmp := b58[b[i]]
-// 		if tmp == 255 {
-// 			return []byte("")
-// 		}
-// 		scratch.SetInt64(int64(tmp))
-// 		scratch.Mul(j, scratch)
-// 		answer.Add(answer, scratch)
-// 		j.Mul(j, bigRadix)
-// 	}
-
-// 	tmpval := answer.Bytes()
-
-// 	var numZeros int
-// 	for numZeros = 0; numZeros < len(b); numZeros++ {
-// 		if b[numZeros] != alphabetIdx0 {
-// 			break
-// 		}
-// 	}
-// 	flen := numZeros + len(tmpval)
-// 	val := make([]byte, flen)
-// 	copy(val[numZeros:], tmpval)
-
-// 	return val
-// }

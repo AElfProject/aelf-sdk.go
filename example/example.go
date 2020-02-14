@@ -21,7 +21,7 @@ var privatekeyAddress = aelf.GetAddressFromPrivateKey(aelf.PrivateKey, false)
 var contractMethodName = "GetContractAddressByName"
 var contractAddress, _ = aelf.GetGenesisContractAddress()
 
-//DemoGetBlockByHash Get Block ByHash demo
+//DemoGetBlockByHash Get Block ByHash demo.
 func DemoGetBlockByHash() (*dto.BlockDto, error) {
 	var includeTransactions = true
 	height, _ := aelf.GetBlockHeight()
@@ -33,7 +33,7 @@ func DemoGetBlockByHash() (*dto.BlockDto, error) {
 	return byHashBlock, nil
 }
 
-//DemoGetAddressFromPubKey Get Address From Public Key demo
+//DemoGetAddressFromPubKey Get Address From Public Key demo.
 func DemoGetAddressFromPubKey() string {
 	privateKeyBytes, _ := hex.DecodeString(aelf.PrivateKey)
 	pubkeyBytes := secp256.UncompressedPubkeyFromSeckey(privateKeyBytes)
@@ -41,7 +41,7 @@ func DemoGetAddressFromPubKey() string {
 	return pubKeyAddress
 }
 
-//DemoExecuteRawTransaction ExecuteRawTransaction demo
+//DemoExecuteRawTransaction ExecuteRawTransaction demo.
 func DemoExecuteRawTransaction() (string, error) {
 	chainStatus, err := aelf.GetChainStatus()
 	var input = &dto.CreateRawTransactionInput{

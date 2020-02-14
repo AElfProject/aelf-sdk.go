@@ -8,8 +8,7 @@ This is a Golang client library, used to communicate with the [AElf](https://git
 
 ### Getting Started
 
-You should build the "AElf_SDK" project 
-
+You should build the "AElf.Client" project first to get files defined in protos, which will be generated in the directory named "Protobuf/Generated".
 
 ### Basic usage
 
@@ -118,6 +117,13 @@ You need to firstly set necessary parameters to make sure tests can run successf
 
    ```Golang
    string PrivateKey = "680afd630d82ae5c97942c4141d60b8a9fedfa5b2864fca84072c17ee1f72d9d";
+   ```
+
+3. How to run test files.
+   ```Golang
+   The easiest way to run a given test file,looks like TestExecuteTransaction in file (transaction_test.go):
+   cd test
+   go test -v -run TestExecuteTransaction
    ```
 
 ### ProtoBuff Build

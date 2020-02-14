@@ -9,7 +9,7 @@ import (
 	util "aelf-sdk.go/utils"
 )
 
-//GetBlockHeight Get height of the current chain
+//GetBlockHeight Get height of the current chain.
 func (a *AElfClient) GetBlockHeight() (float64, error) {
 	url := a.Host + BLOCKHEIGHT
 	heightBytes, err := util.GetRequest("GET", url, a.Version, nil)

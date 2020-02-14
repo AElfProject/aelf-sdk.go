@@ -38,7 +38,7 @@ func (a *AElfClient) GetTransactionResult(transactionID string) (*dto.Transactio
 	return transaction, nil
 }
 
-//GetTransactionResults Get results of multiple transactions by specified blockHash
+//GetTransactionResults Get results of multiple transactions by specified blockHash.
 func (a *AElfClient) GetTransactionResults(blockHash string, offset, limit int) ([]*dto.TransactionResultDto, error) {
 	url := a.Host + TRANSACTIONRESULTS
 	_, err := hex.DecodeString(blockHash)
