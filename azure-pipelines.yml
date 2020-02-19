@@ -14,9 +14,6 @@ variables:
   imageName: 'aelf-sdk.go:$(build.buildId)'
 
 steps:
-  - task: DotNetCoreInstaller@0
-    inputs:
-      version: '3.0.102' 
   - script: cd scripts/aelf-node && bash start.sh
   - script: docker build -f Dockerfile -t $(imageName) .
     displayName: 'docker build'
