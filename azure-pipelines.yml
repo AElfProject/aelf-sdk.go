@@ -16,4 +16,4 @@ variables:
 steps:
   - script: cd scripts/aelf-node && bash start.sh
   - script: docker build -f Dockerfile -t $(imageName) .
-    displayName: 'docker build'
+    displayName: 'docker build and test'
