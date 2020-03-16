@@ -6,18 +6,28 @@
 
 This is a Golang client library, used to communicate with the [AElf](https://github.com/AElfProject/AElf)  API.
 
-### Getting Started
+### Requirement
 
-You should build the "AElf.Client" project first to get files defined in protos, which will be generated in the directory named "Protobuf/Generated".
+- Protobuff 3.7.1
+- Go 1.13.7
+- VsCode
 
 ### Basic usage
 
+Example.go is provided to show how to use AElfClient.
+
 ``` Golang
-private const string BaseUrl = "Http://127.0.0.1:8000";
+import ("aelf-sdk.go/client"）
 
 // get client instance
-AElfClient aelf = client.AElfClient{Host:BaseUrl}
-var height =  aelf.GetBlockHeight();
+var aelf = client.AElfClient
+{
+	 Host:       "http://127.0.0.1:8000",
+	 Version:    "1.0",
+	 PrivateKey: "680afd630d82ae5c97942c4141d60b8a9fedfa5b2864fca84072c17ee1f72d9d",
+}
+
+height, err := aelf.GetBlockHeight()
 ```
 
 
@@ -99,38 +109,39 @@ func (a *AElfClient) SendTransactions(rawTransactions string) ([]string, error);
 
  func (a *AElfClient) GenerateKeyPairInfo() *model.KeyPairInfo;
 
+ func GetSignatureWithPrivateKey(privateKey string, txData []byte) (string, error)
 ```
 
 ### Test
 
-This module contains tests for all services provided by AElfClient. You can see how to properly use services provided by AElfClient here.
+This module contains tests for all services provided by AElfClient. You can learn how to properly use services provided by AElfClient here.
 
 You need to firstly set necessary parameters to make sure tests can run successfully.
 
 1. Set baseUrl to your target url.
 
    ```Golang
-   string BaseUrl = "Http://127.0.0.1:8000";
+   Host: "http://127.0.0.1:8000"
    ```
 
 2. Give a valid privateKey of a node.
 
    ```Golang
-   string PrivateKey = "680afd630d82ae5c97942c4141d60b8a9fedfa5b2864fca84072c17ee1f72d9d";
+   PrivateKey: "680afd630d82ae5c97942c4141d60b8a9fedfa5b2864fca84072c17ee1f72d9d"
    ```
 
-3. How to run test files.
+3. You can optionally run a test case by specifying the name of a test case.
 
    ```Golang
-   cd test
-   go test -v -run TestExecuteTransaction
+   cd test/
+   go test -v -run TestGetChainStatus
    ```
 
 ### ProtoBuff Build
-Compile protobuff before secondary development.
-You need to go to the resource directory.
 
-Linxu Or Mac ./protobuff.sh
+Default classes defined in the "protobuf/proto" are available in the directory named "protobuf/generated".
+
+You can add new proto files and generate types by using the script `./protobuff.sh`.
 
 ### Note
 

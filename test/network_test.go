@@ -16,17 +16,17 @@ func TestNetworkApi(t *testing.T) {
 	spew.Dump("Get Network Info Result", netWorkInfo)
 
 	// Test AddPeer
-    // addPeer, err := aelf.AddPeer(TestAddress)
+	// addPeer, err := aelf.AddPeer(TestAddress)
 	// assert.NoError(t, err)
 	// assert.True(t, addPeer == true)
 
 	// Test RemovePeer
 	// removePeer, err := aelf.RemovePeer(TestAddress)
 	// assert.NoError(t, err)
-	// assert.True(t, removePeer == true) 
+	// assert.True(t, removePeer == true)
 
 	//Test GetPeers
-	// peers, err := aelf.GetPeers(true)
-	// assert.NoError(t, err)
-	// spew.Dump("Get Peers Result", peers)
+	peers, err := aelf.GetPeers(true)
+	assert.NoError(t, err)
+	spew.Dump("Get Peers Result", peers)
 }
