@@ -83,4 +83,10 @@ message GetCrossChainTransferTokenContractAddressInput {
     int32 chainId = 1;
 }
 
-
+message TransferFromInput {
+    Address from =1;
+    Address to =2;
+    string symbol = 3;
+    sint64 amount = 4;
+    string memo = 5;
+}

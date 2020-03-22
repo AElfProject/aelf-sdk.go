@@ -5,10 +5,13 @@ import (
 	"testing"
 
 	"aelf-sdk.go/client"
+	"aelf-sdk.go/extension"
+	pb "aelf-sdk.go/protobuf/generated"
+	util "aelf-sdk.go/utils"
+
 	"github.com/davecgh/go-spew/spew"
-
+	proto "github.com/golang/protobuf/proto"
 	secp256 "github.com/haltingstate/secp256k1-go"
-
 	"github.com/stretchr/testify/assert"
 )
 
@@ -57,4 +60,30 @@ func TestClient(t *testing.T) {
 	contractAddr, err := aelf.GetGenesisContractAddress()
 	assert.NoError(t, err)
 	spew.Dump("Get Genesis Contract Address Result", contractAddr)
+}
+
+func TestGetTransactionFee(t *testing.T) {
+	toAccount := "2DyzHMD1DqurK9hhiPa91mTBEtcPNrPvY5Uh7tnqRMXGnB381R"
+	toAddress, _ := aelf.GetContractAddressByName("AElf.ContractNames.Token")
+	methodName := "TransferFrom"
+	fromAddressBytes, _ := util.Base58StringToAddress(_address)
+	toAddressBytes, _ := util.Base58StringToAddress(toAccount)
+	var param = &pb.TransferFromInput{
+		From:   fromAddressBytes,
+		To:     toAddressBytes,
+		Symbol: "ELF",
+		Amount: 10000,
+	}
+	paramBytes, _ := proto.Marshal(param)
+	transaction, _ := aelf.CreateTransaction(_address, toAddress, methodName, paramBytes)
+	signature, err := aelf.SignTransaction(aelf.PrivateKey, transaction)
+	transaction.Signature = signature
+	assert.NoError(t, err)
+	transactionByets, _ := proto.Marshal(transaction)
+	result, err := aelf.SendTransaction(hex.EncodeToString(transactionByets))
+	assert.NoError(t, err)
+
+	transactionResult, _ := aelf.GetTransactionResult(result.TransactionID)
+	res := extension.GetTransactionFees(transactionResult)
+	spew.Dump("Get Transaction Fee Result", res)
 }
