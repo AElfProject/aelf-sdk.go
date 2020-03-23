@@ -1,14 +1,15 @@
 package test
 
 import (
+	"encoding/base64"
 	"encoding/hex"
 	"testing"
 
 	"aelf-sdk.go/client"
+	"aelf-sdk.go/dto"
 	"aelf-sdk.go/extension"
 
 	pb "aelf-sdk.go/protobuf/generated"
-	util "aelf-sdk.go/utils"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/golang/protobuf/proto"
 	secp256 "github.com/haltingstate/secp256k1-go"
@@ -64,26 +65,32 @@ func TestClient(t *testing.T) {
 }
 
 func TestGetTransactionFee(t *testing.T) {
-	toAccount := "2DyzHMD1DqurK9hhiPa91mTBEtcPNrPvY5Uh7tnqRMXGnB381R"
-	toAddress, _ := aelf.GetContractAddressByName("AElf.ContractNames.Token")
-	methodName := "TransferFrom"
-	fromAddressBytes, _ := util.Base58StringToAddress(_address)
-	toAddressBytes, _ := util.Base58StringToAddress(toAccount)
-	var param = &pb.TransferFromInput{
-		From:   fromAddressBytes,
-		To:     toAddressBytes,
-		Symbol: "ELF",
-		Amount: 10000,
-	}
+	var result dto.TransactionResultDto
+	var logEventDto dto.LogEventDto
+	logEventDto.Name = "TransactionFeeCharged"
+	var param = &pb.TransactionFeeCharged{Symbol: "ELF", Amount: 1000}
 	paramBytes, _ := proto.Marshal(param)
-	transaction, _ := aelf.CreateTransaction(_address, toAddress, methodName, paramBytes)
-	signature, err := aelf.SignTransaction(aelf.PrivateKey, transaction)
-	transaction.Signature = signature
-	assert.NoError(t, err)
-	transactionByets, _ := proto.Marshal(transaction)
-	result, err := aelf.SendTransaction(hex.EncodeToString(transactionByets))
-	assert.NoError(t, err)
-	transactionResult, _ := aelf.GetTransactionResult(result.TransactionID)
-	res, _ := extension.GetTransactionFees(transactionResult)
+	logEventDto.NonIndexed = base64.StdEncoding.EncodeToString(paramBytes)
+	result.Logs = append(result.Logs, logEventDto)
+
+	logEventDto.Name = "ResourceTokenCharged"
+	var params = &pb.ResourceTokenCharged{Symbol: "READ", Amount: 800}
+	paramsBytes, _ := proto.Marshal(params)
+	logEventDto.NonIndexed = base64.StdEncoding.EncodeToString(paramsBytes)
+	result.Logs = append(result.Logs, logEventDto)
+
+	logEventDto.Name = "ResourceTokenCharged"
+	params = &pb.ResourceTokenCharged{Symbol: "WRITE", Amount: 600}
+	paramsBytes, _ = proto.Marshal(params)
+	logEventDto.NonIndexed = base64.StdEncoding.EncodeToString(paramsBytes)
+	result.Logs = append(result.Logs, logEventDto)
+
+	logEventDto.Name = "ResourceTokenCharged"
+	params = &pb.ResourceTokenCharged{Symbol: "READ", Amount: 200}
+	paramsBytes, _ = proto.Marshal(params)
+	logEventDto.NonIndexed = base64.StdEncoding.EncodeToString(paramsBytes)
+	result.Logs = append(result.Logs, logEventDto)
+
+	res, _ := extension.GetTransactionFees(result)
 	spew.Dump("Get Transaction Fee Result", res)
 }

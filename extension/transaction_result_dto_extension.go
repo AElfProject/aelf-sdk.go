@@ -10,7 +10,7 @@ import (
 )
 
 //GetTransactionFees Get Transaction Fees
-func GetTransactionFees(transactionResultDto *dto.TransactionResultDto) (map[string][]map[string]interface{}, error) {
+func GetTransactionFees(transactionResultDto dto.TransactionResultDto) (map[string][]map[string]interface{}, error) {
 	var feeDicts = map[string][]map[string]interface{}{}
 	eventLogs := transactionResultDto.Logs
 	if len(eventLogs) == 0 {
