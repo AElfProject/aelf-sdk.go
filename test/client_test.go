@@ -6,12 +6,13 @@ import (
 
 	"aelf-sdk.go/client"
 	"aelf-sdk.go/extension"
+
 	pb "aelf-sdk.go/protobuf/generated"
 	util "aelf-sdk.go/utils"
-
 	"github.com/davecgh/go-spew/spew"
-	proto "github.com/golang/protobuf/proto"
+	"github.com/golang/protobuf/proto"
 	secp256 "github.com/haltingstate/secp256k1-go"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -82,8 +83,7 @@ func TestGetTransactionFee(t *testing.T) {
 	transactionByets, _ := proto.Marshal(transaction)
 	result, err := aelf.SendTransaction(hex.EncodeToString(transactionByets))
 	assert.NoError(t, err)
-
 	transactionResult, _ := aelf.GetTransactionResult(result.TransactionID)
-	res := extension.GetTransactionFees(transactionResult)
+	res, _ := extension.GetTransactionFees(transactionResult)
 	spew.Dump("Get Transaction Fee Result", res)
 }

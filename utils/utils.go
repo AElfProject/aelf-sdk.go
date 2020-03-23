@@ -100,3 +100,12 @@ func GetAddressByBytes(b []byte) string {
 	address := EncodeCheck(secondBytes[:])
 	return address
 }
+
+//Base64DecodeBytes Base64 Decode Bytes
+func Base64DecodeBytes(param string) ([]byte, error) {
+	b, err := base64.StdEncoding.DecodeString(param)
+	if err != nil {
+		fmt.Println("json Marshal error")
+	}
+	return b, nil
+}
