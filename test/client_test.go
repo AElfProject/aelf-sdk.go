@@ -1,12 +1,17 @@
 package test
 
 import (
+	"encoding/base64"
 	"encoding/hex"
 	"testing"
 
 	"aelf-sdk.go/client"
-	"github.com/davecgh/go-spew/spew"
+	"aelf-sdk.go/dto"
+	"aelf-sdk.go/extension"
 
+	pb "aelf-sdk.go/protobuf/generated"
+	"github.com/davecgh/go-spew/spew"
+	"github.com/golang/protobuf/proto"
 	secp256 "github.com/haltingstate/secp256k1-go"
 
 	"github.com/stretchr/testify/assert"
@@ -57,4 +62,38 @@ func TestClient(t *testing.T) {
 	contractAddr, err := aelf.GetGenesisContractAddress()
 	assert.NoError(t, err)
 	spew.Dump("Get Genesis Contract Address Result", contractAddr)
+}
+
+func TestGetTransactionFee(t *testing.T) {
+	var result dto.TransactionResultDto
+	var logEventDto dto.LogEventDto
+	logEventDto.Name = "TransactionFeeCharged"
+	var param = &pb.TransactionFeeCharged{Symbol: "ELF", Amount: 1000}
+	paramBytes, _ := proto.Marshal(param)
+	logEventDto.NonIndexed = base64.StdEncoding.EncodeToString(paramBytes)
+	result.Logs = append(result.Logs, logEventDto)
+
+	logEventDto.Name = "ResourceTokenCharged"
+	var params = &pb.ResourceTokenCharged{Symbol: "READ", Amount: 800}
+	paramsBytes, _ := proto.Marshal(params)
+	logEventDto.NonIndexed = base64.StdEncoding.EncodeToString(paramsBytes)
+	result.Logs = append(result.Logs, logEventDto)
+
+	logEventDto.Name = "ResourceTokenCharged"
+	params = &pb.ResourceTokenCharged{Symbol: "WRITE", Amount: 600}
+	paramsBytes, _ = proto.Marshal(params)
+	logEventDto.NonIndexed = base64.StdEncoding.EncodeToString(paramsBytes)
+	result.Logs = append(result.Logs, logEventDto)
+
+	logEventDto.Name = "ResourceTokenCharged"
+	params = &pb.ResourceTokenCharged{Symbol: "READ", Amount: 200}
+	paramsBytes, _ = proto.Marshal(params)
+	logEventDto.NonIndexed = base64.StdEncoding.EncodeToString(paramsBytes)
+	result.Logs = append(result.Logs, logEventDto)
+
+	res, _ := extension.GetTransactionFees(result)
+	assert.Equal(t, int64(1000), res["TransactionFeeCharged"][0]["ELF"])
+	assert.Equal(t, int64(800), res["ResourceTokenCharged"][0]["READ"])
+	assert.Equal(t, int64(600), res["ResourceTokenCharged"][1]["WRITE"])
+	assert.Equal(t, int64(200), res["ResourceTokenCharged"][2]["READ"])
 }
