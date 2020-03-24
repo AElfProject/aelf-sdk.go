@@ -92,5 +92,8 @@ func TestGetTransactionFee(t *testing.T) {
 	result.Logs = append(result.Logs, logEventDto)
 
 	res, _ := extension.GetTransactionFees(result)
-	spew.Dump("Get Transaction Fee Result", res)
+	assert.Equal(t, int64(1000), res["TransactionFeeCharged"][0]["ELF"])
+	assert.Equal(t, int64(800), res["ResourceTokenCharged"][0]["READ"])
+	assert.Equal(t, int64(600), res["ResourceTokenCharged"][1]["WRITE"])
+	assert.Equal(t, int64(200), res["ResourceTokenCharged"][2]["READ"])
 }
