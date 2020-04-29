@@ -12,6 +12,7 @@ cd aelf/aelf
 $job2 = Start-Job -ScriptBlock { cd D:\a\1\s\aelf\aelf; dotnet AElf.Launcher.dll; } 
 sleep 60
 cd D:\a\1\s
+go mod download
 cd client/ 
 go build
 cd ../dto/
@@ -23,4 +24,4 @@ go build
 cd ../protobuf/generated/
 go build
 cd ../../test
-go test -v
+go test
