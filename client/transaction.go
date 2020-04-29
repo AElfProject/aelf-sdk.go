@@ -105,9 +105,9 @@ func (a *AElfClient) ExecuteRawTransaction(input *dto.ExecuteRawTransactionDto) 
 	if err != nil {
 		return "", errors.New("Execute RawTransaction error:" + err.Error())
 	}
-	var data interface{}
-	json.Unmarshal(transactionBytes, &data)
-	return data.(string), nil
+	//var data interface{}
+	//json.Unmarshal(transactionBytes, &data)
+	return util.BytesToString(transactionBytes), nil
 }
 
 //SendTransaction Broadcast a transaction.
