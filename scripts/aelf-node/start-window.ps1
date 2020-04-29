@@ -23,4 +23,4 @@ go build
 cd ../protobuf/generated/
 go build
 cd ../../test
-go test
+go test -v
