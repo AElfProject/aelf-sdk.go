@@ -46,6 +46,16 @@ message SmartContractRegistration {
     int32 version = 5;
 }
 
+message Transaction {
+    Address from = 1;
+    Address to = 2;
+    int64 refBlockNumber = 3;
+    bytes refBlockPrefix = 4;
+    string methodName = 5;
+    bytes params = 6;
+    bytes signature = 10000;
+}
+
 //acs0
 message ContractInfo
 {

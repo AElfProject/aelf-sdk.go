@@ -112,12 +112,12 @@ message CandidateVote {
     bytes pubkey = 7;
 }
 
-message GetWelfareRewardAmountSampleInput {
+message EleGetWelfareRewardAmountSampleInput {
     // Token lock time.
     repeated int64 value = 1;
 }
 
-message GetWelfareRewardAmountSampleOutput {
+message EleGetWelfareRewardAmountSampleOutput {
     // The weight calculated.
     repeated int64 value = 1;
 }

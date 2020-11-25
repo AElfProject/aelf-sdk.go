@@ -10,7 +10,7 @@ message ProposalIdList{
     repeated client.Hash proposal_ids = 1;
 }
 
-message Organization {
+message ParliamentOrganization {
     // Indicates if proposals need authority to be created.
     bool proposer_authority_required = 1;
     // The organization address.

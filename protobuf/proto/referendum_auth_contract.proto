@@ -4,7 +4,7 @@ import "client.proto";
 
 package client;
 
-message Organization {
+message ReferendumOrganization {
     // The organization members.
     OrganizationMemberList organization_member_list = 1;
     // The threshold for releasing the proposal.

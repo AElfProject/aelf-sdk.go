@@ -5,7 +5,7 @@ import "client.proto";
 package client;
 
 // association_auth_contract
-message Organization{
+message AssociationOrganization{
     // Indicates if proposals need authority to be created.
     bool proposer_authority_required = 1;
     // The organization address.
