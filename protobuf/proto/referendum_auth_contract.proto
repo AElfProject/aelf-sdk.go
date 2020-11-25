@@ -4,9 +4,22 @@ import "client.proto";
 
 package client;
 
-message ReferendumOrganization {
-    int64 release_threshold = 1;
-    string token_symbol = 2;
-    client.Address organization_address = 3;
-    client.Hash organization_hash = 4;
+message Organization {
+    // The organization members.
+    OrganizationMemberList organization_member_list = 1;
+    // The threshold for releasing the proposal.
+    client.ProposalReleaseThreshold proposal_release_threshold = 2;
+    // The proposer whitelist.
+    client.ProposerWhiteList proposer_white_list = 3;
+    // The address of organization.
+    client.Address organization_address = 4;
+    // The organizations id.
+    client.Hash organization_hash = 5;
+    // The creation token is for organization address generation.
+    client.Hash creation_token = 6;
+}
+
+message OrganizationMemberList {
+    // The address of organization members.
+    repeated client.Address organization_members = 1;
 }

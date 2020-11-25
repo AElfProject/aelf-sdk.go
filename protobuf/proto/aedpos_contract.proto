@@ -4,18 +4,23 @@ package client;
 
 //aedpos_contract
 message MinerList {
+    // The miners public key list.
     repeated bytes pubkeys = 1;
 }
 
 message PubkeyList {
-    repeated string pubkeys = 1;
+    // Candidates’ public keys
+    repeated bytes value = 1;
 }
 
 message MinerListWithRoundNumber {
+    // The list of miners.
     MinerList miner_list = 1;
-    sint64 round_number = 2;
+    // The round number.
+    int64 round_number = 2;
 }
 
 message GetMinerListInput {
-    sint64 term_number = 1;
+    // The term number.
+    int64 term_number = 1;
 }

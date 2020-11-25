@@ -1,19 +1,21 @@
 syntax = "proto3";
 
-package client;
-
 import "client.proto";
 
-// association_auth_contract
-message AssociationOrganization{
-    int32 release_threshold = 1;
-    repeated Reviewer reviewers = 2;
-    int32 proposer_threshold = 3;
-    client.Address organization_address = 4;
-    client.Hash organization_hash = 5;
-}
+package client;
 
-message Reviewer {
-   client.Address address  = 1;
-    int32 weight = 2;
+// association_auth_contract
+message Organization{
+    // Indicates if proposals need authority to be created.
+    bool proposer_authority_required = 1;
+    // The organization address.
+    client.Address organization_address = 2;
+    // The organization id.
+    client.Hash organization_hash = 3;
+    // The threshold for releasing the proposal.
+    client.ProposalReleaseThreshold proposal_release_threshold = 4;
+    // Indicates if parliament member can propose to this organization.
+    bool parliament_member_proposing_allowed = 5;
+    // The creation token is for organization address generation.
+    client.Hash creation_token = 6;
 }

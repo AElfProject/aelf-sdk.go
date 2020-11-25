@@ -6,11 +6,21 @@ package client;
 
 //parliament_auth
 message ProposalIdList{
+    // The list of proposal ids.
     repeated client.Hash proposal_ids = 1;
 }
 
-message ParliamentOrganization {
-    sint32 release_threshold = 1;
+message Organization {
+    // Indicates if proposals need authority to be created.
+    bool proposer_authority_required = 1;
+    // The organization address.
     client.Address organization_address = 2;
+    // The organization id.
     client.Hash organization_hash = 3;
+    // The threshold for releasing the proposal.
+    client.ProposalReleaseThreshold proposal_release_threshold = 4;
+    // Indicates if parliament member can propose to this organization.
+    bool parliament_member_proposing_allowed = 5;
+    // The creation token is for organization address generation.
+    client.Hash creation_token = 6;
 }
