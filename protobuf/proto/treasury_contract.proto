@@ -4,9 +4,11 @@ package client;
 
 //treasury_contract
 message TreGetWelfareRewardAmountSampleInput {
-    repeated sint64 value = 1;
+    // Token lock time.
+    repeated int64 value = 1;
 }
 
 message TreGetWelfareRewardAmountSampleOutput {
-    repeated sint64 value = 1;
+    // The weight calculated.
+    repeated int64 value = 1;
 }

@@ -4,11 +4,13 @@ package client;
 
 import "google/protobuf/timestamp.proto";
 
-message Address {
+message Address
+{
     bytes value = 1;
 }
 
-message Hash {
+message Hash
+{
     bytes value = 1;
 }
 
@@ -37,128 +39,11 @@ message StatePath {
 }
 
 message SmartContractRegistration {
-    int32 category = 1;
+    sint32 category = 1;
     bytes code = 2;
     Hash code_hash = 3;
-}
-
-//acs0
-message ContractInfo
-{
-    uint64 serial_number = 1;
-    int32 category = 3;
-    Hash code_hash = 4;
-    bool is_system_contract = 5;
-}
-
-//acs1
-message MethodFees {
-    string method_name = 1;
-    repeated MethodFee fees = 2;
-}
-
-message MethodFee {
-    string symbol = 1;
-    sint64 basic_fee = 2;
-}
-
-//acs2
-message ResourceInfo {
-    repeated ScopedStatePath paths = 1;
-    bool non_parallelizable = 2;
-}
-
-// acs3
-message ProposalOutput {
-    Hash proposal_id = 1;
-    string contract_method_name = 2;
-    Address to_address = 3;
-    bytes params = 4;
-    google.protobuf.Timestamp expired_time = 5;
-    Address organization_address = 6;
-    Address proposer = 7;
-    bool to_be_released = 8;
-}
-
-//acs4
-
-message ValidationResult {
-    bool success = 1;
-    string message = 2;
-}
-
-//acs5
-message MethodCallingThreshold {
-    map<string, sint64> symbol_to_amount = 1;// The order matters.
-    ThresholdCheckType threshold_check_type = 2;
-}
-
-enum ThresholdCheckType {
-    BALANCE = 0;
-    ALLOWANCE = 1;
-}
-
-//acs7
-message SideChainIdAndHeightDict {
-    map<int32, int64> id_height_dict = 1;
-}
-
-message SideChainIndexingInformationList {
-    repeated SideChainIndexingInformation indexing_information_list = 1;
-}
-
-message SideChainIndexingInformation {
-    int32 chain_id = 1;
-    int64 indexed_height = 2;
-    int64 to_be_indexed_count = 3;
-}
-
-message CrossChainBlockData {
-    repeated SideChainBlockData side_chain_block_data = 1;
-    repeated ParentChainBlockData parent_chain_block_data = 2;
-    int64 previous_block_height = 3;
-}
-
-message SideChainBlockData {
-    int64 height = 1;
-    Hash block_header_hash = 2;
-    Hash transaction_status_merkle_tree_root = 3;
-    int32 chain_id = 4;
-}
-
-message ParentChainBlockData {
-    int64 height = 1;
-    CrossChainExtraData cross_chain_extra_data = 2;
-    int32 chain_id = 3;
-    Hash transaction_status_merkle_tree_root = 4;
-
-    // Indexed block height from side chain and merkle path for this side chain block
-    map<int64, MerklePath> indexed_merkle_path = 5;
-    map<string, bytes> extra_data = 6;
-}
-
-message CrossChainExtraData {
-    // Merkle tree root of side chain block transaction status root
-    Hash transaction_status_merkle_tree_root = 1;
-}
-
-message IndexedSideChainBlockData{
-    repeated SideChainBlockData side_chain_block_data = 1;
-}
-
-message CrossChainMerkleProofContext {
-    int64 bound_parent_chain_height = 1;
-    MerklePath merkle_path_from_parent_chain = 2;
-}
-
-message ChainInitializationData {
-    int32 chain_id = 1;
-    Address creator = 2;
-    google.protobuf.Timestamp creation_timestamp = 3;
-    repeated bytes extra_information = 4;
-    int64 creation_height_on_parent_chain = 5;
-    bool chain_creator_privilege_preserved = 6;
-    string side_chain_token_symbol = 7;
+    bool is_system_contract = 4;
+    int32 version = 5;
 }
 
 message Transaction {
@@ -171,3 +56,222 @@ message Transaction {
     bytes signature = 10000;
 }
 
+//acs0
+message ContractInfo
+{
+    // The serial number of the contract.
+    int64 serial_number = 1;
+    // The author of the contract, this is the person who deployed the contract.
+    client.Address author = 2;
+    // The category of contract code(0: C#).
+    sint32 category = 3;
+    // The hash of the contract code.
+    client.Hash code_hash = 4;
+    // Whether it is a system contract.
+    bool is_system_contract = 5;
+    // The version of the current contract.
+    int32 version = 6;
+}
+
+//acs1
+message MethodFees {
+    // The name of the method to be charged.
+    string method_name = 1;
+    // List of fees to be charged.
+    repeated MethodFee fees = 2;
+    // Optional based on the implementation of SetMethodFee method.
+    bool is_size_fee_free = 3;
+}
+
+message MethodFee {
+    // The name of the method to be charged.
+    string method_name = 1;
+    // List of fees to be charged.
+    repeated MethodFee fees = 2;
+    // Optional based on the implementation of SetMethodFee method.
+    bool is_size_fee_free = 3;
+}
+
+//acs2
+message ResourceInfo {
+    // The state path that depends on when writing.
+    repeated client.ScopedStatePath write_paths = 1;
+    // The state path that depends on when reading.
+    repeated client.ScopedStatePath read_paths = 2;
+    // Whether the transaction is not executed in parallel.
+    bool non_parallelizable = 3;
+}
+
+// acs3
+message ProposalOutput {
+    // The id of the proposal.
+    client.Hash proposal_id = 1;
+    // The method that this proposal will call when being released.
+    string contract_method_name = 2;
+    // The address of the target contract.
+    client.Address to_address = 3;
+    // The parameters of the release transaction.
+    bytes params = 4;
+    // The date at which this proposal will expire.
+    google.protobuf.Timestamp expired_time = 5;
+    // The address of this proposals organization.
+    client.Address organization_address = 6;
+    // The address of the proposer of this proposal.
+    client.Address proposer = 7;
+    // Indicates if this proposal is releasable.
+    bool to_be_released = 8;
+    // Approval count for this proposal.
+    int64 approval_count = 9;
+    // Rejection count for this proposal.
+    int64 rejection_count = 10;
+    // Abstention count for this proposal.
+    int64 abstention_count = 11;
+}
+
+message ProposalReleaseThreshold {
+    // The value for the minimum approval threshold.
+    int64 minimal_approval_threshold = 1;
+    // The value for the maximal rejection threshold.
+    int64 maximal_rejection_threshold = 2;
+    // The value for the maximal abstention threshold.
+    int64 maximal_abstention_threshold = 3;
+    // The value for the minimal vote threshold.
+    int64 minimal_vote_threshold = 4;
+}
+
+message ProposerWhiteList{
+    // The address of the proposers
+    repeated Address proposers = 1;
+}
+
+//acs4
+
+message ValidationResult {
+    // Is successful.
+    bool success = 1;
+    // The error message.
+    string message = 2;
+    // Whether to trigger mining again.
+    bool is_re_trigger = 3;
+}
+
+//acs5
+message MethodCallingThreshold {
+    // The threshold for method calling, token symbol -> amount. 
+    map<string, int64> symbol_to_amount = 1;
+    // The type of threshold check.
+    ThresholdCheckType threshold_check_type = 2;
+}
+
+enum ThresholdCheckType {
+    // Check balance only.
+    BALANCE = 0;
+    // Check balance and allowance at the same time.
+    ALLOWANCE = 1;
+}
+
+message SideChainIndexingInformationList {
+    // A list contains indexing information of side chains.
+    repeated SideChainIndexingInformation indexing_information_list = 1;
+}
+
+message SideChainIndexingInformation {
+    // The side chain id.
+    int32 chain_id = 1;
+    // The indexed height.
+    int64 indexed_height = 2;
+}
+
+message CrossChainBlockData {
+    // The side chain block data list to index.
+    repeated SideChainBlockData side_chain_block_data_list = 1;
+    // The parent chain block data list to index.
+    repeated ParentChainBlockData parent_chain_block_data_list = 2;
+}
+
+message SideChainBlockData {
+    // The height of side chain block.
+    int64 height = 1;
+    // The hash of side chain block.
+    client.Hash block_header_hash = 2;
+    // The merkle tree root computing from transactions status in side chain block.
+    client.Hash transaction_status_merkle_tree_root = 3;
+    // The id of side chain.
+    int32 chain_id = 4;
+}
+
+message ParentChainBlockData {
+    // The height of parent chain.
+    int64 height = 1;
+    // The merkle tree root computing from side chain roots.
+    CrossChainExtraData cross_chain_extra_data = 2;
+    // The parent chain id.
+    int32 chain_id = 3;
+    // The merkle tree root computing from transactions status in parent chain block.
+    client.Hash transaction_status_merkle_tree_root = 4;
+    // Indexed block height from side chain and merkle path for this side chain block
+    map<int64, client.MerklePath> indexed_merkle_path = 5;
+    // Extra data map.
+    map<string, bytes> extra_data = 6;
+}
+
+message CrossChainExtraData {
+    // Merkle tree root of side chain block transaction status root
+    Hash transaction_status_merkle_tree_root = 1;
+}
+
+message CrossChainMerkleProofContext {
+    // The height of parent chain bound up with side chain.
+    int64 bound_parent_chain_height = 1;
+    // The merkle path generated from parent chain.
+    client.MerklePath merkle_path_from_parent_chain = 2;
+}
+
+message ChainInitializationData {
+    // The id of side chain.
+    int32 chain_id = 1;
+    // The side chain creator.
+    client.Address creator = 2;
+    // The timestamp for side chain creation.
+    google.protobuf.Timestamp creation_timestamp = 3;
+    // The height of side chain creation on parent chain.
+    int64 creation_height_on_parent_chain = 4;
+    // Creator privilege boolean flag: True if chain creator privilege preserved, otherwise false.
+    bool chain_creator_privilege_preserved = 5;
+    // Parent chain token contract address.
+    client.Address parent_chain_token_contract_address = 6;
+    // Initial consensus information.
+    ChainInitializationConsensusInfo chain_initialization_consensus_info = 7;
+    // The native token info.
+    bytes native_token_info_data = 8;
+    // The resource token information.
+    ResourceTokenInfo resource_token_info = 9;
+    // The chain primary token information.
+    ChainPrimaryTokenInfo chain_primary_token_info = 10;
+}
+
+message ResourceTokenInfo{
+    // The resource token information.
+    bytes resource_token_list_data = 1;
+    // The initial resource token amount.
+    map<string, int32> initial_resource_amount = 2;
+}
+
+message ChainPrimaryTokenInfo{
+    // The side chain primary token data.
+    bytes chain_primary_token_data = 1;
+    // The side chain primary token initial issue list.
+    repeated SideChainTokenInitialIssue side_chain_token_initial_issue_list = 2;
+}
+
+message ChainInitializationConsensusInfo{
+    // Initial consensus data.
+    bytes initial_consensus_data = 1;
+}
+
+message SideChainTokenInitialIssue{
+    // The account that will be issued.
+    client.Address address = 1;
+    // The amount that will be issued.
+    int64 amount = 2;
+}

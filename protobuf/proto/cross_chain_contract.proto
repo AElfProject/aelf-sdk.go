@@ -6,8 +6,12 @@ import "client.proto";
 
 //cross_chain_contract
 message VerifyTransactionInput {
+    // The cross chain transaction id to verify.
     client.Hash transaction_id = 1;
+    // The merkle path of the transaction.
     client.MerklePath path = 2;
-    sint64 parent_chain_height = 3;
+    // The height of parent chain that indexing this transaction.
+    int64 parent_chain_height = 3;
+    // The chain if to verify.
     int32 verified_chain_id = 4;
 }

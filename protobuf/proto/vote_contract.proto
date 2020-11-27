@@ -6,49 +6,73 @@ import "google/protobuf/timestamp.proto";
 package client;
 
 message GetVotingItemInput {
+    // The voting activity id.
     client.Hash voting_item_id = 1;
 }
 
 message VotedItems {
+    // The voted ids.
     map<string, VotedIds> voted_item_vote_ids = 1;
 }
 
 message VotedIds {
+    // The active vote ids.
     repeated client.Hash active_votes = 1;
+    // The withdrawn vote ids.
     repeated client.Hash withdrawn_votes = 2;
 }
 
 message GetVotingResultInput {
+    // The voting activity id.
     client.Hash voting_item_id = 1;
-    sint64 snapshot_number = 2;
+    // The snapshot number.
+    int64 snapshot_number = 2;
 }
 
 message VotingResult {
+    // The voting activity id.
     client.Hash voting_item_id = 1;
-    map<string, sint64> results = 2; // option -> amount
-    sint64 snapshot_number = 3;
-    sint64 voters_count = 4;
+    // The voting result, option -> amount of votes,
+    map<string, int64> results = 2;
+    // The snapshot number.
+    int64 snapshot_number = 3;
+    // The total number of voters.
+    int64 voters_count = 4;
+    // The start time of this snapshot.
     google.protobuf.Timestamp snapshot_start_timestamp = 5;
+    // The end time of this snapshot.
     google.protobuf.Timestamp snapshot_end_timestamp = 6;
-    sint64 votes_amount = 7;
+    // Total votes received during the process of this snapshot.
+    int64 votes_amount = 7;
 }
 
 message VotingRecord {
+    // The voting activity id.
     client.Hash voting_item_id = 1;
+    // The address of voter.
     client.Address voter = 2;
-    sint64 snapshot_number = 3;
-    sint64 amount = 4;
+    // The snapshot number.
+    int64 snapshot_number = 3;
+    // The amount of vote.
+    int64 amount = 4;
+    // The time of withdraw.
     google.protobuf.Timestamp withdraw_timestamp = 5;
+    // The time of vote.
     google.protobuf.Timestamp vote_timestamp = 6;
+    // Whether the vote had been withdrawn.
     bool is_withdrawn = 7;
+    // The option voted.
     string option = 8;
+    // Whether vote others.
     bool is_change_target = 9;
 }
 
 message GetVotingRecordsInput {
+    // The vote ids.
     repeated client.Hash ids = 1;
 }
 
 message VotingRecords {
+    // The voting records.
     repeated VotingRecord records = 1;
 }
