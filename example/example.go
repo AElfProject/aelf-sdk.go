@@ -17,7 +17,7 @@ var aelf = client.AElfClient{
 	PrivateKey: "680afd630d82ae5c97942c4141d60b8a9fedfa5b2864fca84072c17ee1f72d9d", //your private key
 }
 
-var privatekeyAddress = aelf.GetAddressFromPrivateKey(aelf.PrivateKey, false)
+var privatekeyAddress = aelf.GetAddressFromPrivateKey(aelf.PrivateKey)
 var contractMethodName = "GetContractAddressByName"
 var contractAddress, _ = aelf.GetGenesisContractAddress()
 

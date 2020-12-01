@@ -54,14 +54,9 @@ func (a *AElfClient) GetAddressFromPubKey(pubkey string) string {
 }
 
 //GetAddressFromPrivateKey Get the account address through the private key.
-func (a *AElfClient) GetAddressFromPrivateKey(privateKey string, compress bool) string {
-	var pubkeyBytes []byte
+func (a *AElfClient) GetAddressFromPrivateKey(privateKey string) string {
 	bytes, _ := hex.DecodeString(privateKey)
-	if compress {
-		pubkeyBytes = secp256.PubkeyFromSeckey(bytes)
-	} else {
-		pubkeyBytes = secp256.UncompressedPubkeyFromSeckey(bytes)
-	}
+	pubkeyBytes := secp256.UncompressedPubkeyFromSeckey(bytes)
 	return util.GetAddressByBytes(pubkeyBytes)
 }
 
@@ -69,7 +64,7 @@ func (a *AElfClient) GetAddressFromPrivateKey(privateKey string, compress bool) 
 func (a *AElfClient) GetFormattedAddress(address string) (string, error) {
 	chain, _ := a.GetChainStatus()
 	methodName := "GetPrimaryTokenSymbol"
-	fromAddress := a.GetAddressFromPrivateKey(ExamplePrivateKey, false)
+	fromAddress := a.GetAddressFromPrivateKey(ExamplePrivateKey)
 	contractAddress, _ := a.GetContractAddressByName("AElf.ContractNames.Token")
 	transaction, _ := a.CreateTransaction(fromAddress, contractAddress, methodName, nil)
 	signature, _ := a.SignTransaction(ExamplePrivateKey, transaction)
@@ -87,7 +82,7 @@ func (a *AElfClient) GetFormattedAddress(address string) (string, error) {
 
 //GetContractAddressByName Get  contract address by contract name.
 func (a *AElfClient) GetContractAddressByName(contractName string) (string, error) {
-	fromAddress := a.GetAddressFromPrivateKey(ExamplePrivateKey, false)
+	fromAddress := a.GetAddressFromPrivateKey(ExamplePrivateKey)
 	toAddress, err := a.GetGenesisContractAddress()
 	if err != nil {
 		return "", errors.New("Get Genesis Contract Address error")
@@ -164,7 +159,7 @@ func (a *AElfClient) GenerateKeyPairInfo() *model.KeyPairInfo {
 	publicKeyBytes, privateKeyBytes := secp256.GenerateKeyPair()
 	publicKey := hex.EncodeToString(publicKeyBytes)
 	privateKey := hex.EncodeToString(privateKeyBytes)
-	privateKeyAddress := a.GetAddressFromPrivateKey(privateKey, false)
+	privateKeyAddress := a.GetAddressFromPrivateKey(privateKey)
 	var keyPair = &model.KeyPairInfo{
 		PrivateKey: privateKey,
 		PublicKey:  publicKey,

@@ -23,7 +23,7 @@ var aelf = client.AElfClient{
 	PrivateKey: "680afd630d82ae5c97942c4141d60b8a9fedfa5b2864fca84072c17ee1f72d9d",
 }
 
-var _address = aelf.GetAddressFromPrivateKey(aelf.PrivateKey, false)
+var _address = aelf.GetAddressFromPrivateKey(aelf.PrivateKey)
 
 func TestGetAddressFromPubKey(t *testing.T) {
 	privateKeyBytes, _ := hex.DecodeString(aelf.PrivateKey)
@@ -38,7 +38,7 @@ func TestGetFormattedAddress(t *testing.T) {
 	assert.NoError(t, err)
 	spew.Dump("Get Formatted Address result", formattedAddress, err)
 
-	privateKeyaddress := aelf.GetAddressFromPrivateKey(aelf.PrivateKey, false)
+	privateKeyaddress := aelf.GetAddressFromPrivateKey(aelf.PrivateKey)
 	assert.Equal(t, formattedAddress, ("ELF_" + privateKeyaddress + "_AELF"))
 }
 

@@ -101,7 +101,7 @@ func (a *AElfClient) SendTransactions(rawTransactions string) ([]string, error);
 
  func (a *AElfClient) GetAddressFromPubKey(pubkey string) string;
 
- func (a *AElfClient) GetAddressFromPrivateKey(privateKey string, compress = false bool) string;
+ func (a *AElfClient) GetAddressFromPrivateKey(privateKey string) string;
 
  func (a *AElfClient) GetGenesisContractAddress() (string, error);
 
