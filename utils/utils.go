@@ -11,7 +11,7 @@ import (
 	"reflect"
 	"unsafe"
 
-	pb "aelf-sdk.go/protobuf/generated"
+	pb "github.com/AElfProject/aelf-sdk.go/protobuf/generated"
 	"github.com/btcsuite/btcutil/base58"
 )
 

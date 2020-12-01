@@ -5,9 +5,9 @@ import (
 	"encoding/hex"
 	"errors"
 
-	"aelf-sdk.go/model"
-	pb "aelf-sdk.go/protobuf/generated"
-	util "aelf-sdk.go/utils"
+	"github.com/AElfProject/aelf-sdk.go/model"
+	pb "github.com/AElfProject/aelf-sdk.go/protobuf/generated"
+	util "github.com/AElfProject/aelf-sdk.go/utils"
 
 	proto "github.com/golang/protobuf/proto"
 	wrap "github.com/golang/protobuf/ptypes/wrappers"

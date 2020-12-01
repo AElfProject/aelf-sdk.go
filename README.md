@@ -17,7 +17,7 @@ This is a Golang client library, used to communicate with the [AElf](https://git
 Example.go is provided to show how to use AElfClient.
 
 ``` Golang
-import ("aelf-sdk.go/client"）
+import ("github.com/AElfProject/aelf-sdk.go/client"）
 
 // get client instance
 var aelf = client.AElfClient

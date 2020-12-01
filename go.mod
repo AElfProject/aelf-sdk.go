@@ -1,4 +1,4 @@
-module aelf-sdk.go
+module github.com/AElfProject/aelf-sdk.go
 
 go 1.13
 

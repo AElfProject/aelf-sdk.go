@@ -5,11 +5,11 @@ import (
 	"encoding/hex"
 	"testing"
 
-	"aelf-sdk.go/client"
-	"aelf-sdk.go/dto"
-	"aelf-sdk.go/extension"
+	"github.com/AElfProject/aelf-sdk.go/client"
+	"github.com/AElfProject/aelf-sdk.go/dto"
+	"github.com/AElfProject/aelf-sdk.go/extension"
 
-	pb "aelf-sdk.go/protobuf/generated"
+	pb "github.com/AElfProject/aelf-sdk.go/protobuf/generated"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/golang/protobuf/proto"
 	secp256 "github.com/haltingstate/secp256k1-go"
