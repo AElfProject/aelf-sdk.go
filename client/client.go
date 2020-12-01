@@ -93,7 +93,11 @@ func (a *AElfClient) GetContractAddressByName(contractName string) (string, erro
 		return "", errors.New("Get Genesis Contract Address error")
 	}
 	contractNameBytes := util.GetBytesSha256(contractName)
-	transaction, _ := a.CreateTransaction(fromAddress, toAddress, "GetContractAddressByName", contractNameBytes)
+	var hash = new(pb.Hash)
+	hash.Value = contractNameBytes
+	hashBytes, _ := proto.Marshal(hash)
+
+	transaction, _ := a.CreateTransaction(fromAddress, toAddress, "GetContractAddressByName", hashBytes)
 	signature, _ := a.SignTransaction(ExamplePrivateKey, transaction)
 	transaction.Signature = signature
 	transactionBytes, err := proto.Marshal(transaction)
@@ -131,11 +135,8 @@ func (a *AElfClient) CreateTransaction(from, to, method string, params []byte) (
 		MethodName:     method,
 		RefBlockNumber: chainStatus.BestChainHeight,
 		RefBlockPrefix: prefixBytes[:4],
+		Params:         params,
 	}
-	var hash = new(pb.Hash)
-	hash.Value = params
-	hashBytes, _ := proto.Marshal(hash)
-	transaction.Params = hashBytes
 	return transaction, nil
 }
 
