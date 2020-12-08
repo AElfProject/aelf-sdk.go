@@ -17,7 +17,7 @@ This is a Golang client library, used to communicate with the [AElf](https://git
 Example.go is provided to show how to use AElfClient.
 
 ``` Golang
-import ("aelf-sdk.go/client"）
+import ("github.com/AElfProject/aelf-sdk.go/client"）
 
 // get client instance
 var aelf = client.AElfClient
@@ -101,7 +101,7 @@ func (a *AElfClient) SendTransactions(rawTransactions string) ([]string, error);
 
  func (a *AElfClient) GetAddressFromPubKey(pubkey string) string;
 
- func (a *AElfClient) GetAddressFromPrivateKey(privateKey string, compress = false bool) string;
+ func (a *AElfClient) GetAddressFromPrivateKey(privateKey string) string;
 
  func (a *AElfClient) GetGenesisContractAddress() (string, error);
 

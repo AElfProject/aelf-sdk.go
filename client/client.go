@@ -5,9 +5,9 @@ import (
 	"encoding/hex"
 	"errors"
 
-	"aelf-sdk.go/model"
-	pb "aelf-sdk.go/protobuf/generated"
-	util "aelf-sdk.go/utils"
+	"github.com/AElfProject/aelf-sdk.go/model"
+	pb "github.com/AElfProject/aelf-sdk.go/protobuf/generated"
+	util "github.com/AElfProject/aelf-sdk.go/utils"
 
 	proto "github.com/golang/protobuf/proto"
 	wrap "github.com/golang/protobuf/ptypes/wrappers"
@@ -54,14 +54,9 @@ func (a *AElfClient) GetAddressFromPubKey(pubkey string) string {
 }
 
 //GetAddressFromPrivateKey Get the account address through the private key.
-func (a *AElfClient) GetAddressFromPrivateKey(privateKey string, compress bool) string {
-	var pubkeyBytes []byte
+func (a *AElfClient) GetAddressFromPrivateKey(privateKey string) string {
 	bytes, _ := hex.DecodeString(privateKey)
-	if compress {
-		pubkeyBytes = secp256.PubkeyFromSeckey(bytes)
-	} else {
-		pubkeyBytes = secp256.UncompressedPubkeyFromSeckey(bytes)
-	}
+	pubkeyBytes := secp256.UncompressedPubkeyFromSeckey(bytes)
 	return util.GetAddressByBytes(pubkeyBytes)
 }
 
@@ -69,7 +64,7 @@ func (a *AElfClient) GetAddressFromPrivateKey(privateKey string, compress bool) 
 func (a *AElfClient) GetFormattedAddress(address string) (string, error) {
 	chain, _ := a.GetChainStatus()
 	methodName := "GetPrimaryTokenSymbol"
-	fromAddress := a.GetAddressFromPrivateKey(ExamplePrivateKey, false)
+	fromAddress := a.GetAddressFromPrivateKey(ExamplePrivateKey)
 	contractAddress, _ := a.GetContractAddressByName("AElf.ContractNames.Token")
 	transaction, _ := a.CreateTransaction(fromAddress, contractAddress, methodName, nil)
 	signature, _ := a.SignTransaction(ExamplePrivateKey, transaction)
@@ -87,13 +82,17 @@ func (a *AElfClient) GetFormattedAddress(address string) (string, error) {
 
 //GetContractAddressByName Get  contract address by contract name.
 func (a *AElfClient) GetContractAddressByName(contractName string) (string, error) {
-	fromAddress := a.GetAddressFromPrivateKey(ExamplePrivateKey, false)
+	fromAddress := a.GetAddressFromPrivateKey(ExamplePrivateKey)
 	toAddress, err := a.GetGenesisContractAddress()
 	if err != nil {
 		return "", errors.New("Get Genesis Contract Address error")
 	}
 	contractNameBytes := util.GetBytesSha256(contractName)
-	transaction, _ := a.CreateTransaction(fromAddress, toAddress, "GetContractAddressByName", contractNameBytes)
+	var hash = new(pb.Hash)
+	hash.Value = contractNameBytes
+	hashBytes, _ := proto.Marshal(hash)
+
+	transaction, _ := a.CreateTransaction(fromAddress, toAddress, "GetContractAddressByName", hashBytes)
 	signature, _ := a.SignTransaction(ExamplePrivateKey, transaction)
 	transaction.Signature = signature
 	transactionBytes, err := proto.Marshal(transaction)
@@ -131,11 +130,8 @@ func (a *AElfClient) CreateTransaction(from, to, method string, params []byte) (
 		MethodName:     method,
 		RefBlockNumber: chainStatus.BestChainHeight,
 		RefBlockPrefix: prefixBytes[:4],
+		Params:         params,
 	}
-	var hash = new(pb.Hash)
-	hash.Value = params
-	hashBytes, _ := proto.Marshal(hash)
-	transaction.Params = hashBytes
 	return transaction, nil
 }
 
@@ -163,7 +159,7 @@ func (a *AElfClient) GenerateKeyPairInfo() *model.KeyPairInfo {
 	publicKeyBytes, privateKeyBytes := secp256.GenerateKeyPair()
 	publicKey := hex.EncodeToString(publicKeyBytes)
 	privateKey := hex.EncodeToString(privateKeyBytes)
-	privateKeyAddress := a.GetAddressFromPrivateKey(privateKey, false)
+	privateKeyAddress := a.GetAddressFromPrivateKey(privateKey)
 	var keyPair = &model.KeyPairInfo{
 		PrivateKey: privateKey,
 		PublicKey:  publicKey,

@@ -3,9 +3,9 @@ package extension
 import (
 	"errors"
 
-	"aelf-sdk.go/dto"
-	pb "aelf-sdk.go/protobuf/generated"
-	util "aelf-sdk.go/utils"
+	"github.com/AElfProject/aelf-sdk.go/dto"
+	pb "github.com/AElfProject/aelf-sdk.go/protobuf/generated"
+	util "github.com/AElfProject/aelf-sdk.go/utils"
 	proto "github.com/golang/protobuf/proto"
 )
 

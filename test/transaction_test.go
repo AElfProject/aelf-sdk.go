@@ -2,11 +2,13 @@ package test
 
 import (
 	"encoding/hex"
+	"strings"
 	"testing"
 
-	"aelf-sdk.go/client"
-	"aelf-sdk.go/dto"
-	util "aelf-sdk.go/utils"
+	"github.com/AElfProject/aelf-sdk.go/client"
+	"github.com/AElfProject/aelf-sdk.go/dto"
+	pb "github.com/AElfProject/aelf-sdk.go/protobuf/generated"
+	util "github.com/AElfProject/aelf-sdk.go/utils"
 
 	"github.com/davecgh/go-spew/spew"
 	"github.com/golang/protobuf/proto"
@@ -143,7 +145,10 @@ func TestExecuteTransaction(t *testing.T) {
 	toAddress := ContractAddress
 	methodName := ContractMethodName
 	params := util.GetBytesSha256("AElf.ContractNames.TokenConverter")
-	transaction, err := aelf.CreateTransaction(fromAddress, toAddress, methodName, params)
+	var hash = new(pb.Hash)
+	hash.Value = params
+	hashBytes, _ := proto.Marshal(hash)
+	transaction, err := aelf.CreateTransaction(fromAddress, toAddress, methodName, hashBytes)
 	assert.NoError(t, err)
 	signature, err := aelf.SignTransaction(aelf.PrivateKey, transaction)
 	transaction.Signature = signature
@@ -162,15 +167,22 @@ func TestSendTransctions(t *testing.T) {
 	var parameters [][]byte
 	parameters = append(parameters, param1)
 	parameters = append(parameters, param2)
+	var transactions []string
 	for _, param := range parameters {
-		transaction, err := aelf.CreateTransaction(fromAddress, toAddress, methodName, param)
+		var hash = new(pb.Hash)
+		hash.Value = param
+		hashBytes, _ := proto.Marshal(hash)
+		transaction, err := aelf.CreateTransaction(fromAddress, toAddress, methodName, hashBytes)
 		assert.NoError(t, err)
 		signature, err := aelf.SignTransaction(aelf.PrivateKey, transaction)
 		transaction.Signature = signature
 		assert.NoError(t, err)
 		transactionByets, _ := proto.Marshal(transaction)
-		results, err := aelf.SendTransactions(hex.EncodeToString(transactionByets))
-		assert.NoError(t, err)
-		spew.Dump("Send Transactions result", results)
+		transactions = append(transactions, hex.EncodeToString(transactionByets))
 	}
+	txs := strings.Join(transactions, ",")
+	results, err := aelf.SendTransactions(txs)
+	assert.NoError(t, err)
+	assert.True(t, len(results) == 2)
+	spew.Dump("Send Transactions result", results)
 }

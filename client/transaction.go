@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"errors"
 
-	"aelf-sdk.go/dto"
-	util "aelf-sdk.go/utils"
+	"github.com/AElfProject/aelf-sdk.go/dto"
+	util "github.com/AElfProject/aelf-sdk.go/utils"
 )
 
 //GetTransactionPoolStatus Get information about the current transaction pool.
