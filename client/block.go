@@ -10,7 +10,7 @@ import (
 )
 
 //GetBlockHeight Get height of the current chain.
-func (a *AElfClient) GetBlockHeight() (float64, error) {
+func (a *AElfClient) GetBlockHeight() (int64, error) {
 	url := a.Host + BLOCKHEIGHT
 	heightBytes, err := util.GetRequest("GET", url, a.Version, nil)
 	if err != nil {
@@ -18,7 +18,7 @@ func (a *AElfClient) GetBlockHeight() (float64, error) {
 	}
 	var data interface{}
 	json.Unmarshal(heightBytes, &data)
-	return data.(float64), nil
+	return int64(data.(float64)), nil
 }
 
 // GetBlockByHash Get information of a block by given block hash. Optional whether to include transaction information.
@@ -42,7 +42,7 @@ func (a *AElfClient) GetBlockByHash(blockHash string, includeTransactions bool) 
 }
 
 //GetBlockByHeight Get information of a block by specified height. Optional whether to include transaction information.
-func (a *AElfClient) GetBlockByHeight(blockHeight int, includeTransactions bool) (*dto.BlockDto, error) {
+func (a *AElfClient) GetBlockByHeight(blockHeight int64, includeTransactions bool) (*dto.BlockDto, error) {
 	params := map[string]interface{}{
 		"blockHeight":         blockHeight,
 		"includeTransactions": includeTransactions,

@@ -95,6 +95,8 @@ func ToString(v interface{}) string {
 		return strconv.Itoa(v.(int))
 	case bool:
 		return strconv.FormatBool(v.(bool))
+	case int64:
+		return strconv.FormatInt(v.(int64), 10)
 	default:
 		return fmt.Sprintf("%", v)
 	}

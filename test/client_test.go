@@ -56,12 +56,16 @@ func TestGetContractAddressByName(t *testing.T) {
 func TestClient(t *testing.T) {
 	//Test IsConnected
 	isConnected := aelf.IsConnected()
-	assert.True(t, isConnected == true)
+	assert.True(t, isConnected)
 
-	//Test GetGenesisContractAddress
-	contractAddr, err := aelf.GetGenesisContractAddress()
-	assert.NoError(t, err)
-	spew.Dump("Get Genesis Contract Address Result", contractAddr)
+	wrongClient := client.AElfClient{
+		Host:       "http://127.0.0.1:8008",
+		Version:    "1.0",
+		PrivateKey: "680afd630d82ae5c97942c4141d60b8a9fedfa5b2864fca84072c17ee1f72d9d",
+	}
+
+	isConnected = wrongClient.IsConnected()
+	assert.False(t, isConnected)
 }
 
 func TestGetTransactionFee(t *testing.T) {

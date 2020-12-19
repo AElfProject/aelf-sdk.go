@@ -21,7 +21,7 @@ var ContractAddress, _ = aelf.GetGenesisContractAddress()
 func TestGetTransactionResult(t *testing.T) {
 	var isTransactions = true
 	height, err := aelf.GetBlockHeight()
-	block, err := aelf.GetBlockByHeight(int(height), isTransactions)
+	block, err := aelf.GetBlockByHeight(height, isTransactions)
 	assert.NoError(t, err)
 	transactionID := block.Body.Transactions[0]
 	transactionResult, err := aelf.GetTransactionResult(transactionID)
@@ -32,7 +32,7 @@ func TestGetTransactionResult(t *testing.T) {
 func TestGetTransactionResults(t *testing.T) {
 	var isTransactions = true
 	height, err := aelf.GetBlockHeight()
-	block, err := aelf.GetBlockByHeight(int(height), isTransactions)
+	block, err := aelf.GetBlockByHeight(height, isTransactions)
 	assert.NoError(t, err)
 	blockHash := block.BlockHash
 	transactionResults, err := aelf.GetTransactionResults(blockHash, 0, 10)
@@ -43,7 +43,7 @@ func TestGetTransactionResults(t *testing.T) {
 func TestGetMerklePathByTransactionID(t *testing.T) {
 	var isTransactions = true
 	height, err := aelf.GetBlockHeight()
-	block, err := aelf.GetBlockByHeight(int(height), isTransactions)
+	block, err := aelf.GetBlockByHeight(height, isTransactions)
 	assert.NoError(t, err)
 	transactionID := block.Body.Transactions[0]
 	merklePath, err := aelf.GetMerklePathByTransactionID(transactionID)
