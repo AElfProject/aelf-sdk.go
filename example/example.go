@@ -6,7 +6,8 @@ import (
 
 	"github.com/AElfProject/aelf-sdk.go/client"
 	"github.com/AElfProject/aelf-sdk.go/dto"
-	util "github.com/AElfProject/aelf-sdk.go/utils"
+	"github.com/AElfProject/aelf-sdk.go/utils"
+	"google.golang.org/protobuf/encoding/protojson"
 
 	secp256 "github.com/skycoin/skycoin/src/cipher/secp256k1-go"
 )
@@ -44,13 +45,17 @@ func DemoGetAddressFromPubKey() string {
 //DemoExecuteRawTransaction ExecuteRawTransaction demo.
 func DemoExecuteRawTransaction() (string, error) {
 	chainStatus, err := aelf.GetChainStatus()
+	params := &pb.Hash{
+		Value: utils.GetBytesSha256("AElf.ContractNames.Token"),
+	}
+	paramsByte, _ := protojson.Marshal(params)
 	var input = &dto.CreateRawTransactionInput{
 		From:           privatekeyAddress,
 		To:             contractAddress,
 		MethodName:     contractMethodName,
 		RefBlockNumber: chainStatus.BestChainHeight,
 		RefBlockHash:   chainStatus.BestChainHash,
-		Params:         util.ParamsToString("AElf.ContractNames.Consensus"),
+		Params:         string(paramsByte),
 	}
 	createRaw, err := aelf.CreateRawTransaction(input)
 	if err != nil {

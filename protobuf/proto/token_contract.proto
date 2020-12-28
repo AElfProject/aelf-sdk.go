@@ -1,5 +1,6 @@
 syntax = "proto3";
 
+import "options.proto";
 import "client.proto";
 
 package client;
@@ -133,4 +134,18 @@ message TransferInput {
     int64 amount = 3;
     // The memo.
     string memo = 4;
+}
+
+message Transferred {
+    option (client.is_event) = true;
+    // The source address of the transferred token.
+    client.Address from = 1 [(client.is_indexed) = true];
+    // The destination address of the transferred token.
+    client.Address to = 2 [(client.is_indexed) = true];
+    // The symbol of the transferred token.
+    string symbol = 3 [(client.is_indexed) = true];
+    // The amount of the transferred token.
+    int64 amount = 4;
+    // The memo.
+    string memo = 5;
 }
