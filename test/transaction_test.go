@@ -1,6 +1,7 @@
 package test
 
 import (
+	"encoding/base64"
 	"encoding/hex"
 	"strings"
 	"testing"
@@ -11,9 +12,9 @@ import (
 	pb "github.com/AElfProject/aelf-sdk.go/protobuf/generated"
 	"github.com/AElfProject/aelf-sdk.go/utils"
 	util "github.com/AElfProject/aelf-sdk.go/utils"
+	"github.com/davecgh/go-spew/spew"
 	"google.golang.org/protobuf/encoding/protojson"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/golang/protobuf/proto"
 	"github.com/stretchr/testify/assert"
 )
@@ -35,7 +36,7 @@ func TestGetTransactionResult(t *testing.T) {
 	assert.Equal(t, block.BlockHash, transactionResult.BlockHash)
 	assert.NotEmpty(t, transactionResult.Bloom)
 	assert.NotEmpty(t, transactionResult.Transaction)
-	spew.Dump("Get Transaction Result", transactionResult)
+	//spew.Dump("Get Transaction Result", transactionResult)
 }
 
 func TestGetTransactionResults(t *testing.T) {
@@ -52,7 +53,7 @@ func TestGetTransactionResults(t *testing.T) {
 		assert.NotEmpty(t, txResult.Bloom)
 		assert.NotEmpty(t, txResult.Transaction)
 	}
-	spew.Dump("Get Transaction Results", transactionResults)
+	//spew.Dump("Get Transaction Results", transactionResults)
 }
 
 func TestGetMerklePathByTransactionID(t *testing.T) {
@@ -63,7 +64,8 @@ func TestGetMerklePathByTransactionID(t *testing.T) {
 	transactionID := block.Body.Transactions[0]
 	merklePath, err := aelf.GetMerklePathByTransactionID(transactionID)
 	assert.NoError(t, err)
-	spew.Dump("Get Merkle Path By TransactionID Result", merklePath)
+	assert.NotEmpty(t, merklePath)
+	//spew.Dump("Get Merkle Path By TransactionID Result", merklePath)
 }
 
 func TestGetTransactionPoolStatus(t *testing.T) {
@@ -92,7 +94,7 @@ func TestCreateRawTransaction(t *testing.T) {
 	spew.Dump("Create RawTransaction result", result)
 }
 
-func TestSendRawTransaction(t *testing.T) {
+func TestSendRaßwTransaction(t *testing.T) {
 	chainStatus, err := aelf.GetChainStatus()
 	tokenContractAddress, _ := aelf.GetContractAddressByName("AElf.ContractNames.Token")
 	userKeyPairInfo := aelf.GenerateKeyPairInfo()
@@ -115,7 +117,7 @@ func TestSendRawTransaction(t *testing.T) {
 	}
 	createRaw, err := aelf.CreateRawTransaction(input)
 	assert.NoError(t, err)
-	spew.Dump("Create Raw Transaction result", createRaw)
+	//spew.Dump("Create Raw Transaction result", createRaw)
 	rawTransactionBytes, err := hex.DecodeString(createRaw.RawTransaction)
 	signature, _ := client.GetSignatureWithPrivateKey(aelf.PrivateKey, rawTransactionBytes)
 	var sendRawinput = &dto.SendRawTransactionInput{
@@ -123,9 +125,70 @@ func TestSendRawTransaction(t *testing.T) {
 		Signature:         signature,
 		ReturnTransaction: true,
 	}
-	executeRawresult, err := aelf.SendRawTransaction(sendRawinput)
+	executeRawResult, err := aelf.SendRawTransaction(sendRawinput)
 	assert.NoError(t, err)
-	spew.Dump("Send Raw Transaction result", executeRawresult)
+	//spew.Dump("Send Raw Transaction result", executeRawResult)
+	assert.NotEmpty(t, executeRawResult.TransactionId)
+	assert.Equal(t, _address, executeRawResult.Transaction.From)
+	assert.Equal(t, tokenContractAddress, executeRawResult.Transaction.To)
+	assert.Equal(t, chainStatus.BestChainHeight, executeRawResult.Transaction.RefBlockNumber)
+	prefixBytes, _ := hex.DecodeString(chainStatus.BestChainHash)
+	assert.Equal(t, base64.StdEncoding.EncodeToString(prefixBytes[:4]), executeRawResult.Transaction.RefBlockPrefix)
+	assert.Equal(t, "Transfer", executeRawResult.Transaction.MethodName)
+	assert.Equal(t, "{ \"to\": \""+userKeyPairInfo.Address+"\", \"symbol\": \"ELF\", \"amount\": \"1000000000\", \"memo\": \"transfer in test\" }", executeRawResult.Transaction.Params)
+	signatureBytes, _ := hex.DecodeString(signature)
+	assert.Equal(t, base64.StdEncoding.EncodeToString(signatureBytes), executeRawResult.Transaction.Signature)
+
+	time.Sleep(time.Duration(4) * time.Second)
+
+	balance := getBanlance(toAddress)
+	assert.Equal(t, "ELF", balance.Symbol)
+	assert.Equal(t, toAddress.Value, balance.Owner.Value)
+	assert.Equal(t, int64(1000000000), balance.Balance)
+}
+
+func TestSendRawTransactionWithoutReturnTransaction(t *testing.T) {
+	chainStatus, err := aelf.GetChainStatus()
+	tokenContractAddress, _ := aelf.GetContractAddressByName("AElf.ContractNames.Token")
+	userKeyPairInfo := aelf.GenerateKeyPairInfo()
+	toAddress, _ := util.Base58StringToAddress(userKeyPairInfo.Address)
+	params := &pb.TransferInput{
+		To:     toAddress,
+		Symbol: "ELF",
+		Amount: 1000000000,
+		Memo:   "transfer in test",
+	}
+
+	paramsByte, _ := protojson.Marshal(params)
+	var input = &dto.CreateRawTransactionInput{
+		From:           _address,
+		To:             tokenContractAddress,
+		MethodName:     "Transfer",
+		RefBlockNumber: chainStatus.BestChainHeight,
+		RefBlockHash:   chainStatus.BestChainHash,
+		Params:         string(paramsByte),
+	}
+	createRaw, err := aelf.CreateRawTransaction(input)
+	assert.NoError(t, err)
+	//spew.Dump("Create Raw Transaction result", createRaw)
+	rawTransactionBytes, err := hex.DecodeString(createRaw.RawTransaction)
+	signature, _ := client.GetSignatureWithPrivateKey(aelf.PrivateKey, rawTransactionBytes)
+	var sendRawinput = &dto.SendRawTransactionInput{
+		Transaction:       createRaw.RawTransaction,
+		Signature:         signature,
+		ReturnTransaction: false,
+	}
+	executeRawResult, err := aelf.SendRawTransaction(sendRawinput)
+	assert.NoError(t, err)
+	//spew.Dump("Send Raw Transaction result", executeRawResult)
+	assert.NotEmpty(t, executeRawResult.TransactionId)
+	assert.Empty(t, executeRawResult.Transaction.From)
+	assert.Empty(t, executeRawResult.Transaction.To)
+	assert.Equal(t, int64(0), executeRawResult.Transaction.RefBlockNumber)
+	assert.Empty(t, executeRawResult.Transaction.RefBlockPrefix)
+	assert.Empty(t, executeRawResult.Transaction.MethodName)
+	assert.Empty(t, executeRawResult.Transaction.Params)
+	assert.Empty(t, executeRawResult.Transaction.Signature)
 
 	time.Sleep(time.Duration(4) * time.Second)
 
@@ -153,7 +216,7 @@ func TestExecuteRawTransaction(t *testing.T) {
 		Owner:  toAddress,
 	}
 	paramsByte, _ := protojson.Marshal(getBalanceInput)
-	spew.Dump(paramsByte)
+	//spew.Dump(paramsByte)
 	var input = &dto.CreateRawTransactionInput{
 		From:           _address,
 		To:             tokenContractAddress,
@@ -164,7 +227,7 @@ func TestExecuteRawTransaction(t *testing.T) {
 	}
 	createRaw, err := aelf.CreateRawTransaction(input)
 	assert.NoError(t, err)
-	spew.Dump("Create Raw Transaction result", createRaw)
+	//spew.Dump("Create Raw Transaction result", createRaw)
 	rawTransactionBytes, err := hex.DecodeString(createRaw.RawTransaction)
 	signature, _ := client.GetSignatureWithPrivateKey(aelf.PrivateKey, rawTransactionBytes)
 	var executeRawinput = &dto.ExecuteRawTransactionDto{
@@ -194,7 +257,7 @@ func TestSendTransaction(t *testing.T) {
 	time.Sleep(time.Duration(4) * time.Second)
 
 	transactionResult, err := aelf.GetTransactionResult(sendResult.TransactionID)
-	spew.Dump("Create Raw Transaction result", transactionResult)
+	//spew.Dump("Create Raw Transaction result", transactionResult)
 	assert.NoError(t, err)
 	assert.Equal(t, sendResult.TransactionID, transactionResult.TransactionId)
 	assert.Equal(t, "MINED", transactionResult.Status)
