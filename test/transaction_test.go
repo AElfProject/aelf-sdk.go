@@ -94,7 +94,7 @@ func TestCreateRawTransaction(t *testing.T) {
 	spew.Dump("Create RawTransaction result", result)
 }
 
-func TestSendRaßwTransaction(t *testing.T) {
+func TestSendRawTransaction(t *testing.T) {
 	chainStatus, err := aelf.GetChainStatus()
 	tokenContractAddress, _ := aelf.GetContractAddressByName("AElf.ContractNames.Token")
 	userKeyPairInfo := aelf.GenerateKeyPairInfo()
