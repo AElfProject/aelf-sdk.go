@@ -58,13 +58,12 @@ func TestGetTransactionResults(t *testing.T) {
 
 func TestGetMerklePathByTransactionID(t *testing.T) {
 	var isTransactions = true
-	height, err := aelf.GetBlockHeight()
-	block, err := aelf.GetBlockByHeight(height, isTransactions)
+	block, err := aelf.GetBlockByHeight(1, isTransactions)
 	assert.NoError(t, err)
 	transactionID := block.Body.Transactions[0]
 	merklePath, err := aelf.GetMerklePathByTransactionID(transactionID)
 	assert.NoError(t, err)
-	assert.NotEmpty(t, merklePath)
+	assert.True(t, len(merklePath.MerklePathNodes) == 4)
 	//spew.Dump("Get Merkle Path By TransactionID Result", merklePath)
 }
 
