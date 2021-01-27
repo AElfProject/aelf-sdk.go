@@ -5,7 +5,6 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/binary"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"reflect"
@@ -24,6 +23,10 @@ func Base58StringToAddress(addr string) (*pb.Address, error) {
 	}
 	address.Value = addressBytes
 	return address, nil
+}
+
+func AddressToBase58String(address *pb.Address) string {
+	return EncodeCheck(address.Value)
 }
 
 //BytesToString  Bytes To String.
@@ -79,18 +82,6 @@ func DecodeCheck(input string) (result []byte, err error) {
 	payload := decoded[0 : len(decoded)-4]
 	result = append(result, payload...)
 	return
-}
-
-//ParamsToString Params To String like "AElf.ContractNames.Consensus".
-func ParamsToString(params string) string {
-	paramMap := map[string]interface{}{
-		"value": base64.StdEncoding.EncodeToString(GetBytesSha256(params)),
-	}
-	paramsBytes, err := json.Marshal(paramMap)
-	if err != nil {
-		fmt.Println("json Marshal error")
-	}
-	return string(paramsBytes)
 }
 
 //GetAddressByBytes  sha256 twice Bytes to get address.
