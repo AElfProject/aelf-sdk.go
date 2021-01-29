@@ -15,8 +15,8 @@ message TransactionSizeFeeSymbols
 message TransactionSizeFeeSymbol
 {
     string token_symbol = 1;
-    sint32 base_token_weight = 2;
-    sint32 added_token_weight = 3;
+    int32 base_token_weight = 2;
+    int32 added_token_weight = 3;
 }
 
 // Events
@@ -24,19 +24,19 @@ message TransactionSizeFeeSymbol
 message TransactionFeeCharged {
     option (client.is_event) = true;
     string symbol = 1;
-    sint64 amount = 2;
+    int64 amount = 2;
 }
 
 message ResourceTokenCharged {
     option (client.is_event) = true;
     string symbol = 1;
-    sint64 amount = 2;
+    int64 amount = 2;
     Address contract_address = 3;
 }
 
 message ResourceTokenOwned {
     option (client.is_event) = true;
     string symbol = 1;
-    sint64 amount = 2;
+    int64 amount = 2;
     Address contract_address = 3;
 }
