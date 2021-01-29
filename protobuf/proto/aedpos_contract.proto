@@ -9,8 +9,8 @@ message MinerList {
 }
 
 message PubkeyList {
-    // Candidates’ public keys
-    repeated bytes value = 1;
+    // The miners public key list.
+    repeated string pubkeys = 1;
 }
 
 message MinerListWithRoundNumber {

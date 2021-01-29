@@ -6,16 +6,21 @@ package client;
 
 // association_auth_contract
 message AssociationOrganization{
-    // Indicates if proposals need authority to be created.
-    bool proposer_authority_required = 1;
-    // The organization address.
-    client.Address organization_address = 2;
-    // The organization id.
-    client.Hash organization_hash = 3;
+    // The organization members.
+    OrganizationMemberList organization_member_list = 1;
     // The threshold for releasing the proposal.
-    client.ProposalReleaseThreshold proposal_release_threshold = 4;
-    // Indicates if parliament member can propose to this organization.
-    bool parliament_member_proposing_allowed = 5;
+    client.ProposalReleaseThreshold proposal_release_threshold = 2;
+    // The proposer whitelist.
+    client.ProposerWhiteList proposer_white_list = 3;
+    // The address of organization.
+    client.Address organization_address = 4;
+    // The organizations id.
+    client.Hash organization_hash = 5;
     // The creation token is for organization address generation.
     client.Hash creation_token = 6;
+}
+
+message OrganizationMemberList {
+    // The address of organization members.
+    repeated client.Address organization_members = 1;
 }
