@@ -3,12 +3,12 @@ syntax = "proto3";
 package client;
 
 //treasury_contract
-message TreGetWelfareRewardAmountSampleInput {
+message GetWelfareRewardAmountSampleInput {
     // Token lock time.
     repeated int64 value = 1;
 }
 
-message TreGetWelfareRewardAmountSampleOutput {
+message GetWelfareRewardAmountSampleOutput {
     // The weight calculated.
     repeated int64 value = 1;
 }

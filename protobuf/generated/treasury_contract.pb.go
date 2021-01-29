@@ -21,7 +21,7 @@ const (
 )
 
 //treasury_contract
-type TreGetWelfareRewardAmountSampleInput struct {
+type GetWelfareRewardAmountSampleInput struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -30,8 +30,8 @@ type TreGetWelfareRewardAmountSampleInput struct {
 	Value []int64 `protobuf:"varint,1,rep,packed,name=value,proto3" json:"value,omitempty"`
 }
 
-func (x *TreGetWelfareRewardAmountSampleInput) Reset() {
-	*x = TreGetWelfareRewardAmountSampleInput{}
+func (x *GetWelfareRewardAmountSampleInput) Reset() {
+	*x = GetWelfareRewardAmountSampleInput{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_treasury_contract_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -39,13 +39,13 @@ func (x *TreGetWelfareRewardAmountSampleInput) Reset() {
 	}
 }
 
-func (x *TreGetWelfareRewardAmountSampleInput) String() string {
+func (x *GetWelfareRewardAmountSampleInput) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*TreGetWelfareRewardAmountSampleInput) ProtoMessage() {}
+func (*GetWelfareRewardAmountSampleInput) ProtoMessage() {}
 
-func (x *TreGetWelfareRewardAmountSampleInput) ProtoReflect() protoreflect.Message {
+func (x *GetWelfareRewardAmountSampleInput) ProtoReflect() protoreflect.Message {
 	mi := &file_treasury_contract_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -57,19 +57,19 @@ func (x *TreGetWelfareRewardAmountSampleInput) ProtoReflect() protoreflect.Messa
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use TreGetWelfareRewardAmountSampleInput.ProtoReflect.Descriptor instead.
-func (*TreGetWelfareRewardAmountSampleInput) Descriptor() ([]byte, []int) {
+// Deprecated: Use GetWelfareRewardAmountSampleInput.ProtoReflect.Descriptor instead.
+func (*GetWelfareRewardAmountSampleInput) Descriptor() ([]byte, []int) {
 	return file_treasury_contract_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *TreGetWelfareRewardAmountSampleInput) GetValue() []int64 {
+func (x *GetWelfareRewardAmountSampleInput) GetValue() []int64 {
 	if x != nil {
 		return x.Value
 	}
 	return nil
 }
 
-type TreGetWelfareRewardAmountSampleOutput struct {
+type GetWelfareRewardAmountSampleOutput struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -78,8 +78,8 @@ type TreGetWelfareRewardAmountSampleOutput struct {
 	Value []int64 `protobuf:"varint,1,rep,packed,name=value,proto3" json:"value,omitempty"`
 }
 
-func (x *TreGetWelfareRewardAmountSampleOutput) Reset() {
-	*x = TreGetWelfareRewardAmountSampleOutput{}
+func (x *GetWelfareRewardAmountSampleOutput) Reset() {
+	*x = GetWelfareRewardAmountSampleOutput{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_treasury_contract_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -87,13 +87,13 @@ func (x *TreGetWelfareRewardAmountSampleOutput) Reset() {
 	}
 }
 
-func (x *TreGetWelfareRewardAmountSampleOutput) String() string {
+func (x *GetWelfareRewardAmountSampleOutput) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*TreGetWelfareRewardAmountSampleOutput) ProtoMessage() {}
+func (*GetWelfareRewardAmountSampleOutput) ProtoMessage() {}
 
-func (x *TreGetWelfareRewardAmountSampleOutput) ProtoReflect() protoreflect.Message {
+func (x *GetWelfareRewardAmountSampleOutput) ProtoReflect() protoreflect.Message {
 	mi := &file_treasury_contract_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -105,12 +105,12 @@ func (x *TreGetWelfareRewardAmountSampleOutput) ProtoReflect() protoreflect.Mess
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use TreGetWelfareRewardAmountSampleOutput.ProtoReflect.Descriptor instead.
-func (*TreGetWelfareRewardAmountSampleOutput) Descriptor() ([]byte, []int) {
+// Deprecated: Use GetWelfareRewardAmountSampleOutput.ProtoReflect.Descriptor instead.
+func (*GetWelfareRewardAmountSampleOutput) Descriptor() ([]byte, []int) {
 	return file_treasury_contract_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *TreGetWelfareRewardAmountSampleOutput) GetValue() []int64 {
+func (x *GetWelfareRewardAmountSampleOutput) GetValue() []int64 {
 	if x != nil {
 		return x.Value
 	}
@@ -122,15 +122,14 @@ var File_treasury_contract_proto protoreflect.FileDescriptor
 var file_treasury_contract_proto_rawDesc = []byte{
 	0x0a, 0x17, 0x74, 0x72, 0x65, 0x61, 0x73, 0x75, 0x72, 0x79, 0x5f, 0x63, 0x6f, 0x6e, 0x74, 0x72,
 	0x61, 0x63, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x06, 0x63, 0x6c, 0x69, 0x65, 0x6e,
-	0x74, 0x22, 0x3c, 0x0a, 0x24, 0x54, 0x72, 0x65, 0x47, 0x65, 0x74, 0x57, 0x65, 0x6c, 0x66, 0x61,
-	0x72, 0x65, 0x52, 0x65, 0x77, 0x61, 0x72, 0x64, 0x41, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x53, 0x61,
-	0x6d, 0x70, 0x6c, 0x65, 0x49, 0x6e, 0x70, 0x75, 0x74, 0x12, 0x14, 0x0a, 0x05, 0x76, 0x61, 0x6c,
-	0x75, 0x65, 0x18, 0x01, 0x20, 0x03, 0x28, 0x03, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x22,
-	0x3d, 0x0a, 0x25, 0x54, 0x72, 0x65, 0x47, 0x65, 0x74, 0x57, 0x65, 0x6c, 0x66, 0x61, 0x72, 0x65,
-	0x52, 0x65, 0x77, 0x61, 0x72, 0x64, 0x41, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x53, 0x61, 0x6d, 0x70,
-	0x6c, 0x65, 0x4f, 0x75, 0x74, 0x70, 0x75, 0x74, 0x12, 0x14, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75,
-	0x65, 0x18, 0x01, 0x20, 0x03, 0x28, 0x03, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x62, 0x06,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x74, 0x22, 0x39, 0x0a, 0x21, 0x47, 0x65, 0x74, 0x57, 0x65, 0x6c, 0x66, 0x61, 0x72, 0x65, 0x52,
+	0x65, 0x77, 0x61, 0x72, 0x64, 0x41, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x53, 0x61, 0x6d, 0x70, 0x6c,
+	0x65, 0x49, 0x6e, 0x70, 0x75, 0x74, 0x12, 0x14, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18,
+	0x01, 0x20, 0x03, 0x28, 0x03, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x22, 0x3a, 0x0a, 0x22,
+	0x47, 0x65, 0x74, 0x57, 0x65, 0x6c, 0x66, 0x61, 0x72, 0x65, 0x52, 0x65, 0x77, 0x61, 0x72, 0x64,
+	0x41, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x53, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x4f, 0x75, 0x74, 0x70,
+	0x75, 0x74, 0x12, 0x14, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x01, 0x20, 0x03, 0x28,
+	0x03, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -147,8 +146,8 @@ func file_treasury_contract_proto_rawDescGZIP() []byte {
 
 var file_treasury_contract_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_treasury_contract_proto_goTypes = []interface{}{
-	(*TreGetWelfareRewardAmountSampleInput)(nil),  // 0: client.TreGetWelfareRewardAmountSampleInput
-	(*TreGetWelfareRewardAmountSampleOutput)(nil), // 1: client.TreGetWelfareRewardAmountSampleOutput
+	(*GetWelfareRewardAmountSampleInput)(nil),  // 0: client.GetWelfareRewardAmountSampleInput
+	(*GetWelfareRewardAmountSampleOutput)(nil), // 1: client.GetWelfareRewardAmountSampleOutput
 }
 var file_treasury_contract_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type
@@ -165,7 +164,7 @@ func file_treasury_contract_proto_init() {
 	}
 	if !protoimpl.UnsafeEnabled {
 		file_treasury_contract_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*TreGetWelfareRewardAmountSampleInput); i {
+			switch v := v.(*GetWelfareRewardAmountSampleInput); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -177,7 +176,7 @@ func file_treasury_contract_proto_init() {
 			}
 		}
 		file_treasury_contract_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*TreGetWelfareRewardAmountSampleOutput); i {
+			switch v := v.(*GetWelfareRewardAmountSampleOutput); i {
 			case 0:
 				return &v.state
 			case 1:

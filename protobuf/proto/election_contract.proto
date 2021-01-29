@@ -112,16 +112,6 @@ message CandidateVote {
     bytes pubkey = 7;
 }
 
-message EleGetWelfareRewardAmountSampleInput {
-    // Token lock time.
-    repeated int64 value = 1;
-}
-
-message EleGetWelfareRewardAmountSampleOutput {
-    // The weight calculated.
-    repeated int64 value = 1;
-}
-
 message PageInformation {
     // The start index.
     int32 start = 1;
@@ -144,5 +134,4 @@ message GetPageableCandidateInformationOutput {
 message DataCenterRankingList {
     // The top n * 5 candidates with vote amount, candidate public key -> vote amount.
     map<string, int64> data_centers = 1;
-    int64 minimum_votes = 2;
 }

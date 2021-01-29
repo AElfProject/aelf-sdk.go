@@ -47,12 +47,20 @@ message SmartContractRegistration {
 }
 
 message Transaction {
+    // The address of the sender of the transaction.
     Address from = 1;
+    // The address of the contract when calling a contract.
     Address to = 2;
-    int64 refBlockNumber = 3;
-    bytes refBlockPrefix = 4;
-    string methodName = 5;
+    // The height of the referenced block hash.
+    int64 ref_block_number = 3;
+    // The first four bytes of the referenced block hash.
+    bytes ref_block_prefix = 4;
+    // The name of a method in the smart contract at the To address.
+    string method_name = 5;
+    // The parameters to pass to the smart contract method.
     bytes params = 6;
+    // When signing a transaction it’s actually a subset of the fields: from/to and the target method as well as 
+    // the parameter that were given. It also contains the reference block number and prefix.
     bytes signature = 10000;
 }
 
@@ -84,12 +92,10 @@ message MethodFees {
 }
 
 message MethodFee {
-    // The name of the method to be charged.
-    string method_name = 1;
-    // List of fees to be charged.
-    repeated MethodFee fees = 2;
-    // Optional based on the implementation of SetMethodFee method.
-    bool is_size_fee_free = 3;
+    // The token symbol of the method fee.
+    string symbol = 1;
+    // The amount of fees to be charged.
+    int64 basic_fee = 2;
 }
 
 //acs2

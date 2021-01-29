@@ -703,102 +703,6 @@ func (x *CandidateVote) GetPubkey() []byte {
 	return nil
 }
 
-type EleGetWelfareRewardAmountSampleInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	// Token lock time.
-	Value []int64 `protobuf:"varint,1,rep,packed,name=value,proto3" json:"value,omitempty"`
-}
-
-func (x *EleGetWelfareRewardAmountSampleInput) Reset() {
-	*x = EleGetWelfareRewardAmountSampleInput{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_election_contract_proto_msgTypes[8]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *EleGetWelfareRewardAmountSampleInput) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*EleGetWelfareRewardAmountSampleInput) ProtoMessage() {}
-
-func (x *EleGetWelfareRewardAmountSampleInput) ProtoReflect() protoreflect.Message {
-	mi := &file_election_contract_proto_msgTypes[8]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use EleGetWelfareRewardAmountSampleInput.ProtoReflect.Descriptor instead.
-func (*EleGetWelfareRewardAmountSampleInput) Descriptor() ([]byte, []int) {
-	return file_election_contract_proto_rawDescGZIP(), []int{8}
-}
-
-func (x *EleGetWelfareRewardAmountSampleInput) GetValue() []int64 {
-	if x != nil {
-		return x.Value
-	}
-	return nil
-}
-
-type EleGetWelfareRewardAmountSampleOutput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	// The weight calculated.
-	Value []int64 `protobuf:"varint,1,rep,packed,name=value,proto3" json:"value,omitempty"`
-}
-
-func (x *EleGetWelfareRewardAmountSampleOutput) Reset() {
-	*x = EleGetWelfareRewardAmountSampleOutput{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_election_contract_proto_msgTypes[9]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *EleGetWelfareRewardAmountSampleOutput) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*EleGetWelfareRewardAmountSampleOutput) ProtoMessage() {}
-
-func (x *EleGetWelfareRewardAmountSampleOutput) ProtoReflect() protoreflect.Message {
-	mi := &file_election_contract_proto_msgTypes[9]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use EleGetWelfareRewardAmountSampleOutput.ProtoReflect.Descriptor instead.
-func (*EleGetWelfareRewardAmountSampleOutput) Descriptor() ([]byte, []int) {
-	return file_election_contract_proto_rawDescGZIP(), []int{9}
-}
-
-func (x *EleGetWelfareRewardAmountSampleOutput) GetValue() []int64 {
-	if x != nil {
-		return x.Value
-	}
-	return nil
-}
-
 type PageInformation struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -813,7 +717,7 @@ type PageInformation struct {
 func (x *PageInformation) Reset() {
 	*x = PageInformation{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_election_contract_proto_msgTypes[10]
+		mi := &file_election_contract_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -826,7 +730,7 @@ func (x *PageInformation) String() string {
 func (*PageInformation) ProtoMessage() {}
 
 func (x *PageInformation) ProtoReflect() protoreflect.Message {
-	mi := &file_election_contract_proto_msgTypes[10]
+	mi := &file_election_contract_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -839,7 +743,7 @@ func (x *PageInformation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PageInformation.ProtoReflect.Descriptor instead.
 func (*PageInformation) Descriptor() ([]byte, []int) {
-	return file_election_contract_proto_rawDescGZIP(), []int{10}
+	return file_election_contract_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *PageInformation) GetStart() int32 {
@@ -870,7 +774,7 @@ type CandidateDetail struct {
 func (x *CandidateDetail) Reset() {
 	*x = CandidateDetail{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_election_contract_proto_msgTypes[11]
+		mi := &file_election_contract_proto_msgTypes[9]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -883,7 +787,7 @@ func (x *CandidateDetail) String() string {
 func (*CandidateDetail) ProtoMessage() {}
 
 func (x *CandidateDetail) ProtoReflect() protoreflect.Message {
-	mi := &file_election_contract_proto_msgTypes[11]
+	mi := &file_election_contract_proto_msgTypes[9]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -896,7 +800,7 @@ func (x *CandidateDetail) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CandidateDetail.ProtoReflect.Descriptor instead.
 func (*CandidateDetail) Descriptor() ([]byte, []int) {
-	return file_election_contract_proto_rawDescGZIP(), []int{11}
+	return file_election_contract_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *CandidateDetail) GetCandidateInformation() *CandidateInformation {
@@ -925,7 +829,7 @@ type GetPageableCandidateInformationOutput struct {
 func (x *GetPageableCandidateInformationOutput) Reset() {
 	*x = GetPageableCandidateInformationOutput{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_election_contract_proto_msgTypes[12]
+		mi := &file_election_contract_proto_msgTypes[10]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -938,7 +842,7 @@ func (x *GetPageableCandidateInformationOutput) String() string {
 func (*GetPageableCandidateInformationOutput) ProtoMessage() {}
 
 func (x *GetPageableCandidateInformationOutput) ProtoReflect() protoreflect.Message {
-	mi := &file_election_contract_proto_msgTypes[12]
+	mi := &file_election_contract_proto_msgTypes[10]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -951,7 +855,7 @@ func (x *GetPageableCandidateInformationOutput) ProtoReflect() protoreflect.Mess
 
 // Deprecated: Use GetPageableCandidateInformationOutput.ProtoReflect.Descriptor instead.
 func (*GetPageableCandidateInformationOutput) Descriptor() ([]byte, []int) {
-	return file_election_contract_proto_rawDescGZIP(), []int{12}
+	return file_election_contract_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *GetPageableCandidateInformationOutput) GetValue() []*CandidateDetail {
@@ -967,14 +871,13 @@ type DataCenterRankingList struct {
 	unknownFields protoimpl.UnknownFields
 
 	// The top n * 5 candidates with vote amount, candidate public key -> vote amount.
-	DataCenters  map[string]int64 `protobuf:"bytes,1,rep,name=data_centers,json=dataCenters,proto3" json:"data_centers,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"varint,2,opt,name=value,proto3"`
-	MinimumVotes int64            `protobuf:"varint,2,opt,name=minimum_votes,json=minimumVotes,proto3" json:"minimum_votes,omitempty"`
+	DataCenters map[string]int64 `protobuf:"bytes,1,rep,name=data_centers,json=dataCenters,proto3" json:"data_centers,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"varint,2,opt,name=value,proto3"`
 }
 
 func (x *DataCenterRankingList) Reset() {
 	*x = DataCenterRankingList{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_election_contract_proto_msgTypes[13]
+		mi := &file_election_contract_proto_msgTypes[11]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -987,7 +890,7 @@ func (x *DataCenterRankingList) String() string {
 func (*DataCenterRankingList) ProtoMessage() {}
 
 func (x *DataCenterRankingList) ProtoReflect() protoreflect.Message {
-	mi := &file_election_contract_proto_msgTypes[13]
+	mi := &file_election_contract_proto_msgTypes[11]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1000,7 +903,7 @@ func (x *DataCenterRankingList) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DataCenterRankingList.ProtoReflect.Descriptor instead.
 func (*DataCenterRankingList) Descriptor() ([]byte, []int) {
-	return file_election_contract_proto_rawDescGZIP(), []int{13}
+	return file_election_contract_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *DataCenterRankingList) GetDataCenters() map[string]int64 {
@@ -1008,13 +911,6 @@ func (x *DataCenterRankingList) GetDataCenters() map[string]int64 {
 		return x.DataCenters
 	}
 	return nil
-}
-
-func (x *DataCenterRankingList) GetMinimumVotes() int64 {
-	if x != nil {
-		return x.MinimumVotes
-	}
-	return 0
 }
 
 var File_election_contract_proto protoreflect.FileDescriptor
@@ -1180,47 +1076,37 @@ var file_election_contract_proto_rawDesc = []byte{
 	0x6f, 0x62, 0x74, 0x61, 0x69, 0x6e, 0x65, 0x64, 0x57, 0x69, 0x74, 0x68, 0x64, 0x72, 0x61, 0x77,
 	0x6e, 0x56, 0x6f, 0x74, 0x65, 0x73, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x73, 0x12, 0x16, 0x0a,
 	0x06, 0x70, 0x75, 0x62, 0x6b, 0x65, 0x79, 0x18, 0x07, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x06, 0x70,
-	0x75, 0x62, 0x6b, 0x65, 0x79, 0x22, 0x3c, 0x0a, 0x24, 0x45, 0x6c, 0x65, 0x47, 0x65, 0x74, 0x57,
-	0x65, 0x6c, 0x66, 0x61, 0x72, 0x65, 0x52, 0x65, 0x77, 0x61, 0x72, 0x64, 0x41, 0x6d, 0x6f, 0x75,
-	0x6e, 0x74, 0x53, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x49, 0x6e, 0x70, 0x75, 0x74, 0x12, 0x14, 0x0a,
-	0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x01, 0x20, 0x03, 0x28, 0x03, 0x52, 0x05, 0x76, 0x61,
-	0x6c, 0x75, 0x65, 0x22, 0x3d, 0x0a, 0x25, 0x45, 0x6c, 0x65, 0x47, 0x65, 0x74, 0x57, 0x65, 0x6c,
-	0x66, 0x61, 0x72, 0x65, 0x52, 0x65, 0x77, 0x61, 0x72, 0x64, 0x41, 0x6d, 0x6f, 0x75, 0x6e, 0x74,
-	0x53, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x4f, 0x75, 0x74, 0x70, 0x75, 0x74, 0x12, 0x14, 0x0a, 0x05,
-	0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x01, 0x20, 0x03, 0x28, 0x03, 0x52, 0x05, 0x76, 0x61, 0x6c,
-	0x75, 0x65, 0x22, 0x3f, 0x0a, 0x0f, 0x50, 0x61, 0x67, 0x65, 0x49, 0x6e, 0x66, 0x6f, 0x72, 0x6d,
-	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x14, 0x0a, 0x05, 0x73, 0x74, 0x61, 0x72, 0x74, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x05, 0x52, 0x05, 0x73, 0x74, 0x61, 0x72, 0x74, 0x12, 0x16, 0x0a, 0x06, 0x6c,
-	0x65, 0x6e, 0x67, 0x74, 0x68, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x06, 0x6c, 0x65, 0x6e,
-	0x67, 0x74, 0x68, 0x22, 0x98, 0x01, 0x0a, 0x0f, 0x43, 0x61, 0x6e, 0x64, 0x69, 0x64, 0x61, 0x74,
-	0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x51, 0x0a, 0x15, 0x63, 0x61, 0x6e, 0x64, 0x69,
-	0x64, 0x61, 0x74, 0x65, 0x5f, 0x69, 0x6e, 0x66, 0x6f, 0x72, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1c, 0x2e, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x2e,
+	0x75, 0x62, 0x6b, 0x65, 0x79, 0x22, 0x3f, 0x0a, 0x0f, 0x50, 0x61, 0x67, 0x65, 0x49, 0x6e, 0x66,
+	0x6f, 0x72, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x14, 0x0a, 0x05, 0x73, 0x74, 0x61, 0x72,
+	0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x05, 0x73, 0x74, 0x61, 0x72, 0x74, 0x12, 0x16,
+	0x0a, 0x06, 0x6c, 0x65, 0x6e, 0x67, 0x74, 0x68, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x06,
+	0x6c, 0x65, 0x6e, 0x67, 0x74, 0x68, 0x22, 0x98, 0x01, 0x0a, 0x0f, 0x43, 0x61, 0x6e, 0x64, 0x69,
+	0x64, 0x61, 0x74, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x51, 0x0a, 0x15, 0x63, 0x61,
+	0x6e, 0x64, 0x69, 0x64, 0x61, 0x74, 0x65, 0x5f, 0x69, 0x6e, 0x66, 0x6f, 0x72, 0x6d, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1c, 0x2e, 0x63, 0x6c, 0x69, 0x65,
+	0x6e, 0x74, 0x2e, 0x43, 0x61, 0x6e, 0x64, 0x69, 0x64, 0x61, 0x74, 0x65, 0x49, 0x6e, 0x66, 0x6f,
+	0x72, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x14, 0x63, 0x61, 0x6e, 0x64, 0x69, 0x64, 0x61,
+	0x74, 0x65, 0x49, 0x6e, 0x66, 0x6f, 0x72, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x32, 0x0a,
+	0x15, 0x6f, 0x62, 0x74, 0x61, 0x69, 0x6e, 0x65, 0x64, 0x5f, 0x76, 0x6f, 0x74, 0x65, 0x73, 0x5f,
+	0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x03, 0x52, 0x13, 0x6f, 0x62,
+	0x74, 0x61, 0x69, 0x6e, 0x65, 0x64, 0x56, 0x6f, 0x74, 0x65, 0x73, 0x41, 0x6d, 0x6f, 0x75, 0x6e,
+	0x74, 0x22, 0x56, 0x0a, 0x25, 0x47, 0x65, 0x74, 0x50, 0x61, 0x67, 0x65, 0x61, 0x62, 0x6c, 0x65,
 	0x43, 0x61, 0x6e, 0x64, 0x69, 0x64, 0x61, 0x74, 0x65, 0x49, 0x6e, 0x66, 0x6f, 0x72, 0x6d, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x52, 0x14, 0x63, 0x61, 0x6e, 0x64, 0x69, 0x64, 0x61, 0x74, 0x65, 0x49,
-	0x6e, 0x66, 0x6f, 0x72, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x32, 0x0a, 0x15, 0x6f, 0x62,
-	0x74, 0x61, 0x69, 0x6e, 0x65, 0x64, 0x5f, 0x76, 0x6f, 0x74, 0x65, 0x73, 0x5f, 0x61, 0x6d, 0x6f,
-	0x75, 0x6e, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x03, 0x52, 0x13, 0x6f, 0x62, 0x74, 0x61, 0x69,
-	0x6e, 0x65, 0x64, 0x56, 0x6f, 0x74, 0x65, 0x73, 0x41, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x22, 0x56,
-	0x0a, 0x25, 0x47, 0x65, 0x74, 0x50, 0x61, 0x67, 0x65, 0x61, 0x62, 0x6c, 0x65, 0x43, 0x61, 0x6e,
-	0x64, 0x69, 0x64, 0x61, 0x74, 0x65, 0x49, 0x6e, 0x66, 0x6f, 0x72, 0x6d, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x4f, 0x75, 0x74, 0x70, 0x75, 0x74, 0x12, 0x2d, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65,
-	0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x2e,
-	0x43, 0x61, 0x6e, 0x64, 0x69, 0x64, 0x61, 0x74, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x52,
-	0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x22, 0xcf, 0x01, 0x0a, 0x15, 0x44, 0x61, 0x74, 0x61, 0x43,
-	0x65, 0x6e, 0x74, 0x65, 0x72, 0x52, 0x61, 0x6e, 0x6b, 0x69, 0x6e, 0x67, 0x4c, 0x69, 0x73, 0x74,
-	0x12, 0x51, 0x0a, 0x0c, 0x64, 0x61, 0x74, 0x61, 0x5f, 0x63, 0x65, 0x6e, 0x74, 0x65, 0x72, 0x73,
-	0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x2e, 0x2e, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x2e,
-	0x44, 0x61, 0x74, 0x61, 0x43, 0x65, 0x6e, 0x74, 0x65, 0x72, 0x52, 0x61, 0x6e, 0x6b, 0x69, 0x6e,
-	0x67, 0x4c, 0x69, 0x73, 0x74, 0x2e, 0x44, 0x61, 0x74, 0x61, 0x43, 0x65, 0x6e, 0x74, 0x65, 0x72,
-	0x73, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x52, 0x0b, 0x64, 0x61, 0x74, 0x61, 0x43, 0x65, 0x6e, 0x74,
-	0x65, 0x72, 0x73, 0x12, 0x23, 0x0a, 0x0d, 0x6d, 0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d, 0x5f, 0x76,
-	0x6f, 0x74, 0x65, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0c, 0x6d, 0x69, 0x6e, 0x69,
-	0x6d, 0x75, 0x6d, 0x56, 0x6f, 0x74, 0x65, 0x73, 0x1a, 0x3e, 0x0a, 0x10, 0x44, 0x61, 0x74, 0x61,
-	0x43, 0x65, 0x6e, 0x74, 0x65, 0x72, 0x73, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x12, 0x10, 0x0a, 0x03,
-	0x6b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x6b, 0x65, 0x79, 0x12, 0x14,
-	0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x03, 0x52, 0x05, 0x76,
-	0x61, 0x6c, 0x75, 0x65, 0x3a, 0x02, 0x38, 0x01, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x74, 0x69, 0x6f, 0x6e, 0x4f, 0x75, 0x74, 0x70, 0x75, 0x74, 0x12, 0x2d, 0x0a, 0x05, 0x76, 0x61,
+	0x6c, 0x75, 0x65, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x63, 0x6c, 0x69, 0x65,
+	0x6e, 0x74, 0x2e, 0x43, 0x61, 0x6e, 0x64, 0x69, 0x64, 0x61, 0x74, 0x65, 0x44, 0x65, 0x74, 0x61,
+	0x69, 0x6c, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x22, 0xaa, 0x01, 0x0a, 0x15, 0x44, 0x61,
+	0x74, 0x61, 0x43, 0x65, 0x6e, 0x74, 0x65, 0x72, 0x52, 0x61, 0x6e, 0x6b, 0x69, 0x6e, 0x67, 0x4c,
+	0x69, 0x73, 0x74, 0x12, 0x51, 0x0a, 0x0c, 0x64, 0x61, 0x74, 0x61, 0x5f, 0x63, 0x65, 0x6e, 0x74,
+	0x65, 0x72, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x2e, 0x2e, 0x63, 0x6c, 0x69, 0x65,
+	0x6e, 0x74, 0x2e, 0x44, 0x61, 0x74, 0x61, 0x43, 0x65, 0x6e, 0x74, 0x65, 0x72, 0x52, 0x61, 0x6e,
+	0x6b, 0x69, 0x6e, 0x67, 0x4c, 0x69, 0x73, 0x74, 0x2e, 0x44, 0x61, 0x74, 0x61, 0x43, 0x65, 0x6e,
+	0x74, 0x65, 0x72, 0x73, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x52, 0x0b, 0x64, 0x61, 0x74, 0x61, 0x43,
+	0x65, 0x6e, 0x74, 0x65, 0x72, 0x73, 0x1a, 0x3e, 0x0a, 0x10, 0x44, 0x61, 0x74, 0x61, 0x43, 0x65,
+	0x6e, 0x74, 0x65, 0x72, 0x73, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x12, 0x10, 0x0a, 0x03, 0x6b, 0x65,
+	0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x6b, 0x65, 0x79, 0x12, 0x14, 0x0a, 0x05,
+	0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x03, 0x52, 0x05, 0x76, 0x61, 0x6c,
+	0x75, 0x65, 0x3a, 0x02, 0x38, 0x01, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -1235,7 +1121,7 @@ func file_election_contract_proto_rawDescGZIP() []byte {
 	return file_election_contract_proto_rawDescData
 }
 
-var file_election_contract_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
+var file_election_contract_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
 var file_election_contract_proto_goTypes = []interface{}{
 	(*CandidateInformation)(nil),                  // 0: client.CandidateInformation
 	(*GetTermSnapshotInput)(nil),                  // 1: client.GetTermSnapshotInput
@@ -1245,39 +1131,37 @@ var file_election_contract_proto_goTypes = []interface{}{
 	(*ElectorVote)(nil),                           // 5: client.ElectorVote
 	(*ElectionVotingRecord)(nil),                  // 6: client.ElectionVotingRecord
 	(*CandidateVote)(nil),                         // 7: client.CandidateVote
-	(*EleGetWelfareRewardAmountSampleInput)(nil),  // 8: client.EleGetWelfareRewardAmountSampleInput
-	(*EleGetWelfareRewardAmountSampleOutput)(nil), // 9: client.EleGetWelfareRewardAmountSampleOutput
-	(*PageInformation)(nil),                       // 10: client.PageInformation
-	(*CandidateDetail)(nil),                       // 11: client.CandidateDetail
-	(*GetPageableCandidateInformationOutput)(nil), // 12: client.GetPageableCandidateInformationOutput
-	(*DataCenterRankingList)(nil),                 // 13: client.DataCenterRankingList
-	nil,                                           // 14: client.TermSnapshot.ElectionResultEntry
-	nil,                                           // 15: client.ElectionResult.ResultsEntry
-	nil,                                           // 16: client.DataCenterRankingList.DataCentersEntry
-	(*Hash)(nil),                                  // 17: client.Hash
-	(*Address)(nil),                               // 18: client.Address
-	(*timestamp.Timestamp)(nil),                   // 19: google.protobuf.Timestamp
+	(*PageInformation)(nil),                       // 8: client.PageInformation
+	(*CandidateDetail)(nil),                       // 9: client.CandidateDetail
+	(*GetPageableCandidateInformationOutput)(nil), // 10: client.GetPageableCandidateInformationOutput
+	(*DataCenterRankingList)(nil),                 // 11: client.DataCenterRankingList
+	nil,                                           // 12: client.TermSnapshot.ElectionResultEntry
+	nil,                                           // 13: client.ElectionResult.ResultsEntry
+	nil,                                           // 14: client.DataCenterRankingList.DataCentersEntry
+	(*Hash)(nil),                                  // 15: client.Hash
+	(*Address)(nil),                               // 16: client.Address
+	(*timestamp.Timestamp)(nil),                   // 17: google.protobuf.Timestamp
 }
 var file_election_contract_proto_depIdxs = []int32{
-	17, // 0: client.CandidateInformation.announcement_transaction_id:type_name -> client.Hash
-	14, // 1: client.TermSnapshot.election_result:type_name -> client.TermSnapshot.ElectionResultEntry
-	15, // 2: client.ElectionResult.results:type_name -> client.ElectionResult.ResultsEntry
-	17, // 3: client.ElectorVote.active_voting_record_ids:type_name -> client.Hash
-	17, // 4: client.ElectorVote.withdrawn_voting_record_ids:type_name -> client.Hash
+	15, // 0: client.CandidateInformation.announcement_transaction_id:type_name -> client.Hash
+	12, // 1: client.TermSnapshot.election_result:type_name -> client.TermSnapshot.ElectionResultEntry
+	13, // 2: client.ElectionResult.results:type_name -> client.ElectionResult.ResultsEntry
+	15, // 3: client.ElectorVote.active_voting_record_ids:type_name -> client.Hash
+	15, // 4: client.ElectorVote.withdrawn_voting_record_ids:type_name -> client.Hash
 	6,  // 5: client.ElectorVote.active_voting_records:type_name -> client.ElectionVotingRecord
 	6,  // 6: client.ElectorVote.withdrawn_votes_records:type_name -> client.ElectionVotingRecord
-	18, // 7: client.ElectionVotingRecord.voter:type_name -> client.Address
-	17, // 8: client.ElectionVotingRecord.vote_id:type_name -> client.Hash
-	19, // 9: client.ElectionVotingRecord.unlock_timestamp:type_name -> google.protobuf.Timestamp
-	19, // 10: client.ElectionVotingRecord.withdraw_timestamp:type_name -> google.protobuf.Timestamp
-	19, // 11: client.ElectionVotingRecord.vote_timestamp:type_name -> google.protobuf.Timestamp
-	17, // 12: client.CandidateVote.obtained_active_voting_record_ids:type_name -> client.Hash
-	17, // 13: client.CandidateVote.obtained_withdrawn_voting_record_ids:type_name -> client.Hash
+	16, // 7: client.ElectionVotingRecord.voter:type_name -> client.Address
+	15, // 8: client.ElectionVotingRecord.vote_id:type_name -> client.Hash
+	17, // 9: client.ElectionVotingRecord.unlock_timestamp:type_name -> google.protobuf.Timestamp
+	17, // 10: client.ElectionVotingRecord.withdraw_timestamp:type_name -> google.protobuf.Timestamp
+	17, // 11: client.ElectionVotingRecord.vote_timestamp:type_name -> google.protobuf.Timestamp
+	15, // 12: client.CandidateVote.obtained_active_voting_record_ids:type_name -> client.Hash
+	15, // 13: client.CandidateVote.obtained_withdrawn_voting_record_ids:type_name -> client.Hash
 	6,  // 14: client.CandidateVote.obtained_active_voting_records:type_name -> client.ElectionVotingRecord
 	6,  // 15: client.CandidateVote.obtained_withdrawn_votes_records:type_name -> client.ElectionVotingRecord
 	0,  // 16: client.CandidateDetail.candidate_information:type_name -> client.CandidateInformation
-	11, // 17: client.GetPageableCandidateInformationOutput.value:type_name -> client.CandidateDetail
-	16, // 18: client.DataCenterRankingList.data_centers:type_name -> client.DataCenterRankingList.DataCentersEntry
+	9,  // 17: client.GetPageableCandidateInformationOutput.value:type_name -> client.CandidateDetail
+	14, // 18: client.DataCenterRankingList.data_centers:type_name -> client.DataCenterRankingList.DataCentersEntry
 	19, // [19:19] is the sub-list for method output_type
 	19, // [19:19] is the sub-list for method input_type
 	19, // [19:19] is the sub-list for extension type_name
@@ -1389,30 +1273,6 @@ func file_election_contract_proto_init() {
 			}
 		}
 		file_election_contract_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EleGetWelfareRewardAmountSampleInput); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_election_contract_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EleGetWelfareRewardAmountSampleOutput); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_election_contract_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*PageInformation); i {
 			case 0:
 				return &v.state
@@ -1424,7 +1284,7 @@ func file_election_contract_proto_init() {
 				return nil
 			}
 		}
-		file_election_contract_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
+		file_election_contract_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*CandidateDetail); i {
 			case 0:
 				return &v.state
@@ -1436,7 +1296,7 @@ func file_election_contract_proto_init() {
 				return nil
 			}
 		}
-		file_election_contract_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
+		file_election_contract_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*GetPageableCandidateInformationOutput); i {
 			case 0:
 				return &v.state
@@ -1448,7 +1308,7 @@ func file_election_contract_proto_init() {
 				return nil
 			}
 		}
-		file_election_contract_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
+		file_election_contract_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*DataCenterRankingList); i {
 			case 0:
 				return &v.state
@@ -1467,7 +1327,7 @@ func file_election_contract_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_election_contract_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   17,
+			NumMessages:   15,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
