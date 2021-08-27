@@ -19,6 +19,8 @@ type AElfClient struct {
 	Host       string
 	Version    string
 	PrivateKey string
+	UserName   string
+	Password   string
 }
 
 //const const.
