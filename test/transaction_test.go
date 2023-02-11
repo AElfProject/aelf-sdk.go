@@ -3,6 +3,7 @@ package test
 import (
 	"encoding/base64"
 	"encoding/hex"
+	"encoding/json"
 	"strings"
 	"testing"
 	"time"
@@ -370,6 +371,35 @@ func TestSendTransctions(t *testing.T) {
 		transactionResult, _ := aelf.GetTransactionResult(results[i].(string))
 		assert.Equal(t, "MINED", transactionResult.Status)
 	}
+}
+
+func TestGetTransactionFeeResult(t *testing.T) {
+	chainStatus, err := aelf.GetChainStatus()
+	assert.NoError(t, err)
+	params := &pb.Hash{
+		Value: utils.GetBytesSha256("AElf.ContractNames.Token"),
+	}
+	paramsByte, _ := protojson.Marshal(params)
+	var input = &dto.CreateRawTransactionInput{
+		From:           _address,
+		To:             ContractAddress,
+		MethodName:     ContractMethodName,
+		Params:         string(paramsByte),
+		RefBlockHash:   chainStatus.BestChainHash,
+		RefBlockNumber: chainStatus.BestChainHeight,
+	}
+	result, err := aelf.CreateRawTransaction(input)
+	assert.NoError(t, err)
+	spew.Dump("Create RawTransaction result", result)
+	var rawTransaction = result.RawTransaction
+	var transactionFeeInput = &dto.CalculateTransactionFeeInput{
+		RawTransaction: rawTransaction,
+	}
+	feeResult, err := aelf.GetTransactionFeeResult(transactionFeeInput)
+	assert.NoError(t, err)
+	jsonStr, err := json.Marshal(feeResult.TransactionFee)
+	spew.Dump("GetTransactionFeeResult : ", jsonStr)
+
 }
 
 func createTransferTransaction(toAddress *pb.Address) *pb.Transaction {

@@ -1,6 +1,6 @@
 package dto
 
-//PeerDto PeerDto
+// PeerDto PeerDto
 type PeerDto struct {
 	IpAddress                  string
 	ProtocolVersion            int
@@ -11,9 +11,10 @@ type PeerDto struct {
 	BufferedBlocksCount        int
 	BufferedAnnouncementsCount int
 	RequestMetrics             []RequestMetric
+	NodeVersion                string
 }
 
-//RequestMetric RequestMetric
+// RequestMetric RequestMetric
 type RequestMetric struct {
 	RoundTripTime int64
 	MethodName    string
