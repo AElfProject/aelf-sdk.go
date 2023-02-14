@@ -373,7 +373,7 @@ func TestSendTransctions(t *testing.T) {
 	}
 }
 
-func TestGetTransactionFeeResult(t *testing.T) {
+func TestCalculateTransactionFeeResult(t *testing.T) {
 	chainStatus, err := aelf.GetChainStatus()
 	assert.NoError(t, err)
 	params := &pb.Hash{

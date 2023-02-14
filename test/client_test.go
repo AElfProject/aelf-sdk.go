@@ -18,9 +18,9 @@ import (
 )
 
 var aelf = client.AElfClient{
-	Host:       "http://127.0.0.1:8000",
+	Host:       "http://127.0.0.1:8001",
 	Version:    "1.0",
-	PrivateKey: "4980f789235c786462b24ef23849e90bb1b6d590402a130313ce88d79a6ca3da",
+	PrivateKey: "e3ca0260c3e50526fda2dd3ea8f42476d28d63dfced53e25954d04c2f0c88f17",
 }
 
 var _address = aelf.GetAddressFromPrivateKey(aelf.PrivateKey)
