@@ -400,7 +400,8 @@ func TestCalculateTransactionFeeResult(t *testing.T) {
 	jsonStr, err := json.Marshal(feeResult.TransactionFee)
 	assert.True(t, feeResult.Success)
 	assert.NotEmpty(t, feeResult.TransactionFee["ELF"])
-	//assert.Equal(t, float64(1.7885e+07), feeResult.TransactionFee["ELF"])
+	assert.Greater(t, feeResult.TransactionFee["ELF"], float64(1.7e+07))
+	assert.Less(t, feeResult.TransactionFee["ELF"], float64(1.9e+07))
 	spew.Dump("GetTransactionFeeResult : ", jsonStr)
 
 }
