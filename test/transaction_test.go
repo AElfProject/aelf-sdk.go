@@ -373,7 +373,7 @@ func TestSendTransctions(t *testing.T) {
 	}
 }
 
-func TestCalculateTransactionFeeResult(t *testing.T) {
+func TestCalculateTransactionFee(t *testing.T) {
 	chainStatus, err := aelf.GetChainStatus()
 	assert.NoError(t, err)
 	params := &pb.Hash{
@@ -395,14 +395,14 @@ func TestCalculateTransactionFeeResult(t *testing.T) {
 	var transactionFeeInput = &dto.CalculateTransactionFeeInput{
 		RawTransaction: rawTransaction,
 	}
-	feeResult, err := aelf.GetTransactionFeeResult(transactionFeeInput)
+	feeResult, err := aelf.CalculateTransactionFee(transactionFeeInput)
 	assert.NoError(t, err)
 	jsonStr, err := json.Marshal(feeResult.TransactionFee)
 	assert.True(t, feeResult.Success)
 	assert.NotEmpty(t, feeResult.TransactionFee["ELF"])
 	assert.Greater(t, feeResult.TransactionFee["ELF"], float64(1.7e+07))
 	assert.Less(t, feeResult.TransactionFee["ELF"], float64(1.9e+07))
-	spew.Dump("GetTransactionFeeResult : ", jsonStr)
+	spew.Dump("CalculateTransactionFeeResult : ", jsonStr)
 
 }
 
