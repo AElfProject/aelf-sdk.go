@@ -180,7 +180,7 @@ func (a *AElfClient) SendTransactions(rawTransactions string) ([]interface{}, er
 	return transactions, nil
 }
 
-func (a *AElfClient) CalculateTransactionFee(input *dto.CalculateTransactionFeeInput) (*dto.TransactionFeeResultOutput, error) {
+func (a *AElfClient) CalculateTransactionFee(input *dto.CalculateTransactionFeeInput) (*dto.CalculateTransactionFeeOutput, error) {
 	url := a.Host + CALCULATETRANSACTIONFEE
 	params := map[string]interface{}{
 		"RawTransaction": input.RawTransaction,
@@ -189,7 +189,7 @@ func (a *AElfClient) CalculateTransactionFee(input *dto.CalculateTransactionFeeI
 	if err != nil {
 		return nil, errors.New("GetTransactionFeeResult error:" + err.Error())
 	}
-	var feeResult = new(dto.TransactionFeeResultOutput)
+	var feeResult = new(dto.CalculateTransactionFeeOutput)
 	json.Unmarshal(transactionFeeResult, &feeResult)
 	spew.Dump("CalculateTransactionFee : ", feeResult.Success)
 	return feeResult, nil

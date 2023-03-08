@@ -1,6 +1,6 @@
 package dto
 
-type TransactionFeeResultOutput struct {
+type CalculateTransactionFeeOutput struct {
 	Success        bool
 	TransactionFee map[string]interface{}
 	ResourceFee    map[string]interface{}
