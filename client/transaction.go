@@ -187,7 +187,7 @@ func (a *AElfClient) CalculateTransactionFee(input *dto.CalculateTransactionFeeI
 	}
 	transactionFeeResult, err := util.PostRequest(url, a.Version, params)
 	if err != nil {
-		return nil, errors.New("GetTransactionFeeResult error:" + err.Error())
+		return nil, errors.New("CalculateTransactionFee error:" + err.Error())
 	}
 	var feeResult = new(dto.CalculateTransactionFeeOutput)
 	json.Unmarshal(transactionFeeResult, &feeResult)
