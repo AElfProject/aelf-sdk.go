@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+import "client.proto";
+
+package client;
+
+message ReferendumOrganization {
+    // The threshold for releasing the proposal.
+    client.ProposalReleaseThreshold proposal_release_threshold = 1;
+    // The token used during proposal operations.
+    string token_symbol = 2;
+    // The address of organization.
+    client.Address organization_address = 3;
+    // The organizations id.
+    client.Hash organization_hash = 4;
+    // The proposer whitelist.
+    client.ProposerWhiteList proposer_white_list = 5;
+    // The creation token is for organization address generation.
+    client.Hash creation_token = 6;
+}

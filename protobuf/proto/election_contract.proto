@@ -1,0 +1,137 @@
+syntax = "proto3";
+
+package client;
+
+import "google/protobuf/timestamp.proto";
+import "client.proto";
+
+//election_contract
+message CandidateInformation {
+    // Candidate’s public key.
+    string pubkey = 1;
+    // The number of terms that the candidate is elected.
+    repeated int64 terms = 2;
+    // The number of blocks the candidate has produced.
+    int64 produced_blocks = 3;
+    // The time slot for which the candidate failed to produce blocks.
+    int64 missed_time_slots = 4;
+    // The count of continual appointment.
+    int64 continual_appointment_count = 5;
+    // The transaction id when the candidate announced.
+    client.Hash announcement_transaction_id = 6;
+    // Indicate whether the candidate can be elected in the current term.
+    bool is_current_candidate = 7;
+}
+
+message GetTermSnapshotInput {
+    // The term number.
+    int64 term_number = 1;
+}
+
+message TermSnapshot {
+    // The end round number of this term.
+    int64 end_round_number = 1;
+    // The number of blocks mined in this term. 
+    int64 mined_blocks = 2;
+    // The election result, candidates’ public key -> number of votes.
+    map<string, int64> election_result = 3;
+}
+
+message GetElectionResultInput {
+    // The term number.
+    int64 term_number = 1;
+}
+
+message ElectionResult {
+    // The term number
+    int64 term_number = 1;
+    // The election result, candidates’ public key -> number of votes.
+    map<string, int64> results = 2;
+    // Whether an election is currently being held.
+    bool is_active = 3;
+}
+
+message ElectorVote {
+    // The active voting record ids.
+    repeated client.Hash active_voting_record_ids = 1;
+    // The voting record ids that were withdrawn.
+    repeated client.Hash withdrawn_voting_record_ids = 2;
+    // The total number of active votes.
+    int64 active_voted_votes_amount = 3;
+    // The total number of votes (including the number of votes withdrawn).
+    int64 all_voted_votes_amount = 4;
+    // The active voting records.
+    repeated ElectionVotingRecord active_voting_records = 5;
+    // The voting records that were withdrawn.
+    repeated ElectionVotingRecord withdrawn_votes_records = 6;
+    // Public key for voter.
+    bytes pubkey = 7;
+}
+
+message ElectionVotingRecord {
+    // The address of voter.
+    client.Address voter = 1;
+    // The public key of candidate.
+    string candidate = 2;
+    // Amount of voting.
+    int64 amount = 3;
+    // The term number of voting.
+    int64 term_number = 4;
+    // The vote id.
+    client.Hash vote_id = 5;
+    // Vote lock time.
+    int64 lock_time = 6;
+    // The unlock timestamp.
+    google.protobuf.Timestamp unlock_timestamp = 7;
+    // The withdraw timestamp.
+    google.protobuf.Timestamp withdraw_timestamp = 8;
+    // The vote timestamp.
+    google.protobuf.Timestamp vote_timestamp = 9;
+    // Indicates if the vote has been withdrawn.
+    bool is_withdrawn = 10;
+    // Vote weight for sharing bonus.
+    int64 weight = 11;
+    // Whether vote others.
+    bool is_change_target = 12;
+}
+
+message CandidateVote {
+    // The active voting record ids obtained.
+    repeated client.Hash obtained_active_voting_record_ids = 1;
+    // The active voting record ids that were withdrawn.
+    repeated client.Hash obtained_withdrawn_voting_record_ids = 2;
+    // The total number of active votes obtained.
+    int64 obtained_active_voted_votes_amount = 3;
+    // The total number of votes obtained.
+    int64 all_obtained_voted_votes_amount = 4;
+    // The active voting records.
+    repeated ElectionVotingRecord obtained_active_voting_records = 5;
+    // The voting records that were withdrawn.
+    repeated ElectionVotingRecord obtained_withdrawn_votes_records = 6;
+    // Public key for candidate.
+    bytes pubkey = 7;
+}
+
+message PageInformation {
+    // The start index.
+    int32 start = 1;
+    // The number of records.
+    int32 length = 2;
+}
+
+message CandidateDetail {
+    // The candidate information.
+    CandidateInformation candidate_information = 1;
+    // The number of votes a candidate has obtained.
+    int64 obtained_votes_amount = 2;
+}
+
+message GetPageableCandidateInformationOutput {
+    // The details of the candidates.
+    repeated CandidateDetail value = 1;
+}
+
+message DataCenterRankingList {
+    // The top n * 5 candidates with vote amount, candidate public key -> vote amount.
+    map<string, int64> data_centers = 1;
+}
