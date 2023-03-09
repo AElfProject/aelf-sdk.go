@@ -8,11 +8,13 @@ import (
 )
 
 // var TestAddress = "127.0.0.1:6801"
+const version = "1.2.3.0"
 
 func TestNetworkApi(t *testing.T) {
 	// Test GetNetworkInfo
 	netWorkInfo, err := aelf.GetNetworkInfo()
 	assert.NoError(t, err)
+	assert.Equal(t, netWorkInfo.Version, version)
 	spew.Dump("Get Network Info Result", netWorkInfo)
 
 	// Test AddPeer
