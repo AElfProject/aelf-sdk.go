@@ -10,8 +10,11 @@ import (
 	"time"
 )
 
+const (
+	defaultDialTimeout = 15 * time.Second
+)
 
-//GetRequest GetRequest with Authorization.
+// GetRequest GetRequest with Authorization.
 func GetRequestWithAuth(method, url, version string, params map[string]interface{}, basicAuth string) ([]byte, error) {
 	var apiURL string
 	if params == nil {
@@ -33,7 +36,7 @@ func GetRequestWithAuth(method, url, version string, params map[string]interface
 		request.Header.Set("Authorization", basicAuth)
 	}
 	fmt.Printf("%v", request.Header)
-	client := http.Client{Timeout: 5 * time.Second}
+	client := http.Client{Timeout: defaultDialTimeout}
 	resp, err := client.Do(request)
 	if err != nil {
 		return nil, err
@@ -46,8 +49,7 @@ func GetRequestWithAuth(method, url, version string, params map[string]interface
 	return data, nil
 }
 
-
-//GetRequest GetRequest.
+// GetRequest GetRequest.
 func GetRequest(method, url, version string, params map[string]interface{}) ([]byte, error) {
 	var apiURL string
 	if params == nil {
@@ -66,7 +68,7 @@ func GetRequest(method, url, version string, params map[string]interface{}) ([]b
 		request.Header.Set("Accept", "application/json")
 	}
 
-	client := http.Client{Timeout: 5 * time.Second}
+	client := http.Client{Timeout: defaultDialTimeout}
 	resp, err := client.Do(request)
 	if err != nil {
 		return nil, err
@@ -79,7 +81,7 @@ func GetRequest(method, url, version string, params map[string]interface{}) ([]b
 	return data, nil
 }
 
-//PostRequest Post Request.
+// PostRequest Post Request.
 func PostRequest(url, version string, params map[string]interface{}) ([]byte, error) {
 	jsonParams := ""
 	if params != nil {
@@ -97,7 +99,7 @@ func PostRequest(url, version string, params map[string]interface{}) ([]byte, er
 		request.Header.Set("Content-Type", "application/json")
 
 	}
-	client := &http.Client{Timeout: time.Second * 5}
+	client := &http.Client{Timeout: defaultDialTimeout}
 	resp, err := client.Do(request)
 	if err != nil {
 		return nil, err
@@ -110,7 +112,7 @@ func PostRequest(url, version string, params map[string]interface{}) ([]byte, er
 	return data, nil
 }
 
-//PostRequest Post Request with Authorization.
+// PostRequest Post Request with Authorization.
 func PostRequestWithAuth(url, version string, params map[string]interface{}, basicAuth string) ([]byte, error) {
 	jsonParams := ""
 	if params != nil {
@@ -131,7 +133,7 @@ func PostRequestWithAuth(url, version string, params map[string]interface{}, bas
 		request.Header.Set("Authorization", basicAuth)
 	}
 	fmt.Printf("%v", request.Header)
-	client := &http.Client{Timeout: time.Second * 5}
+	client := &http.Client{Timeout: defaultDialTimeout}
 	resp, err := client.Do(request)
 	if err != nil {
 		return nil, err
@@ -144,7 +146,7 @@ func PostRequestWithAuth(url, version string, params map[string]interface{}, bas
 	return data, nil
 }
 
-//Map2UrlParams Map 2Url Params.
+// Map2UrlParams Map 2Url Params.
 func Map2UrlParams(params map[string]interface{}) string {
 	var strParams string
 	for k, v := range params {
@@ -157,7 +159,7 @@ func Map2UrlParams(params map[string]interface{}) string {
 	return strParams
 }
 
-//ToString To tring.
+// ToString To tring.
 func ToString(v interface{}) string {
 	switch v.(type) {
 	case string:

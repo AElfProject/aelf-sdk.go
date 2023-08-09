@@ -3,6 +3,7 @@ package test
 import (
 	"encoding/base64"
 	"encoding/hex"
+	"github.com/AElfProject/aelf-sdk.go/model/consts"
 	"testing"
 
 	"github.com/AElfProject/aelf-sdk.go/client"
@@ -18,9 +19,9 @@ import (
 )
 
 var aelf = client.AElfClient{
-	Host:       "http://127.0.0.1:8000",
+	Host:       "http://192.168.67.18:8000",
 	Version:    "1.0",
-	PrivateKey: "cd86ab6347d8e52bbbe8532141fc59ce596268143a308d1d40fedf385528b458",
+	PrivateKey: "36bc3f264aa340d44aada5759a5a86aac6d734f19932397e551d9e69edffe0d2",
 }
 
 var _address = aelf.GetAddressFromPrivateKey(aelf.PrivateKey)
@@ -48,7 +49,7 @@ func TestGenerateKeyPairInfo(t *testing.T) {
 }
 
 func TestGetContractAddressByName(t *testing.T) {
-	contractAddress, err := aelf.GetContractAddressByName("AElf.ContractNames.Token")
+	contractAddress, err := aelf.GetContractAddressByName(consts.TokenContractSystemName)
 	assert.NoError(t, err)
 	spew.Dump("Get ContractAddress By Name Result", contractAddress)
 }
@@ -100,4 +101,15 @@ func TestGetTransactionFee(t *testing.T) {
 	assert.Equal(t, int64(800), res["ResourceTokenCharged"][0]["READ"])
 	assert.Equal(t, int64(600), res["ResourceTokenCharged"][1]["WRITE"])
 	assert.Equal(t, int64(200), res["ResourceTokenCharged"][2]["READ"])
+}
+
+func TestGetTokenInfo(t *testing.T) {
+	tokenInfo, err := aelf.GetTokenInfo(DefaultTestSymbol)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, tokenInfo)
+	assert.Equal(t, DefaultTestSymbol, tokenInfo.Symbol)
+	assert.Equal(t, DefaultTestTokenTotalSupply, tokenInfo.TotalSupply)
+	assert.Equal(t, DefaultTestTokenDecimals, tokenInfo.Decimals)
+	assert.Equal(t, DefaultTestTokenIsBurnable, tokenInfo.IsBurnable)
+	assert.Equal(t, DefaultTestTokenIssueChainId, tokenInfo.IssueChainId)
 }

@@ -4,8 +4,8 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"errors"
-
 	"github.com/AElfProject/aelf-sdk.go/model"
+	"github.com/AElfProject/aelf-sdk.go/model/consts"
 	pb "github.com/AElfProject/aelf-sdk.go/protobuf/generated"
 	util "github.com/AElfProject/aelf-sdk.go/utils"
 
@@ -81,6 +81,53 @@ func (a *AElfClient) GetFormattedAddress(address string) (string, error) {
 	executeBytes, err := hex.DecodeString(executeResult)
 	proto.Unmarshal(executeBytes, symbol)
 	return symbol.Value + "_" + address + "_" + chain.ChainId, nil
+}
+
+func (a *AElfClient) GetTokenBalance(symbol, owner string) (*pb.GetBalanceOutput, error) {
+	tokenContractAddr, _ := a.GetContractAddressByName(consts.TokenContractSystemName)
+	addr := a.GetAddressFromPrivateKey(a.PrivateKey)
+	ownerAddr, err := util.Base58StringToAddress(owner)
+	if err != nil {
+		return &pb.GetBalanceOutput{}, err
+	}
+	inputByte, _ := proto.Marshal(&pb.GetBalanceInput{
+		Symbol: symbol,
+		Owner:  ownerAddr,
+	})
+
+	tx, _ := a.CreateTransaction(addr, tokenContractAddr, consts.TokenContractGetBalance, inputByte)
+	sign, _ := a.SignTransaction(a.PrivateKey, tx)
+	tx.Signature = sign
+
+	txByets, _ := proto.Marshal(tx)
+	re, _ := a.ExecuteTransaction(hex.EncodeToString(txByets))
+
+	balance := &pb.GetBalanceOutput{}
+	bytes, _ := hex.DecodeString(re)
+	proto.Unmarshal(bytes, balance)
+
+	return balance, nil
+}
+
+func (a *AElfClient) GetTokenInfo(symbol string) (*pb.TokenInfo, error) {
+	tokenContractAddr, _ := a.GetContractAddressByName(consts.TokenContractSystemName)
+	addr := a.GetAddressFromPrivateKey(a.PrivateKey)
+	inputByte, _ := proto.Marshal(&pb.TokenInfo{
+		Symbol: symbol,
+	})
+
+	tx, _ := a.CreateTransaction(addr, tokenContractAddr, consts.TokenContractGetTokenInfo, inputByte)
+	sign, _ := a.SignTransaction(a.PrivateKey, tx)
+	tx.Signature = sign
+
+	txBytes, _ := proto.Marshal(tx)
+	re, _ := a.ExecuteTransaction(hex.EncodeToString(txBytes))
+
+	tokenInfo := &pb.TokenInfo{}
+	bytes, _ := hex.DecodeString(re)
+	proto.Unmarshal(bytes, tokenInfo)
+
+	return tokenInfo, nil
 }
 
 // GetContractAddressByName Get  contract address by contract name.

@@ -3,6 +3,7 @@ package example
 import (
 	"encoding/hex"
 	"errors"
+	pb "github.com/AElfProject/aelf-sdk.go/protobuf/generated"
 
 	"github.com/AElfProject/aelf-sdk.go/client"
 	"github.com/AElfProject/aelf-sdk.go/dto"
@@ -22,11 +23,11 @@ var privatekeyAddress = aelf.GetAddressFromPrivateKey(aelf.PrivateKey)
 var contractMethodName = "GetContractAddressByName"
 var contractAddress, _ = aelf.GetGenesisContractAddress()
 
-//DemoGetBlockByHash Get Block ByHash demo.
+// DemoGetBlockByHash Get Block ByHash demo.
 func DemoGetBlockByHash() (*dto.BlockDto, error) {
 	var includeTransactions = true
 	height, _ := aelf.GetBlockHeight()
-	HeightBlock, _ := aelf.GetBlockByHeight(int(height), includeTransactions)
+	HeightBlock, _ := aelf.GetBlockByHeight(height, includeTransactions)
 	byHashBlock, err := aelf.GetBlockByHash(HeightBlock.BlockHash, includeTransactions)
 	if err != nil {
 		return nil, errors.New("Get Block By Hash error: " + err.Error())
@@ -34,7 +35,7 @@ func DemoGetBlockByHash() (*dto.BlockDto, error) {
 	return byHashBlock, nil
 }
 
-//DemoGetAddressFromPubKey Get Address From Public Key demo.
+// DemoGetAddressFromPubKey Get Address From Public Key demo.
 func DemoGetAddressFromPubKey() string {
 	privateKeyBytes, _ := hex.DecodeString(aelf.PrivateKey)
 	pubkeyBytes := secp256.UncompressedPubkeyFromSeckey(privateKeyBytes)
@@ -42,7 +43,7 @@ func DemoGetAddressFromPubKey() string {
 	return pubKeyAddress
 }
 
-//DemoExecuteRawTransaction ExecuteRawTransaction demo.
+// DemoExecuteRawTransaction ExecuteRawTransaction demo.
 func DemoExecuteRawTransaction() (string, error) {
 	chainStatus, err := aelf.GetChainStatus()
 	params := &pb.Hash{

@@ -9,7 +9,7 @@ import (
 	util "github.com/AElfProject/aelf-sdk.go/utils"
 )
 
-//GetNetworkInfo Get the node's network information.
+// GetNetworkInfo Get the node's network information.
 func (a *AElfClient) GetNetworkInfo() (*dto.NetworkInfo, error) {
 	url := a.Host + NETWORKINFO
 	networkBytes, err := util.GetRequest("GET", url, a.Version, nil)
@@ -21,7 +21,7 @@ func (a *AElfClient) GetNetworkInfo() (*dto.NetworkInfo, error) {
 	return network, nil
 }
 
-//RemovePeer Attempt to remove a node from the connected network nodes by given the ipAddress.
+// RemovePeer Attempt to remove a node from the connected network nodes by given the ipAddress.
 func (a *AElfClient) RemovePeer(ipAddress string) (bool, error) {
 	url := a.Host + REMOVEPEER
 	combine := a.UserName + ":" + a.Password
@@ -36,7 +36,7 @@ func (a *AElfClient) RemovePeer(ipAddress string) (bool, error) {
 	return data.(bool), nil
 }
 
-//AddPeer Attempt to add a node to the connected network nodes.Input parameter contains the ipAddress of the node.
+// AddPeer Attempt to add a node to the connected network nodes.Input parameter contains the ipAddress of the node.
 func (a *AElfClient) AddPeer(ipAddress string) (bool, error) {
 	url := a.Host + ADDPEER
 	combine := a.UserName + ":" + a.Password
@@ -51,7 +51,7 @@ func (a *AElfClient) AddPeer(ipAddress string) (bool, error) {
 	return data.(bool), nil
 }
 
-//GetPeers Gets information about the peer nodes of the current node.Optional whether to include metrics.
+// GetPeers Gets information about the peer nodes of the current node.Optional whether to include metrics.
 func (a *AElfClient) GetPeers(withMetrics bool) ([]*dto.PeerDto, error) {
 	url := a.Host + PEERS
 	params := map[string]interface{}{"withMetrics": withMetrics}

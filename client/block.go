@@ -9,7 +9,7 @@ import (
 	util "github.com/AElfProject/aelf-sdk.go/utils"
 )
 
-//GetBlockHeight Get height of the current chain.
+// GetBlockHeight Get height of the current chain.
 func (a *AElfClient) GetBlockHeight() (int64, error) {
 	url := a.Host + BLOCKHEIGHT
 	heightBytes, err := util.GetRequest("GET", url, a.Version, nil)
@@ -41,7 +41,7 @@ func (a *AElfClient) GetBlockByHash(blockHash string, includeTransactions bool) 
 	return block, nil
 }
 
-//GetBlockByHeight Get information of a block by specified height. Optional whether to include transaction information.
+// GetBlockByHeight Get information of a block by specified height. Optional whether to include transaction information.
 func (a *AElfClient) GetBlockByHeight(blockHeight int64, includeTransactions bool) (*dto.BlockDto, error) {
 	params := map[string]interface{}{
 		"blockHeight":         blockHeight,
