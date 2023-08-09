@@ -5,15 +5,11 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/AElfProject/aelf-sdk.go/dto"
+	"github.com/AElfProject/aelf-sdk.go/model/consts"
 	client "github.com/AElfProject/aelf-sdk.go/protobuf/generated"
 	util "github.com/AElfProject/aelf-sdk.go/utils"
 	"github.com/davecgh/go-spew/spew"
 	"google.golang.org/protobuf/proto"
-)
-
-const (
-	MainChainTokenContractAddress = "JRmBduh4nXWi1aXgdUsj5gJrzeZb2LxmrAbf7W99faZSvoAaE"
-	SideChainTokenContractAddress = "7RzVGiuVWkvL4VfVHdZfQF2Tri3sgLe9U991bohHFfSRZXuGX"
 )
 
 // GetTransactionPoolStatus Get information about the current transaction pool.
@@ -209,8 +205,10 @@ func (a *AElfClient) GetTransferred(txId string) []*client.Transferred {
 		return transffereds
 	}
 
+	contractAddr, _ := a.GetContractAddressByName(consts.TokenContractSystemName)
+
 	for _, log := range result.Logs {
-		if log.Name == "Transferred" && log.Address == MainChainTokenContractAddress {
+		if log.Name == "Transferred" && log.Address == contractAddr {
 			transferred := new(client.Transferred)
 			if nonIndexedBytes, err := util.Base64DecodeBytes(log.NonIndexed); err == nil {
 				proto.Unmarshal(nonIndexedBytes, transferred)
@@ -244,8 +242,10 @@ func (a *AElfClient) GetCrossChainTransferred(txId string) []*client.CrossChainT
 		return crossChainTransferreds
 	}
 
+	contractAddr, _ := a.GetContractAddressByName(consts.TokenContractSystemName)
+
 	for _, log := range result.Logs {
-		if log.Name == "CrossChainTransferred" && log.Address == MainChainTokenContractAddress {
+		if log.Name == "CrossChainTransferred" && log.Address == contractAddr {
 			crossChainTransferred := new(client.CrossChainTransferred)
 			if nonIndexedBytes, err := util.Base64DecodeBytes(log.NonIndexed); err == nil {
 				proto.Unmarshal(nonIndexedBytes, crossChainTransferred)
@@ -264,8 +264,10 @@ func (a *AElfClient) GetCrossChainReceived(txId string) []*client.CrossChainRece
 		return crossChainReceiveds
 	}
 
+	contractAddr, _ := a.GetContractAddressByName(consts.TokenContractSystemName)
+
 	for _, log := range result.Logs {
-		if log.Name == "CrossChainReceived" && log.Address == SideChainTokenContractAddress {
+		if log.Name == "CrossChainReceived" && log.Address == contractAddr {
 			crossChainReceived := new(client.CrossChainReceived)
 			if nonIndexedBytes, err := util.Base64DecodeBytes(log.NonIndexed); err == nil {
 				proto.Unmarshal(nonIndexedBytes, crossChainReceived)
