@@ -51,41 +51,41 @@ const (
 )
 
 // GetAddressFromPubKey Get the account address through the public key.
-func (a *AElfClient) GetAddressFromPubKey(pubkey string) string {
+func (client *AElfClient) GetAddressFromPubKey(pubkey string) string {
 	bytes, _ := hex.DecodeString(pubkey)
 	return util.GetAddressByBytes(bytes)
 }
 
 // GetAddressFromPrivateKey Get the account address through the private key.
-func (a *AElfClient) GetAddressFromPrivateKey(privateKey string) string {
+func (client *AElfClient) GetAddressFromPrivateKey(privateKey string) string {
 	bytes, _ := hex.DecodeString(privateKey)
 	pubkeyBytes := secp256.UncompressedPubkeyFromSeckey(bytes)
 	return util.GetAddressByBytes(pubkeyBytes)
 }
 
 // GetFormattedAddress Convert the Address to the displayed string:symbol_base58-string_base58-string-chain-id.
-func (a *AElfClient) GetFormattedAddress(address string) (string, error) {
-	chain, _ := a.GetChainStatus()
+func (client *AElfClient) GetFormattedAddress(address string) (string, error) {
+	chain, _ := client.GetChainStatus()
 	methodName := "GetPrimaryTokenSymbol"
-	fromAddress := a.GetAddressFromPrivateKey(ExamplePrivateKey)
-	contractAddress, _ := a.GetContractAddressByName("AElf.ContractNames.Token")
-	transaction, _ := a.CreateTransaction(fromAddress, contractAddress, methodName, nil)
-	signature, _ := a.SignTransaction(ExamplePrivateKey, transaction)
+	fromAddress := client.GetAddressFromPrivateKey(ExamplePrivateKey)
+	contractAddress, _ := client.GetContractAddressByName("AElf.ContractNames.Token")
+	transaction, _ := client.CreateTransaction(fromAddress, contractAddress, methodName, nil)
+	signature, _ := client.SignTransaction(ExamplePrivateKey, transaction)
 	transaction.Signature = signature
 	transactionBytes, err := proto.Marshal(transaction)
 	if err != nil {
 		return "", errors.New("proto marshasl transaction error" + err.Error())
 	}
-	executeResult, _ := a.ExecuteTransaction(hex.EncodeToString(transactionBytes))
+	executeResult, _ := client.ExecuteTransaction(hex.EncodeToString(transactionBytes))
 	var symbol = new(wrap.StringValue)
 	executeBytes, err := hex.DecodeString(executeResult)
 	proto.Unmarshal(executeBytes, symbol)
 	return symbol.Value + "_" + address + "_" + chain.ChainId, nil
 }
 
-func (a *AElfClient) GetTokenBalance(symbol, owner string) (*pb.GetBalanceOutput, error) {
-	tokenContractAddr, _ := a.GetContractAddressByName(consts.TokenContractSystemName)
-	addr := a.GetAddressFromPrivateKey(a.PrivateKey)
+func (client *AElfClient) GetTokenBalance(symbol, owner string) (*pb.GetBalanceOutput, error) {
+	tokenContractAddr, _ := client.GetContractAddressByName(consts.TokenContractSystemName)
+	addr := client.GetAddressFromPrivateKey(client.PrivateKey)
 	ownerAddr, err := util.Base58StringToAddress(owner)
 	if err != nil {
 		return &pb.GetBalanceOutput{}, err
@@ -95,12 +95,11 @@ func (a *AElfClient) GetTokenBalance(symbol, owner string) (*pb.GetBalanceOutput
 		Owner:  ownerAddr,
 	})
 
-	tx, _ := a.CreateTransaction(addr, tokenContractAddr, consts.TokenContractGetBalance, inputByte)
-	sign, _ := a.SignTransaction(a.PrivateKey, tx)
-	tx.Signature = sign
+	tx, _ := client.CreateTransaction(addr, tokenContractAddr, consts.TokenContractGetBalance, inputByte)
+	tx.Signature, _ = client.SignTransaction(client.PrivateKey, tx)
 
 	txByets, _ := proto.Marshal(tx)
-	re, _ := a.ExecuteTransaction(hex.EncodeToString(txByets))
+	re, _ := client.ExecuteTransaction(hex.EncodeToString(txByets))
 
 	balance := &pb.GetBalanceOutput{}
 	bytes, _ := hex.DecodeString(re)
@@ -109,19 +108,18 @@ func (a *AElfClient) GetTokenBalance(symbol, owner string) (*pb.GetBalanceOutput
 	return balance, nil
 }
 
-func (a *AElfClient) GetTokenInfo(symbol string) (*pb.TokenInfo, error) {
-	tokenContractAddr, _ := a.GetContractAddressByName(consts.TokenContractSystemName)
-	addr := a.GetAddressFromPrivateKey(a.PrivateKey)
+func (client *AElfClient) GetTokenInfo(symbol string) (*pb.TokenInfo, error) {
+	tokenContractAddr, _ := client.GetContractAddressByName(consts.TokenContractSystemName)
+	addr := client.GetAddressFromPrivateKey(client.PrivateKey)
 	inputByte, _ := proto.Marshal(&pb.TokenInfo{
 		Symbol: symbol,
 	})
 
-	tx, _ := a.CreateTransaction(addr, tokenContractAddr, consts.TokenContractGetTokenInfo, inputByte)
-	sign, _ := a.SignTransaction(a.PrivateKey, tx)
-	tx.Signature = sign
+	tx, _ := client.CreateTransaction(addr, tokenContractAddr, consts.TokenContractGetTokenInfo, inputByte)
+	tx.Signature, _ = client.SignTransaction(client.PrivateKey, tx)
 
 	txBytes, _ := proto.Marshal(tx)
-	re, _ := a.ExecuteTransaction(hex.EncodeToString(txBytes))
+	re, _ := client.ExecuteTransaction(hex.EncodeToString(txBytes))
 
 	tokenInfo := &pb.TokenInfo{}
 	bytes, _ := hex.DecodeString(re)
@@ -131,9 +129,9 @@ func (a *AElfClient) GetTokenInfo(symbol string) (*pb.TokenInfo, error) {
 }
 
 // GetContractAddressByName Get  contract address by contract name.
-func (a *AElfClient) GetContractAddressByName(contractName string) (string, error) {
-	fromAddress := a.GetAddressFromPrivateKey(ExamplePrivateKey)
-	toAddress, err := a.GetGenesisContractAddress()
+func (client *AElfClient) GetContractAddressByName(contractName string) (string, error) {
+	fromAddress := client.GetAddressFromPrivateKey(ExamplePrivateKey)
+	toAddress, err := client.GetGenesisContractAddress()
 	if err != nil {
 		return "", errors.New("Get Genesis Contract Address error")
 	}
@@ -142,14 +140,14 @@ func (a *AElfClient) GetContractAddressByName(contractName string) (string, erro
 	hash.Value = contractNameBytes
 	hashBytes, _ := proto.Marshal(hash)
 
-	transaction, _ := a.CreateTransaction(fromAddress, toAddress, "GetContractAddressByName", hashBytes)
-	signature, _ := a.SignTransaction(ExamplePrivateKey, transaction)
+	transaction, _ := client.CreateTransaction(fromAddress, toAddress, "GetContractAddressByName", hashBytes)
+	signature, _ := client.SignTransaction(ExamplePrivateKey, transaction)
 	transaction.Signature = signature
 	transactionBytes, err := proto.Marshal(transaction)
 	if err != nil {
 		return "", errors.New("proto marshasl transaction error" + err.Error())
 	}
-	result, _ := a.ExecuteTransaction(hex.EncodeToString(transactionBytes))
+	result, _ := client.ExecuteTransaction(hex.EncodeToString(transactionBytes))
 	var address = new(pb.Address)
 	resultBytes, err := hex.DecodeString(result)
 	proto.Unmarshal(resultBytes, address)
@@ -157,7 +155,7 @@ func (a *AElfClient) GetContractAddressByName(contractName string) (string, erro
 }
 
 // SignTransaction Sign a transaction using private key.
-func (a *AElfClient) SignTransaction(privateKey string, transaction *pb.Transaction) ([]byte, error) {
+func (client *AElfClient) SignTransaction(privateKey string, transaction *pb.Transaction) ([]byte, error) {
 	transactionBytes, _ := proto.Marshal(transaction)
 	txDataBytes := sha256.Sum256(transactionBytes)
 	privateKeyBytes, _ := hex.DecodeString(privateKey)
@@ -166,8 +164,8 @@ func (a *AElfClient) SignTransaction(privateKey string, transaction *pb.Transact
 }
 
 // CreateTransaction create a transaction from the input parameters.
-func (a *AElfClient) CreateTransaction(from, to, method string, params []byte) (*pb.Transaction, error) {
-	chainStatus, err := a.GetChainStatus()
+func (client *AElfClient) CreateTransaction(from, to, method string, params []byte) (*pb.Transaction, error) {
+	chainStatus, err := client.GetChainStatus()
 	if err != nil {
 		return nil, errors.New("Get Chain Status error ")
 	}
@@ -186,8 +184,8 @@ func (a *AElfClient) CreateTransaction(from, to, method string, params []byte) (
 }
 
 // GetGenesisContractAddress Get the address of genesis contract.
-func (a *AElfClient) GetGenesisContractAddress() (string, error) {
-	chainStatus, err := a.GetChainStatus()
+func (client *AElfClient) GetGenesisContractAddress() (string, error) {
+	chainStatus, err := client.GetChainStatus()
 	if err != nil {
 		return "", errors.New("Get Genesis Contract Address error:" + err.Error())
 	}
@@ -196,8 +194,8 @@ func (a *AElfClient) GetGenesisContractAddress() (string, error) {
 }
 
 // IsConnected Verify whether this sdk successfully connects the chain.
-func (a *AElfClient) IsConnected() bool {
-	data, err := a.GetChainStatus()
+func (client *AElfClient) IsConnected() bool {
+	data, err := client.GetChainStatus()
 	if err != nil || data == nil {
 		return false
 	}
@@ -205,11 +203,11 @@ func (a *AElfClient) IsConnected() bool {
 }
 
 // GenerateKeyPairInfo Generate KeyPair Info.
-func (a *AElfClient) GenerateKeyPairInfo() *model.KeyPairInfo {
+func (client *AElfClient) GenerateKeyPairInfo() *model.KeyPairInfo {
 	publicKeyBytes, privateKeyBytes := secp256.GenerateKeyPair()
 	publicKey := hex.EncodeToString(publicKeyBytes)
 	privateKey := hex.EncodeToString(privateKeyBytes)
-	privateKeyAddress := a.GetAddressFromPrivateKey(privateKey)
+	privateKeyAddress := client.GetAddressFromPrivateKey(privateKey)
 	var keyPair = &model.KeyPairInfo{
 		PrivateKey: privateKey,
 		PublicKey:  publicKey,

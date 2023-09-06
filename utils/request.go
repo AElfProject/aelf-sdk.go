@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	defaultDialTimeout = 15 * time.Second
+	defaultDialTimeout = 5 * time.Second
 )
 
 // GetRequest GetRequest with Authorization.

@@ -2,75 +2,136 @@ package example
 
 import (
 	"encoding/hex"
-	"errors"
-	pb "github.com/AElfProject/aelf-sdk.go/protobuf/generated"
-
+	"fmt"
 	"github.com/AElfProject/aelf-sdk.go/client"
-	"github.com/AElfProject/aelf-sdk.go/dto"
+	"github.com/AElfProject/aelf-sdk.go/model/consts"
+	pb "github.com/AElfProject/aelf-sdk.go/protobuf/generated"
 	"github.com/AElfProject/aelf-sdk.go/utils"
-	"google.golang.org/protobuf/encoding/protojson"
-
-	secp256 "github.com/skycoin/skycoin/src/cipher/secp256k1-go"
+	"google.golang.org/protobuf/proto"
 )
 
-var aelf = client.AElfClient{
-	Host:       "http://127.0.0.1:8000", //your host
-	Version:    "1.0",
-	PrivateKey: "680afd630d82ae5c97942c4141d60b8a9fedfa5b2864fca84072c17ee1f72d9d", //your private key
+const (
+	MainChainUrl = "https://aelf-public-node.aelf.io"
+	SideChainUrl = "https://tdvv-public-node.aelf.io"
+)
+
+var mainChainClient = client.AElfClient{
+	Host:    MainChainUrl,
+	Version: "1.0",
 }
 
-var privatekeyAddress = aelf.GetAddressFromPrivateKey(aelf.PrivateKey)
-var contractMethodName = "GetContractAddressByName"
-var contractAddress, _ = aelf.GetGenesisContractAddress()
-
-// DemoGetBlockByHash Get Block ByHash demo.
-func DemoGetBlockByHash() (*dto.BlockDto, error) {
-	var includeTransactions = true
-	height, _ := aelf.GetBlockHeight()
-	HeightBlock, _ := aelf.GetBlockByHeight(height, includeTransactions)
-	byHashBlock, err := aelf.GetBlockByHash(HeightBlock.BlockHash, includeTransactions)
-	if err != nil {
-		return nil, errors.New("Get Block By Hash error: " + err.Error())
-	}
-	return byHashBlock, nil
+var sideChainClient = client.AElfClient{
+	Host:    SideChainUrl,
+	Version: "1.0",
 }
 
-// DemoGetAddressFromPubKey Get Address From Public Key demo.
-func DemoGetAddressFromPubKey() string {
-	privateKeyBytes, _ := hex.DecodeString(aelf.PrivateKey)
-	pubkeyBytes := secp256.UncompressedPubkeyFromSeckey(privateKeyBytes)
-	pubKeyAddress := aelf.GetAddressFromPubKey(hex.EncodeToString(pubkeyBytes))
-	return pubKeyAddress
+func getTransferred(txId string) []*pb.Transferred {
+	transffereds := make([]*pb.Transferred, 0)
+	result, err := mainChainClient.GetTransactionResult(txId)
+	if err != nil || len(result.Logs) == 0 {
+		return transffereds
+	}
+
+	contractAddr, _ := mainChainClient.GetContractAddressByName(consts.TokenContractSystemName)
+
+	for _, log := range result.Logs {
+		if log.Name == "Transferred" && log.Address == contractAddr {
+			transferred := new(pb.Transferred)
+			if nonIndexedBytes, err := utils.Base64DecodeBytes(log.NonIndexed); err == nil {
+				proto.Unmarshal(nonIndexedBytes, transferred)
+			}
+			if fromBytes, err := utils.Base64DecodeBytes(log.Indexed[0]); err == nil {
+				temp := new(pb.Transferred)
+				proto.Unmarshal(fromBytes, temp)
+				transferred.From = temp.From
+			}
+			if toBytes, err := utils.Base64DecodeBytes(log.Indexed[1]); err == nil {
+				temp := new(pb.Transferred)
+				proto.Unmarshal(toBytes, temp)
+				transferred.To = temp.To
+			}
+			if symbolBytes, err := utils.Base64DecodeBytes(log.Indexed[2]); err == nil {
+				temp := new(pb.Transferred)
+				proto.Unmarshal(symbolBytes, temp)
+				transferred.Symbol = temp.Symbol
+			}
+			transffereds = append(transffereds, transferred)
+		}
+	}
+
+	return transffereds
 }
 
-// DemoExecuteRawTransaction ExecuteRawTransaction demo.
-func DemoExecuteRawTransaction() (string, error) {
-	chainStatus, err := aelf.GetChainStatus()
-	params := &pb.Hash{
-		Value: utils.GetBytesSha256("AElf.ContractNames.Token"),
+func getCrossChainTransferred(txId string) []*pb.CrossChainTransferred {
+	crossChainTransferreds := make([]*pb.CrossChainTransferred, 0)
+	result, err := sideChainClient.GetTransactionResult(txId)
+	if err != nil || len(result.Logs) == 0 {
+		return crossChainTransferreds
 	}
-	paramsByte, _ := protojson.Marshal(params)
-	var input = &dto.CreateRawTransactionInput{
-		From:           privatekeyAddress,
-		To:             contractAddress,
-		MethodName:     contractMethodName,
-		RefBlockNumber: chainStatus.BestChainHeight,
-		RefBlockHash:   chainStatus.BestChainHash,
-		Params:         string(paramsByte),
+
+	contractAddr, _ := sideChainClient.GetContractAddressByName(consts.TokenContractSystemName)
+
+	for _, log := range result.Logs {
+		if log.Name == "CrossChainTransferred" && log.Address == contractAddr {
+			crossChainTransferred := new(pb.CrossChainTransferred)
+			if nonIndexedBytes, err := utils.Base64DecodeBytes(log.NonIndexed); err == nil {
+				proto.Unmarshal(nonIndexedBytes, crossChainTransferred)
+			}
+			crossChainTransferreds = append(crossChainTransferreds, crossChainTransferred)
+		}
 	}
-	createRaw, err := aelf.CreateRawTransaction(input)
-	if err != nil {
-		return "", errors.New("create rawTransaction error: " + err.Error())
+
+	return crossChainTransferreds
+}
+
+func getCrossChainReceived(txId string) []*pb.CrossChainReceived {
+	crossChainReceiveds := make([]*pb.CrossChainReceived, 0)
+	result, err := mainChainClient.GetTransactionResult(txId)
+	if err != nil || len(result.Logs) == 0 {
+		return crossChainReceiveds
 	}
-	rawTransactionBytes, err := hex.DecodeString(createRaw.RawTransaction)
-	signature, _ := client.GetSignatureWithPrivateKey(aelf.PrivateKey, rawTransactionBytes)
-	var executeRawinput = &dto.ExecuteRawTransactionDto{
-		RawTransaction: createRaw.RawTransaction,
-		Signature:      signature,
+
+	contractAddr, _ := mainChainClient.GetContractAddressByName(consts.TokenContractSystemName)
+
+	for _, log := range result.Logs {
+		if log.Name == "CrossChainReceived" && log.Address == contractAddr {
+			crossChainReceived := new(pb.CrossChainReceived)
+			if nonIndexedBytes, err := utils.Base64DecodeBytes(log.NonIndexed); err == nil {
+				proto.Unmarshal(nonIndexedBytes, crossChainReceived)
+			}
+			crossChainReceiveds = append(crossChainReceiveds, crossChainReceived)
+		}
 	}
-	executeRawresult, err := aelf.ExecuteRawTransaction(executeRawinput)
-	if err != nil {
-		return "", errors.New("execute rawTransaction error: " + err.Error())
+
+	return crossChainReceiveds
+}
+
+func main() {
+	transferTxId := "5c2b267f436b7b50f53acb7f6ebc8221f4167405c042862155734c414c63c501"
+	transferreds := getTransferred(transferTxId)
+
+	for _, t := range transferreds {
+		fmt.Printf("Transferred logevent params: from:%s, to:%s, symbol:%s, amount:%d, memo:%s\n",
+			utils.AddressToBase58String(t.From), utils.AddressToBase58String(t.To), t.Symbol, t.Amount, t.Memo)
 	}
-	return executeRawresult, nil
+
+	crossChainTransferTxId := "0cc31ff44f14d4f155c8bc09b6e2fed4dcbe923c049df4e27c2a14831d5af031"
+	crossChainTransferred := getCrossChainTransferred(crossChainTransferTxId)
+
+	for _, t := range crossChainTransferred {
+		fmt.Printf("CrossChainTransferred logevent params: from:%s, to:%s, symbol:%s, amount:%d, memo:%s, "+
+			"toChainId:%d, issueChainId:%d\n", utils.AddressToBase58String(t.From), utils.AddressToBase58String(t.To),
+			t.Symbol, t.Amount, t.Memo, t.ToChainId, t.IssueChainId)
+	}
+
+	crossChainReceivedTxId := "df731ace1caec3d2d047c5dd03997a2ad1b6e8fc032b40fc073339623031c036"
+	crossChainReceived := mainChainClient.GetCrossChainReceived(crossChainReceivedTxId)
+
+	for _, t := range crossChainReceived {
+		fmt.Printf("CrossChainTransferred logevent params: from:%s, to:%s, symbol:%s, amount:%d, memo:%s, "+
+			"toChainId:%d, issueChainId:%d, parentChainHeight:%d,transferTransactionId: %s\n",
+			utils.AddressToBase58String(t.From), utils.AddressToBase58String(t.To), t.Symbol, t.Amount, t.Memo,
+			t.FromChainId, t.IssueChainId, t.ParentChainHeight, hex.EncodeToString(t.TransferTransactionId.GetValue()))
+	}
+
 }
