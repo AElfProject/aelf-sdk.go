@@ -8,7 +8,7 @@ import (
 )
 
 // var TestAddress = "127.0.0.1:6801"
-const version = "1.5.0.0"
+const version = "1.2.3.0"
 
 func TestNetworkApi(t *testing.T) {
 	// Test GetNetworkInfo
