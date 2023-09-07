@@ -35,7 +35,7 @@ func getTransferred(txId string) []*pb.Transferred {
 	contractAddr, _ := mainChainClient.GetContractAddressByName(consts.TokenContractSystemName)
 
 	for _, log := range result.Logs {
-		if log.Name == "Transferred" && log.Address == contractAddr {
+		if log.Name == consts.TransferredLogEventName && log.Address == contractAddr {
 			transferred := new(pb.Transferred)
 			if nonIndexedBytes, err := utils.Base64DecodeBytes(log.NonIndexed); err == nil {
 				proto.Unmarshal(nonIndexedBytes, transferred)
@@ -72,7 +72,7 @@ func getCrossChainTransferred(txId string) []*pb.CrossChainTransferred {
 	contractAddr, _ := sideChainClient.GetContractAddressByName(consts.TokenContractSystemName)
 
 	for _, log := range result.Logs {
-		if log.Name == "CrossChainTransferred" && log.Address == contractAddr {
+		if log.Name == consts.CrossChainTransferredLogEventName && log.Address == contractAddr {
 			crossChainTransferred := new(pb.CrossChainTransferred)
 			if nonIndexedBytes, err := utils.Base64DecodeBytes(log.NonIndexed); err == nil {
 				proto.Unmarshal(nonIndexedBytes, crossChainTransferred)
@@ -94,7 +94,7 @@ func getCrossChainReceived(txId string) []*pb.CrossChainReceived {
 	contractAddr, _ := mainChainClient.GetContractAddressByName(consts.TokenContractSystemName)
 
 	for _, log := range result.Logs {
-		if log.Name == "CrossChainReceived" && log.Address == contractAddr {
+		if log.Name == consts.CrossChainReceivedLogEventName && log.Address == contractAddr {
 			crossChainReceived := new(pb.CrossChainReceived)
 			if nonIndexedBytes, err := utils.Base64DecodeBytes(log.NonIndexed); err == nil {
 				proto.Unmarshal(nonIndexedBytes, crossChainReceived)
@@ -125,7 +125,7 @@ func main() {
 	}
 
 	crossChainReceivedTxId := "df731ace1caec3d2d047c5dd03997a2ad1b6e8fc032b40fc073339623031c036"
-	crossChainReceived := mainChainClient.GetCrossChainReceived(crossChainReceivedTxId)
+	crossChainReceived := getCrossChainReceived(crossChainReceivedTxId)
 
 	for _, t := range crossChainReceived {
 		fmt.Printf("CrossChainTransferred logevent params: from:%s, to:%s, symbol:%s, amount:%d, memo:%s, "+

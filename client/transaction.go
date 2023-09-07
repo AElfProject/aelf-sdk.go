@@ -5,11 +5,8 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/AElfProject/aelf-sdk.go/dto"
-	"github.com/AElfProject/aelf-sdk.go/model/consts"
-	pb "github.com/AElfProject/aelf-sdk.go/protobuf/generated"
 	util "github.com/AElfProject/aelf-sdk.go/utils"
 	"github.com/davecgh/go-spew/spew"
-	"google.golang.org/protobuf/proto"
 )
 
 // GetTransactionPoolStatus Get information about the current transaction pool.
@@ -196,85 +193,4 @@ func (client *AElfClient) CalculateTransactionFee(input *dto.CalculateTransactio
 	spew.Dump("CalculateTransactionFee : ", feeResult.Success)
 	return feeResult, nil
 
-}
-
-func (client *AElfClient) GetTransferred(txId string) []*pb.Transferred {
-	transffereds := make([]*pb.Transferred, 0)
-	result, err := client.GetTransactionResult(txId)
-	if err != nil || len(result.Logs) == 0 {
-		return transffereds
-	}
-
-	contractAddr, _ := client.GetContractAddressByName(consts.TokenContractSystemName)
-
-	for _, log := range result.Logs {
-		if log.Name == consts.TransferredLogEventName && log.Address == contractAddr {
-			transferred := new(pb.Transferred)
-			if nonIndexedBytes, err := util.Base64DecodeBytes(log.NonIndexed); err == nil {
-				proto.Unmarshal(nonIndexedBytes, transferred)
-			}
-			if fromBytes, err := util.Base64DecodeBytes(log.Indexed[0]); err == nil {
-				temp := new(pb.Transferred)
-				proto.Unmarshal(fromBytes, temp)
-				transferred.From = temp.From
-			}
-			if toBytes, err := util.Base64DecodeBytes(log.Indexed[1]); err == nil {
-				temp := new(pb.Transferred)
-				proto.Unmarshal(toBytes, temp)
-				transferred.To = temp.To
-			}
-			if symbolBytes, err := util.Base64DecodeBytes(log.Indexed[2]); err == nil {
-				temp := new(pb.Transferred)
-				proto.Unmarshal(symbolBytes, temp)
-				transferred.Symbol = temp.Symbol
-			}
-			transffereds = append(transffereds, transferred)
-		}
-	}
-
-	return transffereds
-}
-
-func (client *AElfClient) GetCrossChainTransferred(txId string) []*pb.CrossChainTransferred {
-	crossChainTransferreds := make([]*pb.CrossChainTransferred, 0)
-	result, err := client.GetTransactionResult(txId)
-	if err != nil || len(result.Logs) == 0 {
-		return crossChainTransferreds
-	}
-
-	contractAddr, _ := client.GetContractAddressByName(consts.TokenContractSystemName)
-
-	for _, log := range result.Logs {
-		if log.Name == consts.CrossChainTransferredLogEventName && log.Address == contractAddr {
-			crossChainTransferred := new(pb.CrossChainTransferred)
-			if nonIndexedBytes, err := util.Base64DecodeBytes(log.NonIndexed); err == nil {
-				proto.Unmarshal(nonIndexedBytes, crossChainTransferred)
-			}
-			crossChainTransferreds = append(crossChainTransferreds, crossChainTransferred)
-		}
-	}
-
-	return crossChainTransferreds
-}
-
-func (client *AElfClient) GetCrossChainReceived(txId string) []*pb.CrossChainReceived {
-	crossChainReceiveds := make([]*pb.CrossChainReceived, 0)
-	result, err := client.GetTransactionResult(txId)
-	if err != nil || len(result.Logs) == 0 {
-		return crossChainReceiveds
-	}
-
-	contractAddr, _ := client.GetContractAddressByName(consts.TokenContractSystemName)
-
-	for _, log := range result.Logs {
-		if log.Name == consts.CrossChainReceivedLogEventName && log.Address == contractAddr {
-			crossChainReceived := new(pb.CrossChainReceived)
-			if nonIndexedBytes, err := util.Base64DecodeBytes(log.NonIndexed); err == nil {
-				proto.Unmarshal(nonIndexedBytes, crossChainReceived)
-			}
-			crossChainReceiveds = append(crossChainReceiveds, crossChainReceived)
-		}
-	}
-
-	return crossChainReceiveds
 }

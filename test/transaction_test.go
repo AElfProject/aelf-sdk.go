@@ -42,7 +42,6 @@ const (
 	DefaultTransferTestAmount    = 1000000000
 	DefaultTransferTestMemo      = "transfer in test"
 	DefaultTransferTestWaitTime  = 8 * time.Second
-	DefaultIndexingTestWaitTime  = 2 * time.Minute
 	DefaultMainChain             = "AELF"
 	DefaultTestSideChain         = "tDVW"
 	DefaultTestTokenTotalSupply  = int64(100000000000000000)
@@ -449,77 +448,6 @@ func TestCalculateTransactionFee(t *testing.T) {
 	spew.Dump("CalculateTransactionFeeResult : ", jsonStr)
 
 }
-
-func TestGetTransferred(t *testing.T) {
-	transaction := createTransferTransaction(defaultTestHolder.Address)
-
-	transactionByets, _ := proto.Marshal(transaction)
-	sendResult, err := aelf.SendTransaction(hex.EncodeToString(transactionByets))
-	assert.NoError(t, err)
-	assert.NotEmpty(t, sendResult.TransactionID)
-
-	time.Sleep(DefaultTransferTestWaitTime)
-
-	transferreds := aelf.GetTransferred(sendResult.TransactionID)
-	assert.Len(t, transferreds, 1)
-	assert.Equal(t, DefaultTestSymbol, transferreds[0].GetSymbol())
-	assert.Equal(t, int64(DefaultTransferTestAmount), transferreds[0].GetAmount())
-	assert.Equal(t, DefaultTransferTestMemo, transferreds[0].GetMemo())
-}
-
-//func TestGetCrossChainTransferred(t *testing.T) {
-//	result, _ := createCrossChainTransferTx(defaultSideChainTestHolder.Address)
-//
-//	time.Sleep(DefaultTransferTestWaitTime)
-//	crossChainTransferred := aelf.GetCrossChainTransferred(result.TransactionID)
-//	assert.Len(t, crossChainTransferred, 1)
-//	assert.Equal(t, DefaultTestSymbol, crossChainTransferred[0].GetSymbol())
-//	assert.Equal(t, int64(DefaultTransferTestAmount), crossChainTransferred[0].GetAmount())
-//	assert.Equal(t, DefaultTransferTestMemo, crossChainTransferred[0].GetMemo())
-//}
-//
-//func TestGetCrossChainReceived(t *testing.T) {
-//	crossChainTxOutput, crossChainTxBytes := createCrossChainTransferTx(defaultSideChainTestHolder.Address)
-//
-//	time.Sleep(DefaultTransferTestWaitTime)
-//	txResult, _ := aelf.GetTransactionResult(crossChainTxOutput.TransactionID)
-//
-//	time.Sleep(DefaultIndexingTestWaitTime)
-//	mp, _ := aelf.GetMerklePathByTransactionID(crossChainTxOutput.TransactionID)
-//
-//	params := &pb.CrossChainReceiveTokenInput{
-//		FromChainId:              defaultTestCrossChainFromChainId,
-//		ParentChainHeight:        txResult.BlockNumber,
-//		TransferTransactionBytes: crossChainTxBytes,
-//		MerklePath:               getTxMerklePath(mp),
-//	}
-//
-//	paramsByte, _ := proto.Marshal(params)
-//
-//	tokenContractAddress, _ := testSideChainClient.GetContractAddressByName(consts.TokenContractSystemName)
-//	transaction, _ := testSideChainClient.CreateTransaction(testSideChainClient.GetAddressFromPrivateKey(testSideChainClient.PrivateKey),
-//		tokenContractAddress, consts.CrossChainContractCrossChainReceiveToken, paramsByte)
-//	signature, _ := testSideChainClient.SignTransaction(testSideChainClient.PrivateKey, transaction)
-//	transaction.Signature = signature
-//
-//	txBytes, _ := proto.Marshal(transaction)
-//	result, err := testSideChainClient.SendTransaction(hex.EncodeToString(txBytes))
-//	assert.NoError(t, err)
-//	assert.NotEmpty(t, result.TransactionID)
-//
-//	time.Sleep(DefaultTransferTestWaitTime)
-//	crossChainReceiveds := testSideChainClient.GetCrossChainReceived(result.TransactionID)
-//
-//	assert.Len(t, crossChainReceiveds, 1)
-//	assert.Equal(t, defaultSideChainTestHolder.KeyPair.Address, utils.AddressToBase58String(crossChainReceiveds[0].GetTo()))
-//	assert.Equal(t, aelf.GetAddressFromPrivateKey(aelf.PrivateKey), utils.AddressToBase58String(crossChainReceiveds[0].GetFrom()))
-//	assert.Equal(t, DefaultTestSymbol, crossChainReceiveds[0].GetSymbol())
-//	assert.Equal(t, int64(DefaultTransferTestAmount), crossChainReceiveds[0].GetAmount())
-//	assert.Equal(t, DefaultTransferTestMemo, crossChainReceiveds[0].GetMemo())
-//	assert.Equal(t, defaultTestCrossChainFromChainId, crossChainReceiveds[0].GetFromChainId())
-//	assert.Equal(t, txResult.BlockNumber, crossChainReceiveds[0].GetParentChainHeight())
-//	assert.Equal(t, defaultTestCrossChainFromChainId, crossChainReceiveds[0].GetIssueChainId())
-//}
 
 func createTransferTransaction(toAddress *pb.Address) *pb.Transaction {
 	tokenContractAddress, _ := aelf.GetContractAddressByName(consts.TokenContractSystemName)
