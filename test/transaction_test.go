@@ -185,7 +185,7 @@ func TestSendRawTransaction(t *testing.T) {
 
 	time.Sleep(DefaultTransferTestWaitTime)
 
-	balance, _ := aelf.GetTokenBalance(DefaultTestSymbol, userKeyPairInfo.Address)
+	balance, _ := getTokenBalance(DefaultTestSymbol, userKeyPairInfo.Address)
 	assert.Equal(t, "ELF", balance.Symbol)
 	assert.Equal(t, toAddress.Value, balance.Owner.Value)
 	assert.Equal(t, int64(DefaultTransferTestAmount), balance.Balance)
@@ -236,7 +236,7 @@ func TestSendRawTransactionWithoutReturnTransaction(t *testing.T) {
 
 	time.Sleep(DefaultTransferTestWaitTime)
 
-	balance, _ := aelf.GetTokenBalance(DefaultTestSymbol, userKeyPairInfo.Address)
+	balance, _ := getTokenBalance(DefaultTestSymbol, userKeyPairInfo.Address)
 	assert.Equal(t, DefaultTestSymbol, balance.Symbol)
 	assert.Equal(t, toAddress.Value, balance.Owner.Value)
 	assert.Equal(t, int64(1000000000), balance.Balance)
@@ -386,7 +386,7 @@ func TestExecuteTransaction(t *testing.T) {
 
 	time.Sleep(DefaultTransferTestWaitTime)
 
-	balance, _ := aelf.GetTokenBalance(DefaultTestSymbol, userKeyPairInfo.Address)
+	balance, _ := getTokenBalance(DefaultTestSymbol, userKeyPairInfo.Address)
 	assert.Equal(t, DefaultTestSymbol, balance.Symbol)
 	assert.Equal(t, toAddress.Value, balance.Owner.Value)
 	assert.Equal(t, int64(DefaultTransferTestAmount), balance.Balance)
@@ -519,4 +519,29 @@ func sendTx(fromAddr, contractAddr, methodName string, inputBytes []byte) (*dto.
 	byets, _ := proto.Marshal(tx)
 	exResult, _ := aelf.SendTransaction(hex.EncodeToString(byets))
 	return exResult, byets
+}
+
+func getTokenBalance(symbol, owner string) (*pb.GetBalanceOutput, error) {
+	tokenContractAddr, _ := aelf.GetContractAddressByName(consts.TokenContractSystemName)
+	addr := aelf.GetAddressFromPrivateKey(aelf.PrivateKey)
+	ownerAddr, err := utils.Base58StringToAddress(owner)
+	if err != nil {
+		return &pb.GetBalanceOutput{}, err
+	}
+	inputByte, _ := proto.Marshal(&pb.GetBalanceInput{
+		Symbol: symbol,
+		Owner:  ownerAddr,
+	})
+
+	tx, _ := aelf.CreateTransaction(addr, tokenContractAddr, consts.TokenContractGetBalance, inputByte)
+	tx.Signature, _ = aelf.SignTransaction(aelf.PrivateKey, tx)
+
+	txByets, _ := proto.Marshal(tx)
+	re, _ := aelf.ExecuteTransaction(hex.EncodeToString(txByets))
+
+	balance := &pb.GetBalanceOutput{}
+	bytes, _ := hex.DecodeString(re)
+	proto.Unmarshal(bytes, balance)
+
+	return balance, nil
 }

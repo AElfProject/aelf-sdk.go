@@ -5,7 +5,6 @@ import (
 	"encoding/hex"
 	"errors"
 	"github.com/AElfProject/aelf-sdk.go/model"
-	"github.com/AElfProject/aelf-sdk.go/model/consts"
 	pb "github.com/AElfProject/aelf-sdk.go/protobuf/generated"
 	util "github.com/AElfProject/aelf-sdk.go/utils"
 
@@ -81,51 +80,6 @@ func (client *AElfClient) GetFormattedAddress(address string) (string, error) {
 	executeBytes, err := hex.DecodeString(executeResult)
 	proto.Unmarshal(executeBytes, symbol)
 	return symbol.Value + "_" + address + "_" + chain.ChainId, nil
-}
-
-func (client *AElfClient) GetTokenBalance(symbol, owner string) (*pb.GetBalanceOutput, error) {
-	tokenContractAddr, _ := client.GetContractAddressByName(consts.TokenContractSystemName)
-	addr := client.GetAddressFromPrivateKey(client.PrivateKey)
-	ownerAddr, err := util.Base58StringToAddress(owner)
-	if err != nil {
-		return &pb.GetBalanceOutput{}, err
-	}
-	inputByte, _ := proto.Marshal(&pb.GetBalanceInput{
-		Symbol: symbol,
-		Owner:  ownerAddr,
-	})
-
-	tx, _ := client.CreateTransaction(addr, tokenContractAddr, consts.TokenContractGetBalance, inputByte)
-	tx.Signature, _ = client.SignTransaction(client.PrivateKey, tx)
-
-	txByets, _ := proto.Marshal(tx)
-	re, _ := client.ExecuteTransaction(hex.EncodeToString(txByets))
-
-	balance := &pb.GetBalanceOutput{}
-	bytes, _ := hex.DecodeString(re)
-	proto.Unmarshal(bytes, balance)
-
-	return balance, nil
-}
-
-func (client *AElfClient) GetTokenInfo(symbol string) (*pb.TokenInfo, error) {
-	tokenContractAddr, _ := client.GetContractAddressByName(consts.TokenContractSystemName)
-	addr := client.GetAddressFromPrivateKey(client.PrivateKey)
-	inputByte, _ := proto.Marshal(&pb.TokenInfo{
-		Symbol: symbol,
-	})
-
-	tx, _ := client.CreateTransaction(addr, tokenContractAddr, consts.TokenContractGetTokenInfo, inputByte)
-	tx.Signature, _ = client.SignTransaction(client.PrivateKey, tx)
-
-	txBytes, _ := proto.Marshal(tx)
-	re, _ := client.ExecuteTransaction(hex.EncodeToString(txBytes))
-
-	tokenInfo := &pb.TokenInfo{}
-	bytes, _ := hex.DecodeString(re)
-	proto.Unmarshal(bytes, tokenInfo)
-
-	return tokenInfo, nil
 }
 
 // GetContractAddressByName Get  contract address by contract name.

@@ -102,14 +102,3 @@ func TestGetTransactionFee(t *testing.T) {
 	assert.Equal(t, int64(600), res["ResourceTokenCharged"][1]["WRITE"])
 	assert.Equal(t, int64(200), res["ResourceTokenCharged"][2]["READ"])
 }
-
-func TestGetTokenInfo(t *testing.T) {
-	tokenInfo, err := aelf.GetTokenInfo(DefaultTestSymbol)
-	assert.NoError(t, err)
-	assert.NotEmpty(t, tokenInfo)
-	assert.Equal(t, DefaultTestSymbol, tokenInfo.Symbol)
-	assert.Equal(t, DefaultTestTokenTotalSupply, tokenInfo.TotalSupply)
-	assert.Equal(t, DefaultTestTokenDecimals, tokenInfo.Decimals)
-	assert.Equal(t, DefaultTestTokenIsBurnable, tokenInfo.IsBurnable)
-	assert.Equal(t, DefaultTestTokenIssueChainId, tokenInfo.IssueChainId)
-}

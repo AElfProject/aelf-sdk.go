@@ -106,7 +106,53 @@ func getCrossChainReceived(txId string) []*pb.CrossChainReceived {
 	return crossChainReceiveds
 }
 
+func getTokenBalance(symbol, owner string) (*pb.GetBalanceOutput, error) {
+	tokenContractAddr, _ := mainChainClient.GetContractAddressByName(consts.TokenContractSystemName)
+	addr := mainChainClient.GetAddressFromPrivateKey(mainChainClient.PrivateKey)
+	ownerAddr, err := utils.Base58StringToAddress(owner)
+	if err != nil {
+		return &pb.GetBalanceOutput{}, err
+	}
+	inputByte, _ := proto.Marshal(&pb.GetBalanceInput{
+		Symbol: symbol,
+		Owner:  ownerAddr,
+	})
+
+	tx, _ := mainChainClient.CreateTransaction(addr, tokenContractAddr, consts.TokenContractGetBalance, inputByte)
+	tx.Signature, _ = mainChainClient.SignTransaction(mainChainClient.PrivateKey, tx)
+
+	txByets, _ := proto.Marshal(tx)
+	re, _ := mainChainClient.ExecuteTransaction(hex.EncodeToString(txByets))
+
+	balance := &pb.GetBalanceOutput{}
+	bytes, _ := hex.DecodeString(re)
+	proto.Unmarshal(bytes, balance)
+
+	return balance, nil
+}
+
+func getTokenInfo(symbol string) (*pb.TokenInfo, error) {
+	tokenContractAddr, _ := mainChainClient.GetContractAddressByName(consts.TokenContractSystemName)
+	addr := mainChainClient.GetAddressFromPrivateKey(mainChainClient.PrivateKey)
+	inputByte, _ := proto.Marshal(&pb.TokenInfo{
+		Symbol: symbol,
+	})
+
+	tx, _ := mainChainClient.CreateTransaction(addr, tokenContractAddr, consts.TokenContractGetTokenInfo, inputByte)
+	tx.Signature, _ = mainChainClient.SignTransaction(mainChainClient.PrivateKey, tx)
+
+	txBytes, _ := proto.Marshal(tx)
+	re, _ := mainChainClient.ExecuteTransaction(hex.EncodeToString(txBytes))
+
+	tokenInfo := &pb.TokenInfo{}
+	bytes, _ := hex.DecodeString(re)
+	proto.Unmarshal(bytes, tokenInfo)
+
+	return tokenInfo, nil
+}
+
 func main() {
+	// handle transferred log event
 	transferTxId := "5c2b267f436b7b50f53acb7f6ebc8221f4167405c042862155734c414c63c501"
 	transferreds := getTransferred(transferTxId)
 
@@ -115,6 +161,7 @@ func main() {
 			utils.AddressToBase58String(t.From), utils.AddressToBase58String(t.To), t.Symbol, t.Amount, t.Memo)
 	}
 
+	// handle crossChainTransfer log event
 	crossChainTransferTxId := "0cc31ff44f14d4f155c8bc09b6e2fed4dcbe923c049df4e27c2a14831d5af031"
 	crossChainTransferred := getCrossChainTransferred(crossChainTransferTxId)
 
@@ -124,6 +171,7 @@ func main() {
 			t.Symbol, t.Amount, t.Memo, t.ToChainId, t.IssueChainId)
 	}
 
+	// handle crossChainReceived log event
 	crossChainReceivedTxId := "df731ace1caec3d2d047c5dd03997a2ad1b6e8fc032b40fc073339623031c036"
 	crossChainReceived := getCrossChainReceived(crossChainReceivedTxId)
 
@@ -134,4 +182,13 @@ func main() {
 			t.FromChainId, t.IssueChainId, t.ParentChainHeight, hex.EncodeToString(t.TransferTransactionId.GetValue()))
 	}
 
+	// get token info
+	elf, _ := getTokenInfo("ELF")
+	fmt.Printf("ELF symbol:%s decimals:%d tokenName:%s,supply:%d totalSupply:%d issuer:%s issueChainId:%d",
+		elf.Symbol, elf.Decimals, elf.TokenName, elf.Supply, elf.TotalSupply, utils.AddressToBase58String(elf.Issuer), elf.IssueChainId)
+
+	// get owner token balance
+	userKeyPairInfo := mainChainClient.GenerateKeyPairInfo()
+	balance, _ := getTokenBalance("ELF", userKeyPairInfo.Address)
+	fmt.Printf("%s ELF Amount: %d.", userKeyPairInfo.Address, balance.Balance)
 }
