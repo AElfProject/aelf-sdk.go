@@ -7,145 +7,212 @@ package client;
 
 //tokenContract
 message TokenInfo {
-    // The symbol of the token.f
-    string symbol = 1;
-    // The full name of the token.
-    string token_name = 2;
-    // The current supply of the token.
-    int64 supply = 3;
-    // The total supply of the token.
-    int64 total_supply = 4;
-    // The precision of the token.
-    int32 decimals = 5;
-    // The address that created the token.
-    client.Address issuer = 6;
-    // A flag indicating if this token is burnable.
-    bool is_burnable = 7;
-    // The chain id of the token.
-    int32 issue_chain_id = 8;
-    // The amount of issued tokens.
-    int64 issued = 9;
+  // The symbol of the token.f
+  string symbol = 1;
+  // The full name of the token.
+  string token_name = 2;
+  // The current supply of the token.
+  int64 supply = 3;
+  // The total supply of the token.
+  int64 total_supply = 4;
+  // The precision of the token.
+  int32 decimals = 5;
+  // The address that created the token.
+  client.Address issuer = 6;
+  // A flag indicating if this token is burnable.
+  bool is_burnable = 7;
+  // The chain id of the token.
+  int32 issue_chain_id = 8;
+  // The amount of issued tokens.
+  int64 issued = 9;
 }
 
 message GetTokenInfoInput {
-    // The symbol of token.
-    string symbol = 1;
+  // The symbol of token.
+  string symbol = 1;
 }
 
 message TokenInfoList {
-    // List of token information.
-    repeated TokenInfo value = 1;
+  // List of token information.
+  repeated TokenInfo value = 1;
 }
 
 message GetBalanceInput {
-    // The symbol of token.
-    string symbol = 1;
-    // The target address of the query.
-    client.Address owner = 2;
+  // The symbol of token.
+  string symbol = 1;
+  // The target address of the query.
+  client.Address owner = 2;
 }
 
 message GetBalanceOutput {
-    // The symbol of token.
-    string symbol = 1;
-    // The target address of the query.
-    client.Address owner = 2;
-    // The balance of the owner.
-    int64 balance = 3;
+  // The symbol of token.
+  string symbol = 1;
+  // The target address of the query.
+  client.Address owner = 2;
+  // The balance of the owner.
+  int64 balance = 3;
 }
 
 message GetAllowanceInput {
-    // The symbol of token.
-    string symbol = 1;
-    // The address of the token owner.
-    client.Address owner = 2;
-    // The address of the spender.
-    client.Address spender = 3;
+  // The symbol of token.
+  string symbol = 1;
+  // The address of the token owner.
+  client.Address owner = 2;
+  // The address of the spender.
+  client.Address spender = 3;
 }
 
 message GetAllowanceOutput {
-    // The symbol of token.
-    string symbol = 1;
-    // The address of the token owner.
-    client.Address owner = 2;
-    // The address of the spender.
-    client.Address spender = 3;
-    // The amount of allowance.
-    int64 allowance = 4;
+  // The symbol of token.
+  string symbol = 1;
+  // The address of the token owner.
+  client.Address owner = 2;
+  // The address of the spender.
+  client.Address spender = 3;
+  // The amount of allowance.
+  int64 allowance = 4;
 }
 
 message IsInWhiteListInput {
-    // The symbol of token. 
-    string symbol = 1;
-    // The address to check.
-    client.Address address = 2;
+  // The symbol of token.
+  string symbol = 1;
+  // The address to check.
+  client.Address address = 2;
 }
 
 message GetLockedAmountInput {
-    // The address of the lock.
-    client.Address address = 1;
-    // The token symbol.
-    string symbol = 2;
-    // The id of the lock.
-    client.Hash lock_id = 3;
+  // The address of the lock.
+  client.Address address = 1;
+  // The token symbol.
+  string symbol = 2;
+  // The id of the lock.
+  client.Hash lock_id = 3;
 }
 
 message GetLockedAmountOutput {
-    // The address of the lock.
-    client.Address address = 1;
-    // The token symbol.
-    string symbol = 2;
-    // The id of the lock.
-    client.Hash lock_id = 3;
-    // The locked amount.
-    int64 amount = 4;
+  // The address of the lock.
+  client.Address address = 1;
+  // The token symbol.
+  string symbol = 2;
+  // The id of the lock.
+  client.Hash lock_id = 3;
+  // The locked amount.
+  int64 amount = 4;
 }
 
 message GetVirtualAddressForLockingInput {
-    // The address of the lock. 
-    client.Address address = 1;
-    // The id of the lock. 
-    client.Hash lock_id = 2;
+  // The address of the lock.
+  client.Address address = 1;
+  // The id of the lock.
+  client.Hash lock_id = 2;
 }
 
 message GetCrossChainTransferTokenContractAddressInput {
-    // The chain id.
-    int32 chainId = 1;
+  // The chain id.
+  int32 chainId = 1;
 }
 
 message TransferFromInput {
-    // The source address of the token.
-    client.Address from = 1;
-    // The destination address of the token.
-    client.Address to = 2;
-    // The symbol of the token to transfer.
-    string symbol = 3;
-    // The amount to transfer.
-    int64 amount = 4;
-    // The memo.
-    string memo = 5;
+  // The source address of the token.
+  client.Address from = 1;
+  // The destination address of the token.
+  client.Address to = 2;
+  // The symbol of the token to transfer.
+  string symbol = 3;
+  // The amount to transfer.
+  int64 amount = 4;
+  // The memo.
+  string memo = 5;
 }
 
 message TransferInput {
-    // The receiver of the token.
-    client.Address to = 1;
-    // The token symbol to transfer.
-    string symbol = 2;
-    // The amount to to transfer.
-    int64 amount = 3;
-    // The memo.
-    string memo = 4;
+  // The receiver of the token.
+  client.Address to = 1;
+  // The token symbol to transfer.
+  string symbol = 2;
+  // The amount to to transfer.
+  int64 amount = 3;
+  // The memo.
+  string memo = 4;
 }
 
 message Transferred {
-    option (client.is_event) = true;
-    // The source address of the transferred token.
-    client.Address from = 1 [(client.is_indexed) = true];
-    // The destination address of the transferred token.
-    client.Address to = 2 [(client.is_indexed) = true];
-    // The symbol of the transferred token.
-    string symbol = 3 [(client.is_indexed) = true];
-    // The amount of the transferred token.
-    int64 amount = 4;
-    // The memo.
-    string memo = 5;
+  option (client.is_event) = true;
+  // The source address of the transferred token.
+  client.Address from = 1 [(client.is_indexed) = true];
+  // The destination address of the transferred token.
+  client.Address to = 2 [(client.is_indexed) = true];
+  // The symbol of the transferred token.
+  string symbol = 3 [(client.is_indexed) = true];
+  // The amount of the transferred token.
+  int64 amount = 4;
+  // The memo.
+  string memo = 5;
 }
+
+message CrossChainTransferInput {
+  // The receiver of transfer.
+  client.Address to = 1;
+  // The symbol of token.
+  string symbol = 2;
+  // The amount of token to transfer.
+  int64 amount = 3;
+  // The memo.
+  string memo = 4;
+  // The destination chain id.
+  int32 to_chain_id = 5;
+  // The chain id of the token.
+  int32 issue_chain_id = 6;
+}
+
+message CrossChainTransferred {
+  option (client.is_event) = true;
+  // The source address of the transferred token.
+  client.Address from = 1;
+  // The destination address of the transferred token.
+  client.Address to = 2;
+  // The symbol of the transferred token.
+  string symbol = 3;
+  // The amount of the transferred token.
+  int64 amount = 4;
+  // The memo.
+  string memo = 5;
+  // The destination chain id.
+  int32 to_chain_id = 6;
+  // The chain id of the token.
+  int32 issue_chain_id = 7;
+}
+
+message CrossChainReceiveTokenInput {
+  // The source chain id.
+  int32 from_chain_id = 1;
+  // The height of the transfer transaction.
+  int64 parent_chain_height = 2;
+  // The raw bytes of the transfer transaction.
+  bytes transfer_transaction_bytes = 3;
+  // The merkle path created from the transfer transaction.
+  client.MerklePath merkle_path = 4;
+}
+
+message CrossChainReceived {
+  option (client.is_event) = true;
+  // The source address of the transferred token.
+  client.Address from = 1;
+  // The destination address of the transferred token.
+  client.Address to = 2;
+  // The symbol of the received token.
+  string symbol = 3;
+  // The amount of the received token.
+  int64 amount = 4;
+  // The memo.
+  string memo = 5;
+  // The destination chain id.
+  int32 from_chain_id = 6;
+  // The chain id of the token.
+  int32 issue_chain_id = 7;
+  // The parent chain height of the transfer transaction.
+  int64 parent_chain_height = 8;
+  // The id of transfer transaction.
+  client.Hash transfer_transaction_id = 9;
+}
+

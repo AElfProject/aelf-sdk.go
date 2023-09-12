@@ -4,6 +4,8 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
+	"github.com/AElfProject/aelf-sdk.go/model"
+	"github.com/AElfProject/aelf-sdk.go/model/consts"
 	"strings"
 	"testing"
 	"time"
@@ -20,8 +22,50 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var ContractMethodName = "GetContractAddressByName"
-var ContractAddress, _ = aelf.GetGenesisContractAddress()
+var (
+	ContractAddress, _               = aelf.GetGenesisContractAddress()
+	defaultTestHolder                = getDefaultTestHolder(true)
+	defaultSideChainTestHolder       = getDefaultTestHolder(false)
+	defaultTestCrossChainFromChainId = utils.ConvertBase58ToChainId(DefaultMainChain)
+	defaultTestCrossChainToChainId   = utils.ConvertBase58ToChainId(DefaultTestSideChain)
+	testSideChainClient              = client.AElfClient{
+		Host:       "http://127.0.0.1:8000",
+		Version:    "1.0",
+		PrivateKey: "*",
+	}
+)
+
+const (
+	ContractMethodName = "GetContractAddressByName"
+
+	DefaultTestSymbol            = "ELF"
+	DefaultTransferTestAmount    = 1000000000
+	DefaultTransferTestMemo      = "transfer in test"
+	DefaultTransferTestWaitTime  = 8 * time.Second
+	DefaultMainChain             = "AELF"
+	DefaultTestSideChain         = "tDVW"
+	DefaultTestTokenTotalSupply  = int64(100000000000000000)
+	DefaultTestTokenDecimals     = int32(8)
+	DefaultTestTokenIsBurnable   = true
+	DefaultTestTokenIssueChainId = int32(9992731)
+)
+
+type TestHolder struct {
+	KeyPair *model.KeyPairInfo
+	Address *pb.Address
+}
+
+func getDefaultTestHolder(isMainChain bool) *TestHolder {
+	userKeyPairInfo := aelf.GenerateKeyPairInfo()
+	if isMainChain == false {
+		userKeyPairInfo = testSideChainClient.GenerateKeyPairInfo()
+	}
+	toAddress, _ := util.Base58StringToAddress(userKeyPairInfo.Address)
+	return &TestHolder{
+		KeyPair: userKeyPairInfo,
+		Address: toAddress,
+	}
+}
 
 func TestGetTransactionResult(t *testing.T) {
 	var isTransactions = true
@@ -78,7 +122,7 @@ func TestCreateRawTransaction(t *testing.T) {
 	chainStatus, err := aelf.GetChainStatus()
 	assert.NoError(t, err)
 	params := &pb.Hash{
-		Value: utils.GetBytesSha256("AElf.ContractNames.Token"),
+		Value: utils.GetBytesSha256(consts.TokenContractSystemName),
 	}
 	paramsByte, _ := protojson.Marshal(params)
 	var input = &dto.CreateRawTransactionInput{
@@ -96,21 +140,21 @@ func TestCreateRawTransaction(t *testing.T) {
 
 func TestSendRawTransaction(t *testing.T) {
 	chainStatus, err := aelf.GetChainStatus()
-	tokenContractAddress, _ := aelf.GetContractAddressByName("AElf.ContractNames.Token")
+	tokenContractAddress, _ := aelf.GetContractAddressByName(consts.TokenContractSystemName)
 	userKeyPairInfo := aelf.GenerateKeyPairInfo()
 	toAddress, _ := util.Base58StringToAddress(userKeyPairInfo.Address)
 	params := &pb.TransferInput{
 		To:     toAddress,
-		Symbol: "ELF",
-		Amount: 1000000000,
-		Memo:   "transfer in test",
+		Symbol: DefaultTestSymbol,
+		Amount: DefaultTransferTestAmount,
+		Memo:   DefaultTransferTestMemo,
 	}
 
 	paramsByte, _ := protojson.Marshal(params)
 	var input = &dto.CreateRawTransactionInput{
 		From:           _address,
 		To:             tokenContractAddress,
-		MethodName:     "Transfer",
+		MethodName:     consts.TokenContractTransfer,
 		RefBlockNumber: chainStatus.BestChainHeight,
 		RefBlockHash:   chainStatus.BestChainHash,
 		Params:         string(paramsByte),
@@ -134,29 +178,29 @@ func TestSendRawTransaction(t *testing.T) {
 	assert.Equal(t, chainStatus.BestChainHeight, executeRawResult.Transaction.RefBlockNumber)
 	prefixBytes, _ := hex.DecodeString(chainStatus.BestChainHash)
 	assert.Equal(t, base64.StdEncoding.EncodeToString(prefixBytes[:4]), executeRawResult.Transaction.RefBlockPrefix)
-	assert.Equal(t, "Transfer", executeRawResult.Transaction.MethodName)
+	assert.Equal(t, consts.TokenContractTransfer, executeRawResult.Transaction.MethodName)
 	assert.Equal(t, "{ \"to\": \""+userKeyPairInfo.Address+"\", \"symbol\": \"ELF\", \"amount\": \"1000000000\", \"memo\": \"transfer in test\" }", executeRawResult.Transaction.Params)
 	signatureBytes, _ := hex.DecodeString(signature)
 	assert.Equal(t, base64.StdEncoding.EncodeToString(signatureBytes), executeRawResult.Transaction.Signature)
 
-	time.Sleep(time.Duration(4) * time.Second)
+	time.Sleep(DefaultTransferTestWaitTime)
 
-	balance := getBanlance(toAddress)
+	balance, _ := getTokenBalance(DefaultTestSymbol, userKeyPairInfo.Address)
 	assert.Equal(t, "ELF", balance.Symbol)
 	assert.Equal(t, toAddress.Value, balance.Owner.Value)
-	assert.Equal(t, int64(1000000000), balance.Balance)
+	assert.Equal(t, int64(DefaultTransferTestAmount), balance.Balance)
 }
 
 func TestSendRawTransactionWithoutReturnTransaction(t *testing.T) {
 	chainStatus, err := aelf.GetChainStatus()
-	tokenContractAddress, _ := aelf.GetContractAddressByName("AElf.ContractNames.Token")
+	tokenContractAddress, _ := aelf.GetContractAddressByName(consts.TokenContractSystemName)
 	userKeyPairInfo := aelf.GenerateKeyPairInfo()
 	toAddress, _ := util.Base58StringToAddress(userKeyPairInfo.Address)
 	params := &pb.TransferInput{
 		To:     toAddress,
-		Symbol: "ELF",
-		Amount: 1000000000,
-		Memo:   "transfer in test",
+		Symbol: DefaultTestSymbol,
+		Amount: DefaultTransferTestAmount,
+		Memo:   DefaultTransferTestMemo,
 	}
 
 	paramsByte, _ := protojson.Marshal(params)
@@ -190,17 +234,17 @@ func TestSendRawTransactionWithoutReturnTransaction(t *testing.T) {
 	assert.Empty(t, executeRawResult.Transaction.Params)
 	assert.Empty(t, executeRawResult.Transaction.Signature)
 
-	time.Sleep(time.Duration(4) * time.Second)
+	time.Sleep(DefaultTransferTestWaitTime)
 
-	balance := getBanlance(toAddress)
-	assert.Equal(t, "ELF", balance.Symbol)
+	balance, _ := getTokenBalance(DefaultTestSymbol, userKeyPairInfo.Address)
+	assert.Equal(t, DefaultTestSymbol, balance.Symbol)
 	assert.Equal(t, toAddress.Value, balance.Owner.Value)
 	assert.Equal(t, int64(1000000000), balance.Balance)
 }
 
 func TestExecuteRawTransaction(t *testing.T) {
 	chainStatus, err := aelf.GetChainStatus()
-	tokenContractAddress, _ := aelf.GetContractAddressByName("AElf.ContractNames.Token")
+	tokenContractAddress, _ := aelf.GetContractAddressByName(consts.TokenContractSystemName)
 	userKeyPairInfo := aelf.GenerateKeyPairInfo()
 	toAddress, _ := util.Base58StringToAddress(userKeyPairInfo.Address)
 	transaction := createTransferTransaction(toAddress)
@@ -209,10 +253,10 @@ func TestExecuteRawTransaction(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotEmpty(t, sendResult.TransactionID)
 
-	time.Sleep(time.Duration(4) * time.Second)
+	time.Sleep(DefaultTransferTestWaitTime)
 
 	getBalanceInput := &pb.GetBalanceInput{
-		Symbol: "ELF",
+		Symbol: DefaultTestSymbol,
 		Owner:  toAddress,
 	}
 	paramsByte, _ := protojson.Marshal(getBalanceInput)
@@ -220,7 +264,7 @@ func TestExecuteRawTransaction(t *testing.T) {
 	var input = &dto.CreateRawTransactionInput{
 		From:           _address,
 		To:             tokenContractAddress,
-		MethodName:     "GetBalance",
+		MethodName:     consts.TokenContractGetBalance,
 		RefBlockNumber: chainStatus.BestChainHeight,
 		RefBlockHash:   chainStatus.BestChainHash,
 		Params:         string(paramsByte),
@@ -242,7 +286,7 @@ func TestExecuteRawTransaction(t *testing.T) {
 
 func TestSendTransaction(t *testing.T) {
 	// Get token contract address.
-	tokenContractAddress, _ := aelf.GetContractAddressByName("AElf.ContractNames.Token")
+	tokenContractAddress, _ := aelf.GetContractAddressByName(consts.TokenContractSystemName)
 	fromAddress := aelf.GetAddressFromPrivateKey(aelf.PrivateKey)
 	userKeyPairInfo := aelf.GenerateKeyPairInfo()
 	toAddress, _ := util.Base58StringToAddress(userKeyPairInfo.Address)
@@ -254,7 +298,7 @@ func TestSendTransaction(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotEmpty(t, sendResult.TransactionID)
 
-	time.Sleep(time.Duration(4) * time.Second)
+	time.Sleep(DefaultTransferTestWaitTime)
 
 	transactionResult, err := aelf.GetTransactionResult(sendResult.TransactionID)
 	//spew.Dump("Create Raw Transaction result", transactionResult)
@@ -270,7 +314,7 @@ func TestSendTransaction(t *testing.T) {
 	var feeCharged = new(pb.TransactionFeeCharged)
 	nonIndexedBytes, _ := util.Base64DecodeBytes(transactionResult.Logs[0].NonIndexed)
 	proto.Unmarshal(nonIndexedBytes, feeCharged)
-	assert.Equal(t, "ELF", feeCharged.Symbol)
+	assert.Equal(t, DefaultTestSymbol, feeCharged.Symbol)
 	assert.True(t, feeCharged.Amount > 0)
 
 	assert.Equal(t, tokenContractAddress, transactionResult.Logs[1].Address)
@@ -288,7 +332,7 @@ func TestSendTransaction(t *testing.T) {
 	transferred = new(pb.Transferred)
 	indexedBytes, _ = util.Base64DecodeBytes(transactionResult.Logs[1].Indexed[2])
 	proto.Unmarshal(indexedBytes, transferred)
-	assert.Equal(t, "ELF", transferred.Symbol)
+	assert.Equal(t, DefaultTestSymbol, transferred.Symbol)
 
 	transferred = new(pb.Transferred)
 	nonIndexedBytes, _ = util.Base64DecodeBytes(transactionResult.Logs[1].NonIndexed)
@@ -298,16 +342,16 @@ func TestSendTransaction(t *testing.T) {
 }
 
 func TestSendFailedTransaction(t *testing.T) {
-	tokenContractAddress, _ := aelf.GetContractAddressByName("AElf.ContractNames.Token")
+	tokenContractAddress, _ := aelf.GetContractAddressByName(consts.TokenContractSystemName)
 	toAddress, _ := util.Base58StringToAddress(aelf.GetAddressFromPrivateKey(aelf.PrivateKey))
 	userKeyPairInfo := aelf.GenerateKeyPairInfo()
-	methodName := "Transfer"
+	methodName := consts.TokenContractTransfer
 
 	params := &pb.TransferInput{
 		To:     toAddress,
-		Symbol: "ELF",
-		Amount: 1000000000,
-		Memo:   "transfer in test",
+		Symbol: DefaultTestSymbol,
+		Amount: DefaultTransferTestAmount,
+		Memo:   DefaultTransferTestMemo,
 	}
 	paramsByte, _ := proto.Marshal(params)
 
@@ -322,7 +366,7 @@ func TestSendFailedTransaction(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotEmpty(t, sendResult.TransactionID)
 
-	time.Sleep(time.Duration(4) * time.Second)
+	time.Sleep(DefaultTransferTestWaitTime)
 
 	transactionResult, err := aelf.GetTransactionResult(sendResult.TransactionID)
 	assert.NoError(t, err)
@@ -340,13 +384,12 @@ func TestExecuteTransaction(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotEmpty(t, sendResult.TransactionID)
 
-	time.Sleep(time.Duration(4) * time.Second)
+	time.Sleep(DefaultTransferTestWaitTime)
 
-	balance := getBanlance(toAddress)
-
-	assert.Equal(t, "ELF", balance.Symbol)
+	balance, _ := getTokenBalance(DefaultTestSymbol, userKeyPairInfo.Address)
+	assert.Equal(t, DefaultTestSymbol, balance.Symbol)
 	assert.Equal(t, toAddress.Value, balance.Owner.Value)
-	assert.Equal(t, int64(1000000000), balance.Balance)
+	assert.Equal(t, int64(DefaultTransferTestAmount), balance.Balance)
 }
 
 func TestSendTransctions(t *testing.T) {
@@ -365,7 +408,7 @@ func TestSendTransctions(t *testing.T) {
 	assert.NotEmpty(t, results[0])
 	assert.NotEmpty(t, results[1])
 
-	time.Sleep(time.Duration(4) * time.Second)
+	time.Sleep(DefaultTransferTestWaitTime)
 
 	for i := 0; i < 2; i++ {
 		transactionResult, _ := aelf.GetTransactionResult(results[i].(string))
@@ -377,7 +420,7 @@ func TestCalculateTransactionFee(t *testing.T) {
 	chainStatus, err := aelf.GetChainStatus()
 	assert.NoError(t, err)
 	params := &pb.Hash{
-		Value: utils.GetBytesSha256("AElf.ContractNames.Token"),
+		Value: utils.GetBytesSha256(consts.TokenContractSystemName),
 	}
 	paramsByte, _ := protojson.Marshal(params)
 	var input = &dto.CreateRawTransactionInput{
@@ -399,51 +442,106 @@ func TestCalculateTransactionFee(t *testing.T) {
 	assert.NoError(t, err)
 	jsonStr, err := json.Marshal(feeResult.TransactionFee)
 	assert.True(t, feeResult.Success)
-	assert.NotEmpty(t, feeResult.TransactionFee["ELF"])
-	assert.Greater(t, feeResult.TransactionFee["ELF"], float64(1.7e+07))
-	assert.Less(t, feeResult.TransactionFee["ELF"], float64(1.9e+07))
+	assert.NotEmpty(t, feeResult.TransactionFee[DefaultTestSymbol])
+	assert.Greater(t, feeResult.TransactionFee[DefaultTestSymbol], float64(1.7e+05))
+	assert.Less(t, feeResult.TransactionFee[DefaultTestSymbol], float64(1.9e+07))
 	spew.Dump("CalculateTransactionFeeResult : ", jsonStr)
 
 }
 
 func createTransferTransaction(toAddress *pb.Address) *pb.Transaction {
-	tokenContractAddress, _ := aelf.GetContractAddressByName("AElf.ContractNames.Token")
-	fromAddress := aelf.GetAddressFromPrivateKey(aelf.PrivateKey)
-	methodName := "Transfer"
+	tokenContractAddress, _ := aelf.GetContractAddressByName(consts.TokenContractSystemName)
+	methodName := consts.TokenContractTransfer
 
 	params := &pb.TransferInput{
 		To:     toAddress,
-		Symbol: "ELF",
-		Amount: 1000000000,
-		Memo:   "transfer in test",
+		Symbol: DefaultTestSymbol,
+		Amount: DefaultTransferTestAmount,
+		Memo:   DefaultTransferTestMemo,
 	}
+
 	paramsByte, _ := proto.Marshal(params)
 
-	transaction, _ := aelf.CreateTransaction(fromAddress, tokenContractAddress, methodName, paramsByte)
+	transaction, _ := aelf.CreateTransaction(aelf.GetAddressFromPrivateKey(aelf.PrivateKey), tokenContractAddress, methodName, paramsByte)
 	signature, _ := aelf.SignTransaction(aelf.PrivateKey, transaction)
 	transaction.Signature = signature
 
 	return transaction
 }
 
-func getBanlance(owner *pb.Address) *pb.GetBalanceOutput {
-	tokenContractAddress, _ := aelf.GetContractAddressByName("AElf.ContractNames.Token")
+func createCrossChainTransferTx(toAddress *pb.Address) (*dto.SendTransactionOutput, []byte) {
+	crossChainContractAddress, _ := aelf.GetContractAddressByName(consts.TokenContractSystemName)
 	fromAddress := aelf.GetAddressFromPrivateKey(aelf.PrivateKey)
-	getBalanceInput := &pb.GetBalanceInput{
-		Symbol: "ELF",
-		Owner:  owner,
+	methodName := consts.TokenContractCrossChainTransfer
+
+	params := &pb.CrossChainTransferInput{
+		To:           toAddress,
+		Symbol:       DefaultTestSymbol,
+		Amount:       DefaultTransferTestAmount,
+		Memo:         DefaultTransferTestMemo,
+		ToChainId:    defaultTestCrossChainToChainId,
+		IssueChainId: defaultTestCrossChainFromChainId,
 	}
-	getBalanceInputByte, _ := proto.Marshal(getBalanceInput)
 
-	getBalanceTransaction, _ := aelf.CreateTransaction(fromAddress, tokenContractAddress, "GetBalance", getBalanceInputByte)
-	getBalanceSignature, _ := aelf.SignTransaction(aelf.PrivateKey, getBalanceTransaction)
-	getBalanceTransaction.Signature = getBalanceSignature
+	paramsByte, _ := proto.Marshal(params)
 
-	getBalanceTransactionByets, _ := proto.Marshal(getBalanceTransaction)
-	getBalanceResult, _ := aelf.ExecuteTransaction(hex.EncodeToString(getBalanceTransactionByets))
+	result, txByets := sendTx(fromAddress, crossChainContractAddress, methodName, paramsByte)
+	return result, txByets
+}
+
+func getTxMerklePath(merklePath *dto.MerklePathDto) *pb.MerklePath {
+	mpn := make([]*pb.MerklePathNode, len(merklePath.MerklePathNodes))
+	for i, node := range merklePath.MerklePathNodes {
+		hashByte, _ := hex.DecodeString(node.Hash)
+		mpn[i] = &pb.MerklePathNode{
+			Hash:            &pb.Hash{Value: hashByte},
+			IsLeftChildNode: node.IsLeftChildNode,
+		}
+	}
+	return &pb.MerklePath{MerklePathNodes: mpn}
+}
+
+func exTx(fromAddr, contractAddr, methodName string, inputBytes []byte) string {
+	tx, _ := aelf.CreateTransaction(fromAddr, contractAddr, methodName, inputBytes)
+	sign, _ := aelf.SignTransaction(aelf.PrivateKey, tx)
+	tx.Signature = sign
+
+	byets, _ := proto.Marshal(tx)
+	exResult, _ := aelf.ExecuteTransaction(hex.EncodeToString(byets))
+	return exResult
+}
+
+func sendTx(fromAddr, contractAddr, methodName string, inputBytes []byte) (*dto.SendTransactionOutput, []byte) {
+	tx, _ := aelf.CreateTransaction(fromAddr, contractAddr, methodName, inputBytes)
+	sign, _ := aelf.SignTransaction(aelf.PrivateKey, tx)
+	tx.Signature = sign
+
+	byets, _ := proto.Marshal(tx)
+	exResult, _ := aelf.SendTransaction(hex.EncodeToString(byets))
+	return exResult, byets
+}
+
+func getTokenBalance(symbol, owner string) (*pb.GetBalanceOutput, error) {
+	tokenContractAddr, _ := aelf.GetContractAddressByName(consts.TokenContractSystemName)
+	addr := aelf.GetAddressFromPrivateKey(aelf.PrivateKey)
+	ownerAddr, err := utils.Base58StringToAddress(owner)
+	if err != nil {
+		return &pb.GetBalanceOutput{}, err
+	}
+	inputByte, _ := proto.Marshal(&pb.GetBalanceInput{
+		Symbol: symbol,
+		Owner:  ownerAddr,
+	})
+
+	tx, _ := aelf.CreateTransaction(addr, tokenContractAddr, consts.TokenContractGetBalance, inputByte)
+	tx.Signature, _ = aelf.SignTransaction(aelf.PrivateKey, tx)
+
+	txByets, _ := proto.Marshal(tx)
+	re, _ := aelf.ExecuteTransaction(hex.EncodeToString(txByets))
+
 	balance := &pb.GetBalanceOutput{}
-	getBalanceResultBytes, _ := hex.DecodeString(getBalanceResult)
-	proto.Unmarshal(getBalanceResultBytes, balance)
+	bytes, _ := hex.DecodeString(re)
+	proto.Unmarshal(bytes, balance)
 
-	return balance
+	return balance, nil
 }

@@ -14,7 +14,7 @@ func TestNetworkApi(t *testing.T) {
 	// Test GetNetworkInfo
 	netWorkInfo, err := aelf.GetNetworkInfo()
 	assert.NoError(t, err)
-	assert.Equal(t, netWorkInfo.Version, version)
+	assert.Equal(t, version, netWorkInfo.Version)
 	spew.Dump("Get Network Info Result", netWorkInfo)
 
 	// Test AddPeer
