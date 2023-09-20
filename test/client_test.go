@@ -3,6 +3,7 @@ package test
 import (
 	"encoding/base64"
 	"encoding/hex"
+	"github.com/AElfProject/aelf-sdk.go/model/consts"
 	"testing"
 
 	"github.com/AElfProject/aelf-sdk.go/client"
@@ -48,7 +49,7 @@ func TestGenerateKeyPairInfo(t *testing.T) {
 }
 
 func TestGetContractAddressByName(t *testing.T) {
-	contractAddress, err := aelf.GetContractAddressByName("AElf.ContractNames.Token")
+	contractAddress, err := aelf.GetContractAddressByName(consts.TokenContractSystemName)
 	assert.NoError(t, err)
 	spew.Dump("Get ContractAddress By Name Result", contractAddress)
 }
