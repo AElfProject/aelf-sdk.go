@@ -1,6 +1,7 @@
 package test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/davecgh/go-spew/spew"
@@ -9,6 +10,7 @@ import (
 
 func TestGetChainStatus(t *testing.T) {
 	chainStatus, err := aelf.GetChainStatus()
+	fmt.Print(chainStatus)
 
 	assert.NoError(t, err)
 	assert.Equal(t, "AELF", chainStatus.ChainId)

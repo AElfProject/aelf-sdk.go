@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"github.com/AElfProject/aelf-sdk.go/model/consts"
+	util "github.com/AElfProject/aelf-sdk.go/utils"
 	"testing"
 
 	"github.com/AElfProject/aelf-sdk.go/client"
@@ -21,7 +22,7 @@ import (
 var aelf = client.AElfClient{
 	Host:       "http://127.0.0.1:8000",
 	Version:    "1.0",
-	PrivateKey: "cd86ab6347d8e52bbbe8532141fc59ce596268143a308d1d40fedf385528b458",
+	PrivateKey: "342e3fa65ce01c2b6d81f766222d6cf1f051ad40245cda4ab147567b1100c28f",
 }
 
 var _address = aelf.GetAddressFromPrivateKey(aelf.PrivateKey)
@@ -101,4 +102,54 @@ func TestGetTransactionFee(t *testing.T) {
 	assert.Equal(t, int64(800), res["ResourceTokenCharged"][0]["READ"])
 	assert.Equal(t, int64(600), res["ResourceTokenCharged"][1]["WRITE"])
 	assert.Equal(t, int64(200), res["ResourceTokenCharged"][2]["READ"])
+}
+
+func TestCallWriteContract(t *testing.T) {
+	// Initialize the AElf client
+	aelfClient := client.AElfClient{
+		Host:       "http://127.0.0.1:8000",
+		Version:    "1.0",
+		PrivateKey: "342e3fa65ce01c2b6d81f766222d6cf1f051ad40245cda4ab147567b1100c28f", // Replace with a valid private key for testing
+	}
+
+	// Set up the parameters for the transaction
+	tokenContractAddress, _ := aelfClient.GetContractAddressByName("AElf.ContractNames.Token")
+	userKeyPairInfo := aelfClient.GenerateKeyPairInfo()
+	toAddress, _ := util.Base58StringToAddress(userKeyPairInfo.Address)
+
+	// Create the transaction input
+	params := &pb.TransferInput{
+		To:     toAddress,
+		Symbol: "ELF",
+		Amount: 100,
+		Memo:   "transfer in test",
+	}
+
+	// Call callWriteContract
+	transactionID, err := aelfClient.CallWriteContract(tokenContractAddress, "Transfer", params)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, transactionID)
+}
+
+func TestCallViewContract(t *testing.T) {
+
+	aelfClient := client.AElfClient{
+		Host:       "http://127.0.0.1:8000",
+		Version:    "1.0",
+		PrivateKey: "342e3fa65ce01c2b6d81f766222d6cf1f051ad40245cda4ab147567b1100c28f", // Replace with a valid private key for testing
+	}
+
+	userKeyPairInfo := aelf.GenerateKeyPairInfo()
+	toAddress, _ := util.Base58StringToAddress(userKeyPairInfo.Address)
+
+	getBalanceInput := &pb.GetBalanceInput{
+		Symbol: DefaultTestSymbol,
+		Owner:  toAddress,
+	}
+	//paramsByte, _ := protojson.Marshal(getBalanceInput)
+
+	contractAddressByName, _ := aelfClient.GetContractAddressByName(consts.TokenContractSystemName)
+	result, err := aelfClient.CallViewContract(contractAddressByName, consts.TokenContractGetBalance, getBalanceInput)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, result)
 }

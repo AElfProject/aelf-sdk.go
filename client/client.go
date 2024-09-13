@@ -3,14 +3,20 @@ package client
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"encoding/json"
 	"errors"
+	"fmt"
+	"time"
+
+	"github.com/AElfProject/aelf-sdk.go/dto"
 	"github.com/AElfProject/aelf-sdk.go/model"
 	pb "github.com/AElfProject/aelf-sdk.go/protobuf/generated"
 	util "github.com/AElfProject/aelf-sdk.go/utils"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 
-	proto "github.com/golang/protobuf/proto"
-	wrap "github.com/golang/protobuf/ptypes/wrappers"
 	secp256 "github.com/haltingstate/secp256k1-go"
+	wrap "google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 // AElfClient AElf Client.
@@ -176,4 +182,105 @@ func GetSignatureWithPrivateKey(privateKey string, txData []byte) (string, error
 	txDataBytes := sha256.Sum256(txData)
 	signatureBytes := secp256.Sign(txDataBytes[:], privateKeyBytes)
 	return hex.EncodeToString(signatureBytes), nil
+}
+
+// callWriteContract 发送交易并轮询获取交易结果
+func (client *AElfClient) CallWriteContract(contractAddress string, methodName string, params interface{}) (*dto.TransactionResultDto, error) {
+
+	paramsByte, err := proto.Marshal(params.(proto.Message))
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal params: %w", err)
+	}
+
+	transaction, _ := client.CreateTransaction(client.GetAddressFromPrivateKey(client.PrivateKey), contractAddress, methodName, paramsByte)
+	signature, _ := client.SignTransaction(client.PrivateKey, transaction)
+	transaction.Signature = signature
+
+	// Send the transfer transaction to AElf chain node.
+	transactionByets, _ := proto.Marshal(transaction)
+	sendResult, err := client.SendTransaction(hex.EncodeToString(transactionByets))
+	if err != nil {
+		return nil, fmt.Errorf("failed to send transaction: %w", err)
+	}
+
+	var times = 0
+	for {
+		if times > 5 {
+			return nil, fmt.Errorf("transaction not mined within time limit")
+		}
+		transactionResult, err := client.GetTransactionResult(sendResult.TransactionID)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get transaction result: %w", err)
+		}
+
+		if transactionResult.Status == "MINED" {
+			return transactionResult, nil
+		}
+
+		time.Sleep(1 * time.Second)
+		times++
+	}
+}
+
+func (client *AElfClient) CallViewContract(contractAddress, methodName string, params interface{}) (json.RawMessage, error) {
+	// Step 1: Get the chain status and contract address
+	chainStatus, err := client.GetChainStatus()
+	if err != nil {
+		return nil, err
+	}
+
+	// Step 2: Prepare the parameters for the contract call
+	var paramsBytes []byte
+	if params != nil {
+		if msg, ok := params.(proto.Message); ok {
+			paramsBytes, err = protojson.Marshal(msg)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			return nil, fmt.Errorf("params is not of type proto.Message")
+		}
+	}
+
+	// Step 3: Create a raw transaction input
+	input := &dto.CreateRawTransactionInput{
+		From:           client.GetAddressFromPrivateKey(client.PrivateKey),
+		To:             contractAddress,
+		MethodName:     methodName,
+		RefBlockNumber: chainStatus.BestChainHeight,
+		RefBlockHash:   chainStatus.BestChainHash,
+		Params:         string(paramsBytes),
+	}
+
+	createRaw, err := client.CreateRawTransaction(input)
+	if err != nil {
+		return nil, err
+	}
+
+	// Step 4: Sign the raw transaction
+	rawTransactionBytes, err := hex.DecodeString(createRaw.RawTransaction)
+	if err != nil {
+		return nil, err
+	}
+
+	signature, err := GetSignatureWithPrivateKey(client.PrivateKey, rawTransactionBytes)
+	if err != nil {
+		return nil, err
+	}
+
+	// Step 5: Execute the raw transaction
+	executeRawInput := &dto.ExecuteRawTransactionDto{
+		RawTransaction: createRaw.RawTransaction,
+		Signature:      signature,
+	}
+
+	executeRawResult, err := client.ExecuteRawTransaction(executeRawInput)
+	if err != nil {
+		return nil, err
+	}
+
+	// Log the result for debugging
+	fmt.Printf("Transaction result: %s\n", executeRawResult)
+
+	return json.RawMessage(executeRawResult), nil
 }
