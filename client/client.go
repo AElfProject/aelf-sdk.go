@@ -3,7 +3,6 @@ package client
 import (
 	"crypto/sha256"
 	"encoding/hex"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
@@ -222,11 +221,11 @@ func (client *AElfClient) CallWriteContract(contractAddress string, methodName s
 	}
 }
 
-func (client *AElfClient) CallViewContract(contractAddress, methodName string, params interface{}) (json.RawMessage, error) {
+func (client *AElfClient) CallViewContract(contractAddress, methodName string, params interface{}) (string, error) {
 	// Step 1: Get the chain status and contract address
 	chainStatus, err := client.GetChainStatus()
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	// Step 2: Prepare the parameters for the contract call
@@ -235,10 +234,10 @@ func (client *AElfClient) CallViewContract(contractAddress, methodName string, p
 		if msg, ok := params.(proto.Message); ok {
 			paramsBytes, err = protojson.Marshal(msg)
 			if err != nil {
-				return nil, err
+				return "", err
 			}
 		} else {
-			return nil, fmt.Errorf("params is not of type proto.Message")
+			return "", fmt.Errorf("params is not of type proto.Message")
 		}
 	}
 
@@ -254,18 +253,18 @@ func (client *AElfClient) CallViewContract(contractAddress, methodName string, p
 
 	createRaw, err := client.CreateRawTransaction(input)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	// Step 4: Sign the raw transaction
 	rawTransactionBytes, err := hex.DecodeString(createRaw.RawTransaction)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	signature, err := GetSignatureWithPrivateKey(client.PrivateKey, rawTransactionBytes)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	// Step 5: Execute the raw transaction
@@ -276,11 +275,11 @@ func (client *AElfClient) CallViewContract(contractAddress, methodName string, p
 
 	executeRawResult, err := client.ExecuteRawTransaction(executeRawInput)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	// Log the result for debugging
 	fmt.Printf("Transaction result: %s\n", executeRawResult)
 
-	return json.RawMessage(executeRawResult), nil
+	return executeRawResult, nil
 }
